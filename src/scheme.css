@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    outline: none;
+}
+
+:root {
+
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+
+    /* Colors */
+    --bg: #16171d;
+    --bg-alt: #1f2028;
+    --bg-muted: #c084fc26;
+    --bg-soft: #2f303a80;
+
+    --accent: #c084fc;
+    --accent-alt: #c084fc80;
+
+    --border: color-mix(in srgb, white 10%, transparent);
+
+    --shadow:
+        rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+
+    /* Fonts */
+    --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+    --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+    --mono: ui-monospace, Consolas, monospace;
+}
+
+body {
+    height: max-content;
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--heading);
+    font-weight: bold;
+    color: var(--text-h);
+}
+
+p {
+    font-family: var(--sans);
+    font-weight: normal;
+    color: var(--text);
+}
+
+.transition-normal {
+    transition: all .8s cubic-bezier(0.075, 0.82, 0.165, 1);
+}

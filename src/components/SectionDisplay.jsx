@@ -1,0 +1,21 @@
+import { Route, Routes } from "react-router-dom"
+import NotFound from "./NotFound"
+import ResumeView from "../views/ResumeView"
+import InventoryView from "../views/InventoryView"
+import EmployeView from "../views/EmployeView"
+
+function SectionDisplay() {
+    return (
+        <main className="
+        flex flex-col flex-1
+        ">
+            <Routes>
+                <Route path="/resume" element={<ResumeView />} />
+                <Route path="/inventory" element={<InventoryView />} />
+                <Route path="/employees" element={<EmployeView />} />
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+        </main>
+    )
+}
+export default SectionDisplay
