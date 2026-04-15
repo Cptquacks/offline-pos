@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 function TagSelector({ onChange }) {
     const [tags, setTags] = useState([])
 
-    const [selectedTag, setSelectedTag] = useState(tags[0] ?? '')
+    const [selectedTag, setSelectedTag] = useState(tags[0])
 
     const handleChange = (event) => {
         setSelectedTag(event.target.value)
@@ -22,6 +22,12 @@ function TagSelector({ onChange }) {
 
         awaitAPI()
     }, [])
+
+    useEffect(() => {
+        onChange(tags[0])
+        setSelectedTag(tags[0])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tags])
 
     return (
         <div className="

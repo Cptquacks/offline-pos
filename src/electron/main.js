@@ -31,6 +31,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
     ipcMain.handle('read-json', (event, path) => files.readJsonData(path))
     ipcMain.handle('write-json', (event, path, data) => files.writeJsonData(path, data))
+    ipcMain.handle('modify-json', (event, path, data) => files.modifyJsonData(path, data))
     createWindow()
 })
 

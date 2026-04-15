@@ -18,6 +18,7 @@ class fileService {
     /**
      * Methods
      */
+
     /**
      * 
      * @param {String} filePath 
@@ -33,7 +34,7 @@ class fileService {
 
         } catch (err) {
             console.error(err)
-            return { succes: false }
+            return { success: false }
         }
     }
 
@@ -44,7 +45,7 @@ class fileService {
      * @returns {Object}
      */
     async writeJsonData(filePath, jsonData) {
-        if (!filePath) return {}
+        if (!filePath || !jsonData) return {}
         const filepath = path.join(this.dataPath, filePath)
         const dataToWrite = JSON.stringify(jsonData, null, 4)
 
@@ -54,7 +55,24 @@ class fileService {
 
         } catch (err) {
             console.error(err)
-            return { succes: false }
+            return { success: false }
+        }
+    }
+
+    async modifyJsonData(filePath, jsonData) {
+        if (!filePath || !jsonData) return {}
+        const filepath = path.join(this.dataPath, filePath)
+
+        const dataToWrite = await this.readJsonData(filePath)
+        dataToWrite.push(jsonData)
+
+        try {
+            await fs.writeFile(filepath, JSON.stringify(dataToWrite, null, 4), 'utf-8')
+            return { succes: true }
+
+        } catch (err) {
+            console.error(err)
+            return { success: false }
         }
     }
 }

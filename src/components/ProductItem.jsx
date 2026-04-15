@@ -1,12 +1,17 @@
-import { faBox, faTag } from "@fortawesome/free-solid-svg-icons"
+import { faBox, faTag, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-function ProductItem({ data }) {
+function ProductItem({ data, onDelete }) {
+
+    const handleDeletion = () => {
+        onDelete(data.index)
+    }
+
     return (
         <div className="
         flex flex-row
         items-center
-        p-4! gap-3
+        p-2! gap-1
         bg-(--bg-soft)
         border border-(--border)
         rounded-md
@@ -17,7 +22,7 @@ function ProductItem({ data }) {
             flex-1 flex flex-col
             gap-2
             ">
-                <div className="px-4!">
+                <div className="px-2!">
                     <p className="font-bold! text-2xl">
                         {data.name}
                     </p>
@@ -47,6 +52,7 @@ function ProductItem({ data }) {
 
             <div className="
             flex flex-col
+            gap-2
             items-end self-stretch justify-between
             ">
                 <p className="
@@ -62,9 +68,16 @@ function ProductItem({ data }) {
                     {data.tag}
                 </p>
                 <div>
-                    <p className="font-bold! opacity-50">
-                        Total: {data.price * data.amount} {data.currency}
-                    </p>
+                    <button className="
+                    transition-normal cursor-pointer
+                    bg-red-500/50 hover:bg-red-600/70
+                    text-white/90
+                    p-1!
+                    rounded-lg
+                    border-2 border-(--border)
+                    " onClick={handleDeletion}>
+                        <FontAwesomeIcon icon={faTrashAlt} size="lg" />
+                    </button>
                 </div>
             </div>
         </div>

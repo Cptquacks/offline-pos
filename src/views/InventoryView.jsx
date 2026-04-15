@@ -1,12 +1,53 @@
 import { useEffect, useState } from "react"
 import ProductForm from "../components/ProductForm"
 import ProductList from "../components/ProductList"
+import SearchBar from "../components/SearchBar"
+import TagFilter from "../components/TagFilter"
+import ImportPanel from "../components/ImportPanel"
 
 function InventoryView() {
     const [productData, setProductData] = useState([])
 
-    const handleSubmition = (data) => {
-        alert(data.price)
+    /**
+     * 
+     * @param {Object} data 
+     * @returns {void}
+     */
+    const handleSubmition = async (data) => {
+        if (!window.electronAPI) return
+        await window.electronAPI.modifyJSON('products.json', data)
+            .then(res => console.log(res))
+            .catch(err => console.error(err))
+
+        await window.electronAPI.readJSON('products.json')
+            .then(res => setProductData(res))
+            .catch(err => console.error(err))
+    }
+
+    /**
+     * 
+     * @param {Number} target 
+     * @returns {void}
+     */
+    const handleDeletion = async (target) => {
+        const data = productData.filter((_, index) => index !== target)
+
+        if (!window.electronAPI) return
+        await window.electronAPI.writeJSON('products.json', data)
+            .then(res => console.log(res))
+            .catch(err => console.error(err))
+
+        await window.electronAPI.readJSON('products.json')
+            .then(res => setProductData(res))
+            .catch(err => console.error(err))
+    }
+
+    /**
+     * 
+     * @param {String} query 
+     */
+    const handleSearch = (query) => {
+        query
     }
 
     useEffect(() => {
@@ -14,7 +55,7 @@ function InventoryView() {
         async function awaitAPI() {
             await window.electronAPI.readJSON('products.json')
                 .then(res => setProductData(res))
-                .catcht(err => console.error(err))
+                .catch(err => console.error(err))
         }
         awaitAPI()
     }, [])
@@ -34,7 +75,27 @@ function InventoryView() {
             rounded-md
             overflow-y-scroll
             ">
-                <ProductList data={productData} />
+                <div className="grid w-fit">
+
+                    <div className="
+                    flex flex-row
+                    px-4! py-2! gap-1
+                    justify-between
+                    ">
+                        <SearchBar onSearch={query => handleSearch(query)} />
+                        <TagFilter />
+                    </div>
+
+                    <div className="
+                    flex flex-row
+                    px-4! py-2! gap-1
+                    ">
+                        <ImportPanel />
+                    </div>
+
+                </div>
+
+                <ProductList data={productData} onDelete={index => handleDeletion(index)} />
             </div>
 
             <div className="

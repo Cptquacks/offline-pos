@@ -1,12 +1,16 @@
+import EmptyList from "./EmptyList"
 import ProductItem from "./ProductItem"
 
-function ProductList({ data }) {
+function ProductList({ data, onDelete }) {
     return (
         <div className="
-        p-4!
+        flex flex-col
+        p-4! gap-2
         ">
+            {data.length === 0 &&
+                <EmptyList />}
             {data.map((item, index) =>
-                <ProductItem key={index} data={item} />
+                <ProductItem key={index} data={{ index: index, ...item }} onDelete={index => onDelete(index)} />
             )}
         </div>
     )

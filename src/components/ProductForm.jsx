@@ -20,23 +20,13 @@ function ProductForm({ onSubmit }) {
     const [productionCost, setProductionCost] = useState(0)
     const [profitMargin, setProfitMargin] = useState(0)
 
-    /**
-     * 
-     * @param {Number} cost 
-     * @param {Number} profit 
-     * @returns {Number}
-     */
     const calculatePrice = (cost, profit) => {
-        cost = parseFloat(cost) || 0
-        profit = parseFloat(cost) || 0
 
         const price = cost + (cost * (profit / 100))
-        return Math.round(price)
+        setFormData(prev => ({ ...prev, price: Math.round(price) }))
     }
 
     const handleSubmition = () => {
-        if (automaticPrice)
-            setFormData(prev => ({ ...prev, price: calculatePrice(productionCost, profitMargin) }))
         onSubmit(formData)
     }
 
@@ -78,7 +68,7 @@ function ProductForm({ onSubmit }) {
                 onChange={data => setFormData(prev => ({ ...prev, description: data }))} />
 
             <FormInput label="Cantidad de producto" type="number" placeholder="Cantidad de producto..."
-                onChange={data => setFormData(prev => ({ ...prev, description: data }))} />
+                onChange={data => setFormData(prev => ({ ...prev, amount: data }))} />
 
 
 
@@ -90,11 +80,19 @@ function ProductForm({ onSubmit }) {
 
             {automaticPrice &&
                 <FormInput label="Costo de compra/produccion" type="number" placeholder="Costo..."
-                    onChange={data => setProductionCost(data)} />}
+                    onChange={data => {
+                        const newCost = parseInt(data) || 0
+                        setProductionCost(newCost)
+                        calculatePrice(newCost, profitMargin)
+                    }} />}
 
             {automaticPrice &&
                 <FormInput label="Margen de ganancia (porcentaje)" type="number" placeholder="Margen de ganancia (en porcentaje)..."
-                    onChange={data => setProfitMargin(data)} />}
+                    onChange={data => {
+                        const newMargin = parseInt(data) || 0
+                        setProfitMargin(newMargin)
+                        calculatePrice(productionCost, newMargin)
+                    }} />}
 
 
 
