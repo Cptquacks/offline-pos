@@ -49,6 +49,7 @@ function ProductForm({ onSubmit }) {
                 cursor-pointer transition-normal
                 flex flex-row
                 items-center
+                font-bold!
                 bg-(--accent-alt) hover:bg-white
                 px-3! py-1! gap-1
                 text-white! hover:text-(--bg)!
@@ -62,13 +63,14 @@ function ProductForm({ onSubmit }) {
             <FormInput label="Nombre" type="text" placeholder="Nombre del producto..."
                 onChange={data => setFormData(prev => ({ ...prev, name: data }))} />
 
-            <TagSelector onChange={data => setFormData(prev => ({ ...prev, tag: data }))} />
-
             <FormInput label="Descripcion" type="text" placeholder="Decripcion opcional..." required={false}
                 onChange={data => setFormData(prev => ({ ...prev, description: data }))} />
 
+            <TagSelector onChange={data => setFormData(prev => ({ ...prev, tag: data }))} />
+
+
             <FormInput label="Cantidad de producto" type="number" placeholder="Cantidad de producto..."
-                onChange={data => setFormData(prev => ({ ...prev, amount: data }))} />
+                onChange={data => setFormData(prev => ({ ...prev, amount: parseInt(data), current: parseInt(data) }))} />
 
 
 

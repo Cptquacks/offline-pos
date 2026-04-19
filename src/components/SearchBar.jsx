@@ -10,7 +10,7 @@ function SearchBar({ onSearch }) {
 
     return (
         <form onSubmit={submitSearch} className="
-        flex flex-row
+        flex flex-row 
         self-center items-center
         px-1! pl-4! py-1! gap-2
         bg-(--bg-alt)
@@ -18,6 +18,7 @@ function SearchBar({ onSearch }) {
         rounded-full
         ">
             <input className="
+            flex-1
             border-b-2 border-(--accent)
             px-2! py-0.5!
             text-sm

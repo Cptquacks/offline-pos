@@ -3,14 +3,18 @@ import SideBarButton from "./SideBarButton"
 
 
 function SideBar() {
+    const appVersion = import.meta.env.VITE_PROGRAM_VERSION
+    const codeName = import.meta.env.VITE_PROGRAM_CODE
+
     const [currentSelection, setSelection] = useState('/resume')
     const menuItems = [
         { label: 'Estadísticas', icon: 'tasks', route: '/resume' },
         { label: 'Inventario', icon: 'dolly', route: '/inventory' },
         { label: 'Empleados', icon: 'users', route: '/employees' },
+        { label: 'Kiosko', icon: 'store', route: '/kiosk' },
         { label: 'Economía', icon: 'chart-line', route: '/business' },
     ]
-
+    console.log(appVersion)
     return (
         <aside className="
         flex flex-col flex-1/3
@@ -29,7 +33,16 @@ function SideBar() {
                 )}
 
             </div>
-            <div>
+            <div className="
+            flex flex-col
+            ">
+                <p className="
+                font-bold!
+                text-sm
+                ">
+                    Versión: {appVersion} {codeName}
+                </p>
+
                 <p className="
                 font-bold
                 text-sm underline underline-offset-2

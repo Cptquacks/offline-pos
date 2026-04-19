@@ -3,6 +3,7 @@ import NotFound from "./NotFound"
 import ResumeView from "../views/ResumeView"
 import InventoryView from "../views/InventoryView"
 import EmployeView from "../views/EmployeView"
+import KioskView from "../views/KioskView"
 
 function SectionDisplay() {
     return (
@@ -13,6 +14,7 @@ function SectionDisplay() {
                 <Route path="/resume" element={<ResumeView />} />
                 <Route path="/inventory" element={<InventoryView />} />
                 <Route path="/employees" element={<EmployeView />} />
+                <Route path="/kiosk" element={<KioskView />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </main>

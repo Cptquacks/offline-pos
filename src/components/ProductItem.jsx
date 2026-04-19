@@ -41,11 +41,11 @@ function ProductItem({ data, onDelete }) {
                 rounded-full
                 ">
                     <p className="font-bold!">
-                        U: {data.amount}
+                        Vendidos {data.amount - data.current} de {data.amount}
                     </p>
 
                     <p>
-                        {data.price} {data.currency}
+                        Precio: {data.price} {data.currency}
                     </p>
                 </div>
             </div>
@@ -70,11 +70,12 @@ function ProductItem({ data, onDelete }) {
                 <div>
                     <button className="
                     transition-normal cursor-pointer
-                    bg-red-500/50 hover:bg-red-600/70
+                    bg-red-500/50
                     text-white/90
                     p-1!
                     rounded-lg
                     border-2 border-(--border)
+                    hover:shadow-(--shadow)
                     " onClick={handleDeletion}>
                         <FontAwesomeIcon icon={faTrashAlt} size="lg" />
                     </button>
