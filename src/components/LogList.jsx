@@ -4,7 +4,7 @@ import LogItem from "./LogItem"
 import { faBrush } from "@fortawesome/free-solid-svg-icons"
 import SearchBar from './SearchBar'
 
-function LogList({ logs }) {
+function LogList({ logs, onClean }) {
     return (
         <div className="
         flex flex-col
@@ -29,7 +29,7 @@ function LogList({ logs }) {
                 bg-(--accent-alt) hover:bg-white
                 text-white hover:text-(--bg-alt)
                 rounded-xs
-                ">
+                " onClick={onClean}>
                     Limpiar
                     <FontAwesomeIcon className="
                     fa-rotate-180

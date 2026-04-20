@@ -13,6 +13,7 @@ function SideBar() {
         { label: 'Empleados', icon: 'users', route: '/employees' },
         { label: 'Kiosko', icon: 'store', route: '/kiosk' },
         { label: 'Economía', icon: 'chart-line', route: '/business' },
+        { label: 'Configuración', icon: 'sliders-h', route: '/settings' },
     ]
     console.log(appVersion)
     return (

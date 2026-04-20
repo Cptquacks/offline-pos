@@ -6,6 +6,12 @@ function KioskView() {
     const [productsList, setProductsList] = useState([])
     const [storeTickets, setSoreTickets] = useState([])
 
+
+    /**
+     * 
+     * @param {Number} index 
+     * @param {Object} data
+     */
     const createTicket = async (index, data) => {
         const product = productsList[index]
         const newTicket = {
@@ -20,7 +26,6 @@ function KioskView() {
 
         if (!window.electronAPI) return
         await window.electronAPI.modifyJSON('tickets.json', newTicket)
-            .then(res => console.log(res))
             .catch(err => console.error(err))
 
         await window.electronAPI.readJSON('tickets.json')
@@ -28,6 +33,19 @@ function KioskView() {
             .catch(err => console.error(err))
     }
 
+    const cleanTicketLog = async () => {
+
+        if (!window.electronAPI) return
+        await window.electronAPI.writeJSON('tickets.json', [])
+            .then(res => setSoreTickets([]))
+            .catch(err => console.error(err))
+    }
+
+    /**
+     * 
+     * @param {Number} index 
+     * @param {Number} amount 
+     */
     const submitSale = (index, amount) => {
         const data = {
             amount: amount,
@@ -38,6 +56,11 @@ function KioskView() {
         modifyProduct(index, amount)
     }
 
+    /**
+     * 
+     * @param {Number} index 
+     * @param {Number} amount 
+     */
     const submitRefund = (index, amount) => {
         const data = {
             amount: amount,
@@ -47,6 +70,12 @@ function KioskView() {
         modifyProduct(index, amount * -1)
     }
 
+
+    /**
+     * 
+     * @param {Number} index 
+     * @param {Number} amount 
+     */
     const modifyProduct = async (index, amount) => {
         let productsCopy = productsList
         let data = productsCopy[index]
@@ -106,7 +135,7 @@ function KioskView() {
             rounded-md
             overflow-y-scroll
             ">
-                <LogList logs={storeTickets.toReversed()} />
+                <LogList logs={storeTickets.toReversed()} onClean={() => cleanTicketLog()} />
             </div>
 
         </section>
