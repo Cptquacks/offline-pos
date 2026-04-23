@@ -4,8 +4,10 @@ import FormInput from "./FormInput"
 import DatePicker from "./DatePicker"
 import { useState } from "react"
 import ChargeSelector from "./ChargeSelector"
+import useStaffStore from "../stores/staffStore"
 
 function EmployeForm({ onSubmit }) {
+    const { staffData } = useStaffStore()
     const [isPermantent, setPermanent] = useState(false)
 
     const [formData, setFormData] = useState({
@@ -18,6 +20,8 @@ function EmployeForm({ onSubmit }) {
     })
 
     const handleSubmition = () => {
+        const member = staffData.filter(member => member.ID === formData.ID)
+        if (member) return
         onSubmit(formData)
     }
 
