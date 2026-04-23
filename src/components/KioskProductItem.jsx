@@ -2,13 +2,12 @@ import { faBox, faShoppingCart, faTag, faTimes } from "@fortawesome/free-solid-s
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useMemo, useState } from "react"
 
-function KioskProductItem({ data, onSell, onRefund }) {
+function KioskProductItem({ data, onAdd, onRefund }) {
     const [currentAmount, setAmount] = useState(1)
-    const outOfStock = useMemo(() => data.current <= 0, [data.current])
+    const outOfStock = useMemo(() => data.current <= 0, [data])
 
-    const handleSell = () => onSell(data.index, currentAmount)
+    const handleAdd = () => onAdd(data, currentAmount)
     const handleRefund = () => onRefund(data.index, currentAmount)
-    console.log(outOfStock)
 
     return (
         <div className="
@@ -28,9 +27,9 @@ function KioskProductItem({ data, onSell, onRefund }) {
                 <FontAwesomeIcon icon={faBox} size="3x" />
 
                 <div className="
-            flex-1 flex flex-col
-            gap-2
-            ">
+                flex-1 flex flex-col
+                gap-2
+                ">
                     <div className="px-2!">
                         <p className="font-bold! text-2xl">
                             {data.name}
@@ -42,15 +41,15 @@ function KioskProductItem({ data, onSell, onRefund }) {
                     </div>
 
                     <div className="
-                flex flex-row 
-                w-fit
-                px-3! py-0.5! gap-3
-                bg-(--bg-alt)
-                border border-(--border)
-                rounded-full
-                ">
+                    flex flex-row 
+                    w-fit
+                    px-3! py-0.5! gap-3
+                    bg-(--bg-alt)
+                    border border-(--border)
+                    rounded-full
+                    ">
                         <p className="font-bold!">
-                            U: {data.current}
+                            D: {data.current}
                         </p>
 
                         <p>
@@ -60,19 +59,19 @@ function KioskProductItem({ data, onSell, onRefund }) {
                 </div>
 
                 <div className="
-            flex flex-col
-            gap-2
-            items-end self-stretch justify-between
-            ">
-                    <p className="
-                flex flex-row gap-1
-                font-bold! text-lg! text-white!
-                items-center
-                px-3! py-px! pl-2.5!
-                bg-(--accent-alt)/50
-                border-2 border-(--border)
-                rounded-full
+                flex flex-col
+                gap-2
+                items-end self-stretch justify-between
                 ">
+                    <p className="
+                    flex flex-row gap-1
+                    font-bold! text-lg! text-white!
+                    items-center
+                    px-3! py-px! pl-2.5!
+                    bg-(--accent-alt)/50
+                    border-2 border-(--border)
+                    rounded-full
+                    ">
                         <FontAwesomeIcon icon={faTag} />
                         {data.tag}
                     </p>
@@ -81,27 +80,19 @@ function KioskProductItem({ data, onSell, onRefund }) {
             </div>
 
             <div className="
-            flex flex-col
+            grid grid-rows-2
             self-start items-start
             p-3! py-1.5! gap-2
             rounded-md
             ">
-                <div className="
-                flex flex-row
-                items-center
-                gap-1
-                ">
-                    <p className="font-bold!">
-                        Cantidad:
-                    </p>
-                    <input className="
-                        bg-(--bg)
-                        border border-white/20
-                        px-2! py-0.5!
-                        rounded-sm
-                    " type="number" min={1} placeholder="Cantidad a vender" value={currentAmount}
-                        onChange={event => setAmount(event.target.value)} required />
-                </div>
+                <input className="
+                w-full
+                bg-(--bg)
+                border border-white/20
+                px-2! py-0.5!
+                rounded-sm
+                " type="number" min={1} value={currentAmount}
+                    onChange={event => setAmount(event.target.value)} required />
 
                 <div className="
                 flex flex-row 
@@ -120,10 +111,10 @@ function KioskProductItem({ data, onSell, onRefund }) {
 
                     disabled:text-white/50!
                     border border-white/40 disabled:border-(--border)
-                    rounded-lg
-                    " onClick={handleSell} disabled={currentAmount > data.amount || outOfStock}>
-                        Vender
+                    rounded-sm
+                    " onClick={handleAdd} disabled={currentAmount > data.amount || outOfStock}>
                         <FontAwesomeIcon icon={faShoppingCart} />
+                        Añadir al carrito
                     </button>
 
                     <button className="
@@ -135,7 +126,7 @@ function KioskProductItem({ data, onSell, onRefund }) {
                     bg-red-600 hover:bg-white
                     text-white! hover:text-(--bg-alt)!
                     border border-white/40
-                    rounded-lg
+                    rounded-sm
                     " onClick={handleRefund}>
                         Devolución
                         <FontAwesomeIcon icon={faTimes} />

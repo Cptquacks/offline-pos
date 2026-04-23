@@ -41,7 +41,7 @@ function ProductItem({ data, onDelete }) {
                 rounded-full
                 ">
                     <p className="font-bold!">
-                        Vendidos {data.amount - data.current} de {data.amount}
+                        U: {data.amount} D: {data.current}
                     </p>
 
                     <p>

@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useNavigate } from "react-router-dom"
 import NotFound from "./NotFound"
 import ResumeView from "../views/ResumeView"
 import InventoryView from "../views/InventoryView"
@@ -6,8 +6,13 @@ import KioskView from "../views/KioskView"
 import SettingsView from "../views/SettingsView"
 import EconomyView from "../views/EconomyView"
 import StaffView from "../views/StaffView"
+import { useEffect } from "react"
 
 function SectionDisplay() {
+    const navigate = useNavigate()
+
+    useEffect(() => { navigate('/resume') }, [])
+
     return (
         <main className="
         flex flex-col flex-1

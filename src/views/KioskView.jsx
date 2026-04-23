@@ -1,141 +1,204 @@
 import { useEffect, useState } from "react"
-import KioskProductList from "../components/KioskProductList"
-import LogList from "../components/LogList"
+import useTicketStore from "../stores/ticketStore"
+import useProductStore from "../stores/productStore"
+import ItemsList from "../components/ItemsList"
+import KioskProductItem from "../components/KioskProductItem"
+import TicketItem from "../components/TicketItem"
+import SearchBar from "../components/SearchBar"
+import TagFilter from "../components/TagFilter"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faBrush, faCheck, faShoppingCart, faTicket } from "@fortawesome/free-solid-svg-icons"
+import CartItem from "../components/CartItem"
+import { registerSell } from "../utils/ticket-util"
 
 function KioskView() {
-    const [productsList, setProductsList] = useState([])
-    const [storeTickets, setSoreTickets] = useState([])
+    const { productData, loadData, modifyProduct } = useProductStore()
+    const { ticketData, loadData: loadTickets, addTicket, cleanTickets } = useTicketStore()
 
+    const [cartItems, setCartItems] = useState([])
 
-    /**
-     * 
-     * @param {Number} index 
-     * @param {Object} data
-     */
-    const createTicket = async (index, data) => {
-        const product = productsList[index]
-        const newTicket = {
-            product: product.name,
-            cost: product.price,
-            amount: data.amount,
-            currency: product.currency,
-            total: product.price * data.amount,
-            date: new Date().toISOString().split('T')[0],
-            type: data.type
-        }
+    const handleSell = () => {
+        addTicket(registerSell(cartItems))
 
-        if (!window.electronAPI) return
-        await window.electronAPI.modifyJSON('tickets.json', newTicket)
-            .catch(err => console.error(err))
+        productData.forEach((item, index) => {
+            const data = cartItems.filter(product => item.name === product.name)[0]
+            if (!data) return
 
-        await window.electronAPI.readJSON('tickets.json')
-            .then(res => setSoreTickets(res))
-            .catch(err => console.error(err))
-    }
+            const updatedProduct = { ...item, current: item.amount - data.cart }
+            modifyProduct(updatedProduct, index)
+            loadData()
+        })
 
-    const cleanTicketLog = async () => {
-
-        if (!window.electronAPI) return
-        await window.electronAPI.writeJSON('tickets.json', [])
-            .then(res => setSoreTickets([]))
-            .catch(err => console.error(err))
-    }
-
-    /**
-     * 
-     * @param {Number} index 
-     * @param {Number} amount 
-     */
-    const submitSale = (index, amount) => {
-        const data = {
-            amount: amount,
-            type: "Venta"
-        }
-
-        createTicket(index, data)
-        modifyProduct(index, amount)
-    }
-
-    /**
-     * 
-     * @param {Number} index 
-     * @param {Number} amount 
-     */
-    const submitRefund = (index, amount) => {
-        const data = {
-            amount: amount,
-            type: "Devolución"
-        }
-        createTicket(index, data)
-        modifyProduct(index, amount * -1)
-    }
-
-
-    /**
-     * 
-     * @param {Number} index 
-     * @param {Number} amount 
-     */
-    const modifyProduct = async (index, amount) => {
-        let productsCopy = productsList
-        let data = productsCopy[index]
-
-        // eslint-disable-next-line react-hooks/immutability
-        data.current -= amount
-        // eslint-disable-next-line react-hooks/immutability
-        productsCopy[index] = data
-
-        if (!window.electronAPI) return
-        await window.electronAPI.writeJSON('products.json', productsCopy)
-            .then(res => console.log(res))
-            .catch(err => console.error(err))
-
-        await window.electronAPI.readJSON('products.json')
-            .then(res => setProductsList(res))
-            .catch(err => console.error(err))
+        setCartItems([])
     }
 
     useEffect(() => {
-        if (!window.electronAPI) return
-        async function awaitAPI() {
-            await window.electronAPI.readJSON('products.json')
-                .then(res => setProductsList(res))
-                .catch(err => console.error(err))
-
-            await window.electronAPI.readJSON('tickets.json')
-                .then(res => setSoreTickets(res))
-                .catch(err => console.error(err))
-        }
-        awaitAPI()
+        loadData()
+        loadTickets()
     }, [])
 
     return (
         <section className="
         grid 
-        grid-cols-3 grid-rows-1
+        grid-cols-4 grid-rows-2
         h-full
         p-4! gap-3">
 
             <div className="
             flex flex-col
+            col-span-2 row-span-2
             gap-3
-            col-span-2
             bg-(--bg-soft)
             rounded-md
             overflow-y-scroll
             ">
-                <KioskProductList data={productsList}
-                    onSell={(index, amount) => submitSale(index, amount)} onRefund={(index, amount) => submitRefund(index, amount)} />
+                <div className="
+                flex flex-row
+                justify-between
+                p-4!
+                ">
+                    <SearchBar />
+                    <TagFilter />
+                </div>
+                <ItemsList>
+                    {productData.map((item, index) =>
+                        <KioskProductItem
+                            key={index}
+                            data={{ index: index, ...item }}
+                            onAdd={
+                                (data, amount) => setCartItems(prev => ([
+                                    ...prev,
+                                    { cart: amount, ...data }
+                                ]))
+                            }
+                        />)}
+                </ItemsList>
             </div>
 
             <div className="
             flex flex-col
+            col-span-2
             p-4! gap-3
             bg-(--bg-soft)
             rounded-md
             overflow-y-scroll
             ">
-                <LogList logs={storeTickets.toReversed()} onClean={() => cleanTicketLog()} />
+                <div className="flex flex-row justify-between items-end">
+                    <div className="flex flex-row items-center gap-1">
+                        <FontAwesomeIcon icon={faShoppingCart} size="xl" />
+                        <p className="font-bold! text-2xl">
+                            Carrito de compra
+                        </p>
+                    </div>
+
+                    <div className="
+                    font-bold text-xl
+                    px-4! py-0.5!
+                    bg-(--bg-alt)
+                    border border-(--border)
+                    rounded-full
+                    ">
+                        Productos: {cartItems.length}
+                    </div>
+                </div>
+
+                <div className="
+                flex flex-row
+                self-end
+                p-2! gap-3
+                bg-(--bg-alt)
+                border border-(--border)
+                rounded-md
+                ">
+                    <button className="
+                    flex flex-row
+                    items-center
+                    px-3! py-1! gap-1
+                    font-bold!
+                    text-white! 
+                    bg-green-600
+                    border border-white/40
+                    rounded-sm
+
+                    transition cursor-pointer
+                    hover:bg-white hover:text-(--bg-alt)!
+                    " onClick={handleSell}>
+                        <FontAwesomeIcon icon={faCheck} />
+                        Vender
+                    </button>
+
+                    <button className="
+                    flex flex-row
+                    items-center
+                    px-3! py-1! gap-1
+                    font-bold!
+                    text-white! 
+                    bg-red-600
+                    border border-white/40
+                    rounded-sm
+
+                    transition cursor-pointer
+                    hover:bg-white hover:text-(--bg-alt)!
+                    " onClick={() => setCartItems([])}>
+                        <FontAwesomeIcon className="fa-rotate-180" icon={faBrush} />
+                        Limpiar
+                    </button>
+                </div>
+
+                <ItemsList>
+                    {cartItems.map((item, index) =>
+                        <CartItem key={index}
+                            data={{ index: index, ...item }}
+                            onRemove={(target) => {
+                                setCartItems(prev => prev.filter((_, index) => index !== target))
+                            }} />
+                    )}
+                </ItemsList>
+            </div>
+
+            <div className="
+            flex flex-col
+            col-span-2
+            p-4! gap-3
+            bg-(--bg-soft)
+            rounded-md
+            overflow-y-scroll
+            ">
+                <div className="flex flex-row justify-between items-end">
+
+                    <div className="flex flex-row gap-3 items-center">
+                        <FontAwesomeIcon icon={faTicket} size="xl" />
+                        <p className="font-bold! text-2xl">
+                            Recibos de compra
+                        </p>
+                    </div>
+
+                    <button className="
+                    flex flex-row
+                    items-center
+                    px-3! py-1! gap-1
+                    font-bold!
+                    text-white! 
+                    bg-(--accent-alt)
+                    rounded-xs
+
+                    transition cursor-pointer
+                    hover:bg-white hover:text-(--bg-alt)!
+                    " onClick={() => {
+                            loadTickets()
+                            cleanTickets()
+                        }}>
+                        <FontAwesomeIcon className="fa-rotate-180" icon={faBrush} />
+                        Limpiar
+                    </button>
+                </div>
+
+                <ItemsList>
+                    {ticketData.map((ticket, index) =>
+                        <TicketItem key={index}
+                            data={ticket} />
+                    )}
+                </ItemsList>
             </div>
 
         </section>

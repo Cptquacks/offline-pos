@@ -11,7 +11,7 @@ function StaffView() {
     const { staffData, salaryWaste, loadData, addStaff, deleteStaff } = useStaffStore()
     useEffect(() => {
         loadData()
-    })
+    }, [])
 
     return (
         <section className="

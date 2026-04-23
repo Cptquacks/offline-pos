@@ -20,7 +20,7 @@ function InventoryView() {
 
     useEffect(() => {
         loadData()
-    })
+    }, [])
 
     return (
         <section className="
