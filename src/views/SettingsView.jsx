@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
 import ItemListSM from "../components/ItemListSM"
-import ListItemSM from "../components/listItemSM"
+import ListItemSM from "../components/ListItemSM"
 
 function SettingsView() {
 
-    const [preferences, setPreferences] = useState({
-        "hasKiosk": true
-    })
+    const [preferences, setPreferences] = useState([])
     const [tagsList, setTagsList] = useState([])
     const [selectedTags, setSelectedTags] = useState([])
 
@@ -21,7 +19,7 @@ function SettingsView() {
             .then(res => setTagsList(res))
             .catch(err => console.error(err))
 
-        await window.electronAPI.readJSON('charges.json')
+        await window.electronAPI.readJSON('roles.json')
             .then(res => setChargesList(res))
             .catch(err => console.error(err))
 
