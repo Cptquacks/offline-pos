@@ -8,7 +8,8 @@ function SideBar() {
 
     const [currentSelection, setSelection] = useState('/resume')
     const menuItems = [
-        { label: 'Estadísticas', icon: 'tasks', route: '/resume' },
+        { label: 'Resumen', icon: 'tasks', route: '/resume' },
+        { label: 'Proveedores', icon: 'sitemap', route: '/providers' },
         { label: 'Inventario', icon: 'dolly', route: '/inventory' },
         { label: 'Empleados', icon: 'users', route: '/employees' },
         { label: 'Kiosko', icon: 'store', route: '/kiosk' },

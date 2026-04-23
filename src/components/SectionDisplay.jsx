@@ -5,6 +5,7 @@ import InventoryView from "../views/InventoryView"
 import EmployeView from "../views/EmployeView"
 import KioskView from "../views/KioskView"
 import SettingsView from "../views/SettingsView"
+import EconomyView from "../views/EconomyView"
 
 function SectionDisplay() {
     return (
@@ -16,6 +17,7 @@ function SectionDisplay() {
                 <Route path="/inventory" element={<InventoryView />} />
                 <Route path="/employees" element={<EmployeView />} />
                 <Route path="/kiosk" element={<KioskView />} />
+                <Route path="/business" element={<EconomyView />} />
                 <Route path="/settings" element={<SettingsView />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
