@@ -9,19 +9,21 @@ function EmployeItem({ data, onDelete }) {
     return (
         <div className="
         flex flex-row
-        items-center
+        items-start
         bg-(--bg-soft)
         p-2! gap-2
         border border-(--border)
         rounded-md
         ">
-            <FontAwesomeIcon icon={faUser} size="3x" />
+            <FontAwesomeIcon className="
+            mt-2!
+            " icon={faUser} size="3x" />
 
             <div className="
             flex-1
             ">
                 <div className="
-                grid grid-cols-2
+                flex flex-col gap-3
                 ">
                     <div className="
                     flex flex-col
@@ -46,12 +48,12 @@ function EmployeItem({ data, onDelete }) {
 
 
                     <div className="
-                    row-span-2
-                    flex flex-col
-                    items-left justify-between
+                    flex flex-row
+                    items-left
+                    w-fit h-fit
+                    p-2! gap-6
                     bg-(--bg-alt)
                     text-sm
-                    p-2!
                     rounded-sm
                     border border-(--border)
                     ">
