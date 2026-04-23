@@ -1,46 +1,14 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import ProductForm from "../components/ProductForm"
-import ProductList from "../components/ProductList"
 import SearchBar from "../components/SearchBar"
 import TagFilter from "../components/TagFilter"
 import ImportPanel from "../components/ImportPanel"
+import useProductStore from "../stores/productStore"
+import ItemsList from "../components/ItemsList"
+import ProductItem from "../components/ProductItem"
 
 function InventoryView() {
-    const [productData, setProductData] = useState([])
-
-    /**
-     * 
-     * @param {Object} data 
-     * @returns {void}
-     */
-    const handleSubmition = async (data) => {
-        if (!window.electronAPI) return
-        await window.electronAPI.modifyJSON('products.json', data)
-            .then(res => console.log(res))
-            .catch(err => console.error(err))
-
-        await window.electronAPI.readJSON('products.json')
-            .then(res => setProductData(res))
-            .catch(err => console.error(err))
-    }
-
-    /**
-     * 
-     * @param {Number} target 
-     * @returns {void}
-     */
-    const handleDeletion = async (target) => {
-        const data = productData.filter((_, index) => index !== target)
-
-        if (!window.electronAPI) return
-        await window.electronAPI.writeJSON('products.json', data)
-            .then(res => console.log(res))
-            .catch(err => console.error(err))
-
-        await window.electronAPI.readJSON('products.json')
-            .then(res => setProductData(res))
-            .catch(err => console.error(err))
-    }
+    const { productData, loadData, deleteProduct, addProduct } = useProductStore()
 
     /**
      * 
@@ -51,14 +19,8 @@ function InventoryView() {
     }
 
     useEffect(() => {
-        if (!window.electronAPI) return
-        async function awaitAPI() {
-            await window.electronAPI.readJSON('products.json')
-                .then(res => setProductData(res))
-                .catch(err => console.error(err))
-        }
-        awaitAPI()
-    }, [])
+        loadData()
+    })
 
     return (
         <section className="
@@ -95,7 +57,12 @@ function InventoryView() {
 
                 </div>
 
-                <ProductList data={productData} onDelete={index => handleDeletion(index)} />
+                <ItemsList>
+                    {productData.map((product, index) =>
+                        <ProductItem key={index} data={{ index: index, ...product }}
+                            onDelete={index => deleteProduct(index)} />
+                    )}
+                </ItemsList>
             </div>
 
             <div className="
@@ -104,7 +71,7 @@ function InventoryView() {
             rounded-md
             p-4! overflow-y-scroll
             ">
-                <ProductForm onSubmit={data => handleSubmition(data)} />
+                <ProductForm onSubmit={data => addProduct(data)} />
             </div>
 
         </section>
