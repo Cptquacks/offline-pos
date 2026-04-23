@@ -15,7 +15,7 @@ function ChargeSelector({ onChange }) {
     useEffect(() => {
         if (!window.electronAPI) return
         async function awaitAPI() {
-            await window.electronAPI.readJSON('charges.json')
+            await window.electronAPI.readJSON('roles.json')
                 .then(res => setCharges(res))
                 .catch(err => console.log(err))
         }

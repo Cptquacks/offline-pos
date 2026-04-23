@@ -2,10 +2,10 @@ import { Route, Routes } from "react-router-dom"
 import NotFound from "./NotFound"
 import ResumeView from "../views/ResumeView"
 import InventoryView from "../views/InventoryView"
-import EmployeView from "../views/EmployeView"
 import KioskView from "../views/KioskView"
 import SettingsView from "../views/SettingsView"
 import EconomyView from "../views/EconomyView"
+import StaffView from "../views/StaffView"
 
 function SectionDisplay() {
     return (
@@ -15,7 +15,7 @@ function SectionDisplay() {
             <Routes>
                 <Route path="/resume" element={<ResumeView />} />
                 <Route path="/inventory" element={<InventoryView />} />
-                <Route path="/employees" element={<EmployeView />} />
+                <Route path="/employees" element={<StaffView />} />
                 <Route path="/kiosk" element={<KioskView />} />
                 <Route path="/business" element={<EconomyView />} />
                 <Route path="/settings" element={<SettingsView />} />

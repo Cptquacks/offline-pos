@@ -16,7 +16,7 @@ function SideBar() {
         { label: 'Economía', icon: 'chart-line', route: '/business' },
         { label: 'Configuración', icon: 'sliders-h', route: '/settings' },
     ]
-    console.log(appVersion)
+
     return (
         <aside className="
         flex flex-col flex-1/3
