@@ -20,11 +20,13 @@ function SearchBar({ onSearch }) {
         rounded-full
         ">
             <div className="
+            transition-normal
             flex-1 flex flex-row
             items-center
             border-b-2 border-(--accent)
             px-2! py-0.5!
             text-md
+            focus-within:border-(--accent-alt)
             ">
                 <input className="
                 w-full"

@@ -7,10 +7,12 @@ import SettingsView from "../views/SettingsView"
 import EconomyView from "../views/EconomyView"
 import StaffView from "../views/StaffView"
 import { useEffect } from "react"
+import ProvidersView from "../views/ProvidersView"
 
 function SectionDisplay() {
     const navigate = useNavigate()
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { navigate('/resume') }, [])
 
     return (
@@ -19,6 +21,7 @@ function SectionDisplay() {
         ">
             <Routes>
                 <Route path="/resume" element={<ResumeView />} />
+                <Route path="/providers" element={<ProvidersView />} />
                 <Route path="/inventory" element={<InventoryView />} />
                 <Route path="/employees" element={<StaffView />} />
                 <Route path="/kiosk" element={<KioskView />} />

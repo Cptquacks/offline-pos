@@ -6,8 +6,8 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
  * @property {Array} staffData
  * @property {number} salaryWaste
  * @property {() => Promise<void>} loadData
- * @property {(product: Object) => Promise<void>} addStaff
- * @property {(product: Object, index: number) => Promise<void>} modifyStaff
+ * @property {(staff: Object) => Promise<void>} addStaff
+ * @property {(staff: Object, index: number) => Promise<void>} modifyStaff
  * @property {(target: number) => Promise<void>} deleteStaff
  */
 
@@ -38,11 +38,11 @@ const useStaffStore = create((set, get) => ({
         set({ staffData: data, salaryWaste: total })
     },
 
-    modifyStaff: async (product, index) => {
+    modifyStaff: async (staff, index) => {
         const { staffData } = get()
         const updatedData = staffData
 
-        updatedData[index] = product
+        updatedData[index] = staff
 
         const data = await writeData('staff', updatedData)
         let total = 0
