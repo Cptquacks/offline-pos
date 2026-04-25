@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import EmployeForm from "../components/EmployeForm"
 import SearchBar from "../components/SearchBar"
 import TagFilter from "../components/TagFilter"
@@ -6,11 +6,45 @@ import ImportPanel from "../components/ImportPanel"
 import ItemsList from "../components/ItemsList"
 import useStaffStore from "../stores/staffStore"
 import EmployeItem from "../components/EmployeItem"
+import { loadData as loadTagData } from "../utils/storage-util"
+import { stringSimilarity } from "../utils/string-util"
 
 function StaffView() {
     const { staffData, salaryWaste, loadData, addStaff, deleteStaff } = useStaffStore()
+    const [roles, setRoles] = useState([])
+
+    const [filter, setFilter] = useState('All')
+    const [query, setQuery] = useState('')
+
+    const filteredList = useMemo(() => {
+        let result = staffData
+
+        if (filter !== 'All') {
+            result = result.filter(product => product.charge === filter)
+        }
+
+        if (query.trim().length > 0) {
+            result = result.filter(product => stringSimilarity(product.name, query) >= 0.3)
+            result = result.map(product => ({ ...product, similarity: stringSimilarity(product.name, query) }))
+            result = result.sort((a, b) => b.similarity - a.similarity)
+
+            console.log(query)
+            result.forEach(product => console.log(`${product.name} : ${product.similarity}`))
+
+        }
+
+        return result
+    }, [query, filter, staffData])
+
     useEffect(() => {
         loadData()
+        loadData()
+        async function loadTags() {
+            const data = await loadTagData('roles')
+            setRoles(data)
+        }
+        loadTags()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
@@ -34,8 +68,8 @@ function StaffView() {
                 ">
 
                     <div className="flex flex-row gap-2 justify-between">
-                        <SearchBar />
-                        <TagFilter />
+                        <SearchBar onSearch={query => setQuery(query)} />
+                        <TagFilter filters={roles} onSelect={filter => setFilter(filter)} />
                     </div>
 
                     <div>
@@ -68,7 +102,7 @@ function StaffView() {
                 </div>
 
                 <ItemsList>
-                    {staffData.map((member, index) =>
+                    {filteredList.map((member, index) =>
                         <EmployeItem key={index} data={{ index: index, ...member }}
                             onDelete={index => deleteStaff(index)} />
                     )}
