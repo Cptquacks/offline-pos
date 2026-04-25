@@ -78,7 +78,7 @@ function InventoryView() {
 
                     <div className="
                     flex flex-row
-                    px-4! py-2! gap-1
+                    px-4! py-2! gap-3
                     justify-between
                     ">
                         <SearchBar onSearch={query => handleSearch(query)} />

@@ -13,7 +13,7 @@ function ImportPanel() {
         rounded-md
         ">
             <p>
-                Archivos
+                Importar datos
             </p>
 
             <div className="
