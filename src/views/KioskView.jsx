@@ -9,7 +9,7 @@ import TagFilter from "../components/TagFilter"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBrush, faCheck, faShoppingCart, faTicket } from "@fortawesome/free-solid-svg-icons"
 import CartItem from "../components/CartItem"
-import { registerSell } from "../utils/ticket-util"
+import { registerRefund, registerSell } from "../utils/ticket-util"
 
 function KioskView() {
     const { productData, loadData, modifyProduct } = useProductStore()
@@ -35,18 +35,19 @@ function KioskView() {
     useEffect(() => {
         loadData()
         loadTickets()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
         <section className="
         grid 
-        grid-cols-4 grid-rows-2
+        grid-cols-2 grid-rows-2
         h-full
         p-4! gap-3">
 
             <div className="
             flex flex-col
-            col-span-2 row-span-2
+            row-span-2
             gap-3
             bg-(--bg-soft)
             rounded-md
@@ -71,13 +72,15 @@ function KioskView() {
                                     { cart: amount, ...data }
                                 ]))
                             }
+                            onRefund={(data, amount) => {
+                                addTicket(registerRefund(data, amount))
+                            }}
                         />)}
                 </ItemsList>
             </div>
 
             <div className="
             flex flex-col
-            col-span-2
             p-4! gap-3
             bg-(--bg-soft)
             rounded-md
@@ -158,7 +161,6 @@ function KioskView() {
 
             <div className="
             flex flex-col
-            col-span-2
             p-4! gap-3
             bg-(--bg-soft)
             rounded-md

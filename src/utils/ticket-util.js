@@ -48,6 +48,7 @@ export function registerRefund(product, amount) {
         },
         "date": new Date().toDateString(),
     }
+    console.log(newTicket)
     newTicket.total[product.currency] = product.price * amount
 
     return newTicket

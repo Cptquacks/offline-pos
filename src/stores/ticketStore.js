@@ -16,15 +16,15 @@ const useTicketStore = create((set) => ({
 
     loadData: async () => {
         const data = await loadData('tickets')
-        set({ ticketData: data })
+        set({ ticketData: data.toReversed() })
     },
     addTicket: async (ticket) => {
         const data = await updateData('tickets', ticket)
-        set({ ticketData: data })
+        set({ ticketData: data.toReversed() })
     },
     cleanTickets: async () => {
         const data = await writeData('tickets', [])
-        set({ productData: data })
+        set({ productData: data.toReversed() })
     }
 }))
 export default useTicketStore

@@ -7,7 +7,7 @@ function KioskProductItem({ data, onAdd, onRefund }) {
     const outOfStock = useMemo(() => data.current <= 0, [data])
 
     const handleAdd = () => onAdd(data, currentAmount)
-    const handleRefund = () => onRefund(data.index, currentAmount)
+    const handleRefund = () => onRefund(data, currentAmount)
 
     return (
         <div className="

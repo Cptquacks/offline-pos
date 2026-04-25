@@ -47,7 +47,7 @@ function TicketItem({ data }) {
                 items-center 
                 px-2! py-1! gap-4
                 ">
-                    <ol className="
+                    {data.products && <ol className="
                     flex flex-col
                     gap-1
                     ">
@@ -98,7 +98,7 @@ function TicketItem({ data }) {
 
                             </li>
                         )}
-                    </ol>
+                    </ol>}
                 </div>
 
                 <div className="
