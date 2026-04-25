@@ -1,7 +1,17 @@
 import { faFilter } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useState } from "react"
 
-function TagFilter({ filters = [] }) {
+function TagFilter({ filters = [], onSelect }) {
+
+    const [selection, setSelection] = useState('Todos')
+
+    const handleSelection = (event) => {
+        onSelect(event.target.value)
+        setSelection(event.target.value)
+        console.log(event.target.value)
+    }
+
     return (
         <div className="
         flex flex-row
@@ -12,8 +22,10 @@ function TagFilter({ filters = [] }) {
         border border-(--border)
         rounded-full">
             <FontAwesomeIcon icon={faFilter} />
-            <select>
-                <option value="all">Todos</option>
+            <select className="
+            bg-(--bg-alt)
+            " onChange={handleSelection} value={selection}>
+                <option value="All">Todos</option>
                 {filters.map((filter, index) =>
                     <option key={index} value={filter}>
                         {filter}

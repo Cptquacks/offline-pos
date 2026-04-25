@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import ProductForm from "../components/ProductForm"
 import SearchBar from "../components/SearchBar"
 import TagFilter from "../components/TagFilter"
@@ -6,20 +6,57 @@ import ImportPanel from "../components/ImportPanel"
 import useProductStore from "../stores/productStore"
 import ItemsList from "../components/ItemsList"
 import ProductItem from "../components/ProductItem"
+import { loadData as loadTagData } from "../utils/storage-util"
+import { stringSimilarity } from "../utils/string-util"
 
 function InventoryView() {
     const { productData, loadData, deleteProduct, addProduct } = useProductStore()
+    const [tags, setTags] = useState([])
+
+    const [query, setQuery] = useState('')
+    const [filter, setFilter] = useState('All')
+
+    const filteredList = useMemo(() => {
+        let result = productData
+
+        if (filter !== 'All') {
+            result = result.filter(product => product.tag === filter)
+        }
+
+        if (query.trim().length > 0) {
+            result = result.filter(product => stringSimilarity(product.name, query) >= 0.3)
+            result = result.map(product => ({ ...product, similarity: stringSimilarity(product.name, query) }))
+            result = result.sort((a, b) => b.similarity - a.similarity)
+
+            console.log(query)
+            result.forEach(product => console.log(`${product.name} : ${product.similarity}`))
+
+        }
+
+        return result
+    }, [query, filter, productData])
+
 
     /**
      * 
      * @param {String} query 
      */
-    const handleSearch = (query) => {
-        query
-    }
+    const handleSearch = (query) => setQuery(query)
+
+    /**
+     * 
+     * @param {String} filter 
+     */
+    const handleFilter = (filter) => setFilter(filter)
 
     useEffect(() => {
         loadData()
+        async function loadTags() {
+            const data = await loadTagData('tags')
+            setTags(data)
+        }
+        loadTags()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
@@ -37,7 +74,7 @@ function InventoryView() {
             rounded-md
             overflow-y-scroll
             ">
-                <div className="grid w-fit">
+                <div className="grid">
 
                     <div className="
                     flex flex-row
@@ -45,7 +82,7 @@ function InventoryView() {
                     justify-between
                     ">
                         <SearchBar onSearch={query => handleSearch(query)} />
-                        <TagFilter />
+                        <TagFilter filters={tags} onSelect={filter => handleFilter(filter)} />
                     </div>
 
                     <div className="
@@ -58,7 +95,7 @@ function InventoryView() {
                 </div>
 
                 <ItemsList>
-                    {productData.map((product, index) =>
+                    {filteredList.map((product, index) =>
                         <ProductItem key={index} data={{ index: index, ...product }}
                             onDelete={index => deleteProduct(index)} />
                     )}

@@ -1,18 +1,18 @@
-import { faSearch } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
 
 function SearchBar({ onSearch }) {
     const [searchQuery, setQuery] = useState('')
-    const submitSearch = () => {
-        onSearch(searchQuery)
+    const submitSearch = (event) => {
+        setQuery(event.target.value)
+        onSearch(event.target.value)
     }
 
     return (
-        <form onSubmit={submitSearch} className="
-        flex flex-row 
+        <div className="
+        flex flex-row
+        w-full 
         self-center items-center
-        px-1! pl-4! py-1! gap-2
+        px-6! py-1.5! gap-2
         bg-(--bg-alt)
         border border-(--border)
         rounded-full
@@ -21,20 +21,10 @@ function SearchBar({ onSearch }) {
             flex-1
             border-b-2 border-(--accent)
             px-2! py-0.5!
-            text-sm
+            text-md
             " type="search" placeholder="Búsqueda..." required
-                value={searchQuery} onChange={event => setQuery(event.target.value)} />
-
-            <button className="
-            transition-normal cursor-pointer
-            bg-(--accent-alt) hover:bg-white
-            text-white hover:text-(--bg)
-            p-1!
-            rounded-full
-            " onClick={submitSearch}>
-                <FontAwesomeIcon icon={faSearch} size="lg" />
-            </button>
-        </form>
+                value={searchQuery} onChange={submitSearch} />
+        </div>
     )
 }
 export default SearchBar
