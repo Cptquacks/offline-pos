@@ -38,7 +38,7 @@ function EconomyView() {
      */
     const closesCount = useMemo(() => {
         let result = traceData.filter(trace => trace.date === currentTrace.date)
-        result = result.filter(trace => trace.refunds !== 0 && trace.sells !== 0)
+        result = result.filter(trace => trace.refunds !== 0 || trace.sells !== 0)
         return result.length
     }, [traceData, currentTrace])
 
@@ -90,12 +90,23 @@ function EconomyView() {
      * Earnings
      */
     const salesTrace = useMemo(() => {
-        let result = traceData
-        result = result.map((trace) => ({
-            date: trace.date.split('-')[2],
-            CUP: trace.total.CUP,
-            USD: trace.total.USD,
-        }))
+        let result = traceData.toReversed()
+        let grouped = {}
+
+        result.forEach(trace => {
+            if (!grouped[trace.date]) {
+                grouped[trace.date] = {
+                    date: trace.date.split('-')[2],
+                    CUP: 0,
+                    USD: 0,
+                }
+            }
+
+            grouped[trace.date].CUP += trace.total.CUP
+            grouped[trace.date].USD += trace.total.USD
+        })
+
+        result = Object.values(grouped)
         return result
     }, [traceData])
 

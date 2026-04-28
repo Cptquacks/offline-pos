@@ -34,6 +34,23 @@ function KioskView() {
         setCartItems([])
     }
 
+    /**
+     * 
+     * @param {Object} data 
+     * @param {NUmber} amount 
+     */
+    const handleRefund = (data, amount) => {
+
+        addTicket(registerRefund(data, amount))
+        addRefund(data, amount)
+
+        productData.forEach((item, index) => {
+            if (item.name !== data.name) return
+            const updatedProduct = { ...item, current: parseInt(item.current) + parseInt(amount) }
+            modifyProduct(updatedProduct, index)
+        })
+    }
+
     useEffect(() => {
         loadData()
         loadTickets()
@@ -74,10 +91,7 @@ function KioskView() {
                                     { cart: amount, ...data }
                                 ]))
                             }
-                            onRefund={(data, amount) => {
-                                addTicket(registerRefund(data, amount))
-                                addRefund(data, amount)
-                            }}
+                            onRefund={(data, amount) => handleRefund(data, amount)}
                         />)}
                 </ItemsList>
             </div>
