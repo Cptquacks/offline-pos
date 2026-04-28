@@ -23,7 +23,7 @@ const useProviderStore = create((set, get) => ({
         let total = 0
 
         data.forEach(provider => {
-            provider.active = !(new Date().toISOString().split('T')[0] >= provider.endsAt)
+            provider.active = !(new Date().toLocaleDateString('sv-SE') >= provider.endsAt)
             total += parseInt(provider.waste)
         })
 

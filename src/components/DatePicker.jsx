@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 function DatePicker({ label, onChange, value = null, required = true }) {
-    const [date, setDate] = useState(value ?? new Date().toISOString().split('T')[0])
+    const [date, setDate] = useState(value ?? new Date().toLocaleDateString('sv-SE'))
 
     const handleChange = (event) => {
         setDate(event.target.value)

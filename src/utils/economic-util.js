@@ -47,54 +47,76 @@ export function findPromedium(valueArray) {
 }
 
 /**
- * Calcula regresión lineal y predice valores para días futuros
- * @param {Array} data - Array de objetos { name: string, value: number } (días con datos)
- * @param {number} totalDays - Total de días en la semana (ej. 5)
- * @returns {Array} - Array completo de 5 días con valores reales y predichos
+ * Predice los siguientes 2 días de ventas (sells) usando regresión lineal
+ * sobre los últimos 5 días hábiles (o menos, mínimo 3).
+ * @param {Array} dataArray - Array de objetos diarios con date, sells, etc.
+ * @returns {Array} Array de objetos { date, real, predicted } (7 elementos si hay >=5 días, o 5 si hay 3-4)
  */
-export function linearRegresion(knownData, totalDays = 7) {
-    const dayMap = { 'Lunes': 0, 'Martes': 1, 'Miércoles': 2, 'Jueves': 3, 'Viernes': 4, 'Sabado': 5, 'Domingo': 6 };
-    const knownPoints = knownData.map(d => ({ x: dayMap[d.name], y: d.value }));
+export function predictNextTwoDays(dataArray) {
+    if (!dataArray || dataArray.length === 0) return [];
 
-    const n = knownPoints.length;
-    if (n < 3) return knownData.map(d => ({ ...d, real: d.value, predicted: null }));
+    // 1. Ordenar por fecha
+    const sorted = [...dataArray].sort((a, b) => a.date.localeCompare(b.date));
 
-    // Cálculo de regresión
+    // 2. Agrupar por fecha (sumar sells por día)
+    const grouped = {};
+    sorted.forEach(entry => {
+        if (!grouped[entry.date]) {
+            grouped[entry.date] = { date: entry.date, sells: 0 };
+        }
+        grouped[entry.date].sells += entry.sells || 0;
+    });
+    const uniqueDays = Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date));
+
+    // 3. Tomar los últimos 5 días únicos
+    const lastDays = uniqueDays.slice(-5);
+    const n = lastDays.length;
+
+    // 4. Si no hay al menos 3 días, devolver datos sin predicción
+    if (n < 3) {
+        return lastDays.map(d => ({ date: d.date, real: d.sells, predicted: null }));
+    }
+
+    // 5. Puntos para regresión: x = índice, y = sells
+    const points = lastDays.map((day, i) => ({ x: i, y: day.sells }));
+
+    // 6. Cálculo de regresión lineal
     let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    knownPoints.forEach(p => {
+    points.forEach(p => {
         sumX += p.x;
         sumY += p.y;
         sumXY += p.x * p.y;
         sumX2 += p.x * p.x;
     });
+
     const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
     const b = (sumY - m * sumX) / n;
 
-    // Encontrar el último día con datos reales
-    const lastKnownDay = knownData[knownData.length - 1];
+    // 7. Último índice histórico
+    const lastIndex = n - 1;
 
-    const fullWeek = [];
-    for (let i = 0; i < totalDays; i++) {
-        const dayName = Object.keys(dayMap).find(key => dayMap[key] === i);
-        const known = knownData.find(d => d.name === dayName);
-        const predictedValue = Math.round(m * i + b);
+    // 8. Construir resultado: días históricos + 2 predicciones
+    const result = lastDays.map((day, i) => ({
+        date: `Día ${day.date.split('-')[2]}`,
+        real: day.sells,
+        predicted: i === lastIndex ? day.sells : null   // conecta la línea punteada
+    }));
 
-        if (known) {
-            fullWeek.push({
-                name: dayName,
-                real: known.value,
-                // Si es el último día con datos reales, también lo ponemos como predicted para que la línea punteada comience aquí
-                predicted: known === lastKnownDay ? known.value : null,
-            });
-        } else {
-            fullWeek.push({
-                name: dayName,
-                real: null,
-                predicted: Math.max(0, predictedValue),
-            });
-        }
+    // 9. Generar los dos días siguientes
+    const lastDate = new Date(lastDays[lastIndex].date);
+    for (let i = 1; i <= 2; i++) {
+        const nextDate = new Date(lastDate);
+        nextDate.setDate(nextDate.getDate() + i);
+        const nextDateStr = nextDate.toISOString().split('T')[0];
+        const predictedValue = Math.round(m * (n + i - 1) + b);  // x = n, n+1
+        result.push({
+            date: `Día ${nextDateStr.split('-')[2]}`,
+            real: null,
+            predicted: Math.max(0, predictedValue)
+        });
     }
-    return fullWeek;
+
+    return result;
 }
 
 /**

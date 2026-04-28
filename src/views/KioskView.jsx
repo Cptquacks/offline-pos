@@ -10,23 +10,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBrush, faCheck, faShoppingCart, faTicket } from "@fortawesome/free-solid-svg-icons"
 import CartItem from "../components/CartItem"
 import { registerRefund, registerSell } from "../utils/ticket-util"
+import useTraceStore from "../stores/traceStore"
 
 function KioskView() {
     const { productData, loadData, modifyProduct } = useProductStore()
     const { ticketData, loadData: loadTickets, addTicket, cleanTickets } = useTicketStore()
+    const { addSell, addRefund } = useTraceStore()
 
     const [cartItems, setCartItems] = useState([])
 
     const handleSell = () => {
         addTicket(registerSell(cartItems))
+        addSell(cartItems)
 
         productData.forEach((item, index) => {
             const data = cartItems.filter(product => item.name === product.name)[0]
             if (!data) return
 
-            const updatedProduct = { ...item, current: item.amount - data.cart }
+            const updatedProduct = { ...item, current: item.current - data.cart }
             modifyProduct(updatedProduct, index)
-            loadData()
         })
 
         setCartItems([])
@@ -74,6 +76,7 @@ function KioskView() {
                             }
                             onRefund={(data, amount) => {
                                 addTicket(registerRefund(data, amount))
+                                addRefund(data, amount)
                             }}
                         />)}
                 </ItemsList>

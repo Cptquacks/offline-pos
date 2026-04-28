@@ -96,7 +96,7 @@ function StaffView() {
                         border border-(--border)
                         rounded-md
                         ">
-                            Gasto de salarios: {salaryWaste}
+                            Gasto de salarios: {salaryWaste} CUP
                         </p>
                     </div>
                 </div>

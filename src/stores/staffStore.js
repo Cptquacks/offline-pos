@@ -34,6 +34,7 @@ const useStaffStore = create((set, get) => ({
         data.forEach(member => {
             total += parseInt(member.salary)
         });
+        console.log(staff)
 
         set({ staffData: data, salaryWaste: total })
     },

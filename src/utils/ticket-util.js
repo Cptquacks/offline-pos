@@ -26,7 +26,7 @@ export function registerSell(data) {
             "amount": item.cart
         })
 
-        newTicket.total[item.currency] = item.price * item.cart
+        newTicket.total[item.currency] += item.price * item.cart
     });
 
     return newTicket
@@ -48,7 +48,7 @@ export function registerRefund(product, amount) {
         },
         "date": new Date().toDateString(),
     }
-    console.log(newTicket)
+
     newTicket.total[product.currency] = product.price * amount
 
     return newTicket

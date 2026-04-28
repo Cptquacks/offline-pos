@@ -15,13 +15,13 @@ function EmployeForm({ onSubmit }) {
         "ID": "",
         "salary": 0,
         "charge": "",
-        "startDate": new Date().toISOString().split('T')[0],
+        "startDate": new Date().toLocaleDateString('sv-SE'),
         "endDate": null,
     })
 
     const handleSubmition = () => {
         const member = staffData.filter(member => member.ID === formData.ID)
-        if (member) return
+        if (member.length > 0) return
         onSubmit(formData)
     }
 

@@ -11,8 +11,8 @@ function ProviderForm({ onSubmit }) {
     const [providerData, setProviderData] = useState({
         "name": '',
         "waste": 0,
-        "startedAt": new Date().toISOString().split('T')[0],
-        "endsAt": oneMonthLater.toISOString().split('T')[0],
+        "startedAt": new Date().toLocaleDateString('sv-SE'),
+        "endsAt": oneMonthLater.toLocaleDateString('sv-SE'),
         "active": true
     })
 

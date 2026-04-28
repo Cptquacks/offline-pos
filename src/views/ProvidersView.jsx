@@ -67,7 +67,7 @@ function ProvidersView() {
                     border border-(--border)
                     rounded-md
                     ">
-                        Gasto total: {paymentWaste}
+                        Gasto total: {paymentWaste} CUP
                     </strong>
                 </div>
 
