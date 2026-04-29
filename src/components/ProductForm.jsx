@@ -5,8 +5,13 @@ import { useState } from "react"
 import TagSelector from "./TagSelector"
 import CurrencySelector from "./CurrencySelector"
 import PriceSelector from "./PriceSelector"
+import DatePicker from "./DatePicker"
 
 function ProductForm({ onSubmit }) {
+    let oneMonthSpan = new Date()
+    oneMonthSpan.setMonth(oneMonthSpan.getMonth() + 1)
+    oneMonthSpan = oneMonthSpan.toLocaleDateString('sv-SE')
+
     const [formData, setFormData] = useState({
         "name": "",
         "tag": "",
@@ -14,8 +19,11 @@ function ProductForm({ onSubmit }) {
         "amount": 0,
         "price": 0,
         "currency": "CUP",
+        "expiresAt": null
     })
+
     const [automaticPrice, setAutomaticPrice] = useState(false)
+    const [productExpires, setProductExpires] = useState(false)
 
     const [productionCost, setProductionCost] = useState(0)
     const [profitMargin, setProfitMargin] = useState(0)
@@ -24,6 +32,16 @@ function ProductForm({ onSubmit }) {
 
         const price = cost + (cost * (profit / 100))
         setFormData(prev => ({ ...prev, price: Math.round(price) }))
+    }
+
+    const handleExpirationSet = (checked) => {
+        setProductExpires(checked)
+
+        if (!checked) {
+            setFormData(prev => ({ ...prev, expiresAt: null }))
+            return
+        }
+        setFormData(prev => ({ ...prev, expiresAt: oneMonthSpan }))
     }
 
     const handleSubmition = () => {
@@ -99,6 +117,28 @@ function ProductForm({ onSubmit }) {
 
 
             <CurrencySelector onChange={data => setFormData(prev => ({ ...prev, currency: data }))} />
+
+            <div className="
+            flex flex-row
+            p-4! py-2! gap-1
+            bg-(--bg-alt)
+            border border-(--border)
+            rounded-md
+            ">
+                <input
+                    id="product-expires"
+                    type="checkbox"
+                    checked={productExpires}
+                    onChange={event => handleExpirationSet(event.target.checked)} />
+
+                <label htmlFor="product-expires">Fecha de caducidad?</label>
+            </div>
+
+            {productExpires &&
+                <DatePicker label="Fecha de caducidad"
+                    value={oneMonthSpan}
+                    required={productExpires}
+                    onChange={data => setFormData(prev => ({ ...prev, expiresAt: data }))} />}
         </form>
     )
 }

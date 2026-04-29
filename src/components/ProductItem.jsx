@@ -1,7 +1,17 @@
-import { faBox, faTag, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
+import { faBox, faCalendar, faRotateLeft, faTag, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useMemo } from "react"
+import { daysFromToday } from "../utils/date-util"
+import ExpirationDisplay from "./ExpirationDisplay"
 
-function ProductItem({ data, onDelete }) {
+function ProductItem({ data, onDelete, onRestock }) {
+
+    const expirationStatus = useMemo(() => {
+        if (!data.expiresAt) return null
+        const result = daysFromToday(data.expiresAt)
+
+        return result
+    }, [data.expiresAt])
 
     const handleDeletion = () => {
         onDelete(data.index)
@@ -9,16 +19,17 @@ function ProductItem({ data, onDelete }) {
 
     return (
         <div className="
-        p-2!
+        flex flex-col
+        p-2! gap-3
         bg-(--bg-soft)
         border border-(--border)
         rounded-md
         ">
             <div className="
-        flex flex-row
-        items-center
-        gap-1
-        ">
+            flex flex-row
+            items-center
+            gap-1
+            ">
                 <FontAwesomeIcon icon={faBox} size="3x" />
 
                 <div className="
@@ -86,6 +97,59 @@ function ProductItem({ data, onDelete }) {
                         </button>
                     </div>
 
+                </div>
+            </div>
+
+            <hr className="
+            border-(--border)
+            " />
+
+            <div>
+                <div className="
+                flex flex-row
+                items-center justify-between
+                ">
+
+                    <div className="
+                    flex flex-row
+                    items-center
+                    gap-1
+                    ">
+                        {data.expiresAt &&
+                            <div className="
+                            flex flex-row
+                            items-center
+                            px-4! py-0.75! gap-0.5
+                            bg-(--bg-alt)
+                            rounded-full
+                            border border-(--border)
+                            ">
+                                <FontAwesomeIcon icon={faCalendar} />
+                                <strong>
+                                    Expira en: {data.expiresAt}
+                                </strong>
+                            </div>}
+
+                        {expirationStatus !== null && <ExpirationDisplay days={expirationStatus} />}
+                    </div>
+
+                    <button className="
+                    transition 
+                    not-disabled:cursor-pointer disabled:cursor-not-allowed
+                    flex flex-row
+                    items-center
+                    px-3! py-1! gap-1
+                    bg-(--accent-alt)
+                    text-white! font-bold
+                    rounded-xs
+                    hover:not-disabled:text-(--bg-alt)! hover:not-disabled:bg-white
+                    disabled:opacity-50
+                    "
+                        onClick={() => onRestock(data.index)}
+                        disabled={data.amount === data.current}>
+                        Rellenar
+                        <FontAwesomeIcon icon={faRotateLeft} />
+                    </button>
                 </div>
             </div>
         </div>

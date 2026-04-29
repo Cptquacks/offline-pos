@@ -10,7 +10,7 @@ import { loadData as loadTagData } from "../utils/storage-util"
 import { stringSimilarity } from "../utils/string-util"
 
 function InventoryView() {
-    const { productData, loadData, deleteProduct, addProduct } = useProductStore()
+    const { productData, loadData, deleteProduct, addProduct, modifyProduct } = useProductStore()
     const [tags, setTags] = useState([])
 
     const [query, setQuery] = useState('')
@@ -48,6 +48,19 @@ function InventoryView() {
      * @param {String} filter 
      */
     const handleFilter = (filter) => setFilter(filter)
+
+    /**
+     * 
+     * @param {Number} target
+     */
+    const handleRestock = (target) => {
+        console.log(target)
+        const data = productData.find((_, index) => target === index)
+
+        console.log(data)
+        modifyProduct({ ...data, current: data.amount }, target)
+        loadData()
+    }
 
     useEffect(() => {
         loadData()
@@ -97,7 +110,9 @@ function InventoryView() {
                 <ItemsList>
                     {filteredList.map((product, index) =>
                         <ProductItem key={index} data={{ index: index, ...product }}
-                            onDelete={index => deleteProduct(index)} />
+                            onDelete={index => deleteProduct(index)}
+                            onRestock={index => handleRestock(index)} />
+
                     )}
                 </ItemsList>
             </div>
