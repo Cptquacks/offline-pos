@@ -75,8 +75,8 @@ function ProductItem({ data, onDelete, onRestock }) {
                     font-bold! text-lg! text-white!
                     items-center
                     px-3! py-px! pl-2.5!
-                    bg-(--accent-alt)/50
-                    border-2 border-(--border)
+                    bg-(--accent-alt)/40
+                    border-2 border-(--accent)/30
                     rounded-full
                     ">
                         <FontAwesomeIcon icon={faTag} />

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import FormInput from "./FormInput"
 import { useState } from "react"
 import DatePicker from "./DatePicker"
+import ListInput from "./ListInput"
 
 function ProviderForm({ onSubmit }) {
     const oneMonthLater = new Date();
@@ -12,8 +13,10 @@ function ProviderForm({ onSubmit }) {
         "name": '',
         "waste": 0,
         "startedAt": new Date().toLocaleDateString('sv-SE'),
-        "endsAt": oneMonthLater.toLocaleDateString('sv-SE'),
-        "active": true
+        "span": 0,
+        "active": true,
+        "contactData": [],
+        "notes": []
     })
 
     return (
@@ -54,15 +57,20 @@ function ProviderForm({ onSubmit }) {
                     data => setProviderData(prev => ({ ...prev, waste: parseInt(data) }))
                 } />
 
+            <ListInput
+                label="Telefonos de contacto"
+                placeHolder="Telefono..."
+                type="phone"
+                onChange={data => setProviderData(prev => ({ ...prev, contactData: data }))} />
+
             <DatePicker label="Inicio de compra" value={providerData.startedAt}
                 onChange={
                     data => setProviderData(prev => ({ ...prev, startedAt: data }))
                 } />
 
-            <DatePicker label="Fecha de recompra" value={providerData.endsAt}
-                onChange={
-                    data => setProviderData(prev => ({ ...prev, endsAt: data }))
-                } />
+            <FormInput label="Tiempo hasta la siguiente recompra" placeholder="Dias hasta recompra..."
+                type="number"
+                onChange={data => setProviderData(prev => ({ ...prev, span: parseInt(data) }))} />
 
             <div className="
             flex flex-row
@@ -87,11 +95,15 @@ function ProviderForm({ onSubmit }) {
                 </div>
 
                 <p className={`
+                transition
                 flex flex-row
                 px-4! py-0.5!
-                text-white! font-bold!
-                ${providerData.active ? 'bg-green-600' : 'bg-red-600'}
-                border-2 border-white/40
+                font-bold!
+                ${providerData.active ?
+                        'bg-green-950/30 text-green-600! border-green-600' :
+                        'bg-red-950/30 text-red-600! border-red-600'
+                    }
+                border
                 rounded-full
                 `}>
                     {providerData.active ? 'Activo' : 'Inactivo'}

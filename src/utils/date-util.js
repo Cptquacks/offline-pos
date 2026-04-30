@@ -23,3 +23,20 @@ export function daysFromToday(target) {
     const today = new Date().toLocaleDateString('sv-SE');
     return daysBetween(today, target);
 }
+
+/**
+ * Suma (o resta) días a una fecha en formato YYYY-MM-DD.
+ * @param {string} dateStr - Fecha base (ej. "2026-06-01")
+ * @param {number} days - Días a añadir (negativo para restar)
+ * @returns {string} Nueva fecha en formato YYYY-MM-DD
+ */
+export function addDays(dateStr, days) {
+    console.log(days)
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const baseDate = new Date(y, m - 1, d);
+    baseDate.setDate(baseDate.getDate() + days);
+    const year = baseDate.getFullYear();
+    const month = String(baseDate.getMonth() + 1).padStart(2, '0');
+    const day = String(baseDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}

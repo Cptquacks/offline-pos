@@ -83,9 +83,9 @@ function EmployeItem({ data, onDelete }) {
                 flex flex-row
                 items-center
                 px-2! py-0.5! gap-1
-                bg-(--accent-alt)/50 
                 text-white! font-bold!
-                border-2 border-(--border)
+                bg-(--accent-alt)/40
+                border-2 border-(--accent)/30
                 rounded-full
                 ">
                     <FontAwesomeIcon icon={faUserCog} />

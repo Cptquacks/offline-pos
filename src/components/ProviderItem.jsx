@@ -1,112 +1,152 @@
 import { faHandshakeAlt, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import { addDays, daysBetween } from "../utils/date-util"
+import NotesControlPanel from "./NotesControlPanel"
+import ProviderBuyIndicator from "./ProviderBuyIndicator"
+import useProviderStore from "../stores/providerStore"
 
 function ProviderItem({ data, onDelete, onChange }) {
+
+    const { providerData, modifyProvider } = useProviderStore()
+
     const [currentWaste, setCurrentWaste] = useState(data.waste ?? 0)
+
+    const restockDate = useMemo(() => {
+        let result = addDays(data.startedAt, data.span)
+
+        return result
+    }, [data.startedAt, data.span])
+
+    const daysUntilRestock = useMemo(() => {
+        const result = addDays(data.startedAt, data.span)
+        const today = new Date().toLocaleDateString('sv-SE')
+
+        return daysBetween(today, result)
+    }, [data.startedAt, data.span])
+
+    const [notesOpen, setNotesOpen] = useState(false)
 
     const handleChange = (event) => {
         setCurrentWaste(event.target.value)
         onChange(event.target.value, data.index)
     }
 
+    const handleRebuy = () => {
+        let result = providerData[data.index]
+        result = { ...result, startedAt: restockDate }
+        modifyProvider(result, data.index)
+    }
+
+    const handleNoteAddition = (note) => {
+        console.log(note)
+        let result = { ...data, notes: [...data.notes, { ...note }] }
+        modifyProvider(result, data.index)
+    }
+
     return (
         <div className="
-        flex flex-row
-        items-start
-        p-2! gap-2
+        flex flex-col
+        p-2! gap-3
         bg-(--bg-soft)
         border border-(--border)
         rounded-md
         ">
-            <FontAwesomeIcon className="my-1!" icon={faHandshakeAlt} size="3x" />
-
             <div className="
-            flex-1 flex flex-col
-            gap-3
+            flex flex-row
+            w-full
+            items-center
+            gap-2
             ">
-                <div className="
-                flex flex-col
-                gap-2
-                ">
-                    <p className="font-bold! text-2xl">
-                        {data.name}
-                    </p>
+                <FontAwesomeIcon className="my-1!" icon={faHandshakeAlt} size="3x" />
 
+                <div className="
+                flex-1 flex flex-col
+                gap-3
+                ">
                     <div className="
-                    flex flex-row
-                    items-center
-                    gap-1
+                    flex flex-col
+                    gap-2
                     ">
-                        <p>Gasto:</p>
-                        <input className="
-                        w-fit
-                        px-1! py-0.5!
-                        bg-(--bg)
-                        border border-white/20
-                        rounded-sm
-                        "
-                            type="number" value={currentWaste}
-                            onChange={handleChange} />
-                        <p>CUP</p>
+                        <p className="font-bold! text-2xl">
+                            {data.name}
+                        </p>
+
+                        <div className="
+                        flex flex-row
+                        items-center
+                        gap-1
+                        ">
+                            <p>Gasto:</p>
+                            <input className="
+                            w-fit
+                            px-1! py-0.5!
+                            bg-(--bg)
+                            border border-white/20
+                            rounded-sm
+                            "
+                                type="number" value={currentWaste}
+                                onChange={handleChange} />
+                            <p>CUP</p>
+                        </div>
                     </div>
                 </div>
 
                 <div className="
-                flex flex-row 
-                w-fit
-                px-4! py-1! gap-6
-                bg-(--bg-alt)
-                rounded-md
-                border border-(--border)
+                flex flex-col 
+                h-full
+                justify-between items-end gap-3
                 ">
-                    <p>
-                        Fecha de compra:
-                        <br />
-                        <strong>{data.startedAt ?? 'Err'}</strong>
+                    <p className={`
+                    flex flex-row
+                    item-center
+                    px-4! py-0.5! gap-3
+                    ${data.active ?
+                            'bg-green-950/30 border-green-600 text-green-600!' :
+                            'bg-red-950/30 border-red-600 text-red-600!'}
+                    border 
+                    rounded-full
+
+                    font-bold! 
+                    `}>
+                        {data.active ? 'Activo' : 'Inactivo'}
                     </p>
 
-                    <p>
-                        Fecha de recompra:
-                        <br />
-                        <strong>{data.endsAt ?? 'Err'}</strong>
-                    </p>
+                    <button className="
+                    transition-normal cursor-pointer
+                    bg-red-500/50
+                    text-white!
+                    p-1!
+
+                    border-2 border-(--border)
+                    rounded-lg
+
+                    hover:shadow-(--shadow)
+                    " onClick={() => onDelete(data.index)}>
+                        <FontAwesomeIcon icon={faTrashAlt} size="lg" />
+                    </button>
                 </div>
             </div>
 
-            <div className="
-            flex flex-col 
-            h-full
-            justify-between items-end gap-3
-            ">
-                <p className={`
+            <hr className="border-(--border)" />
+
+            <div className="flex flex-col gap-3">
+                <div className="
                 flex flex-row
-                item-center
-                px-4! py-0.5! gap-3
-                ${data.active ? 'bg-green-600' : 'bg-red-600'}
-                border-2 border-white/40
-                rounded-full
+                items-center justify-between
+                ">
+                    <NotesControlPanel
+                        data={data}
+                        notesOpen={notesOpen}
+                        handleOpen={value => setNotesOpen(value)}
+                        addNote={note => handleNoteAddition(note)} />
 
-                font-bold! text-white!
-                `}>
-                    {data.active ? 'Activo' : 'Inactivo'}
-                </p>
-
-                <button className="
-                transition-normal cursor-pointer
-                bg-red-500/50
-                text-white!
-                p-1!
-
-                border-2 border-(--border)
-                rounded-lg
-
-                hover:shadow-(--shadow)
-                " onClick={() => onDelete(data.index)}>
-                    <FontAwesomeIcon icon={faTrashAlt} size="lg" />
-                </button>
+                    <ProviderBuyIndicator
+                        days={daysUntilRestock}
+                        onRebuy={handleRebuy} />
+                </div>
             </div>
-        </div>
+        </div >
     )
 }
 export default ProviderItem

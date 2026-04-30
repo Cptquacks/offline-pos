@@ -41,6 +41,7 @@ const useProviderStore = create((set, get) => ({
         set({ providerData: data, paymentWaste: total })
     },
     modifyProvider: async (provider, index) => {
+        console.log(provider)
         const { providerData } = get()
         const updatedData = providerData
 
