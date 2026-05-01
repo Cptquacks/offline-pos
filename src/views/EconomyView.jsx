@@ -1,20 +1,3 @@
-/* TODO
- * MUST HAVE [MODULE]
- * 1. Graphics for
- * 
- * - Revenue on CUP and USD, for each week day
- * - Chart to predict Revenue for empty week days
- * 
- * 
- * - Top 5 sold products
- * 
- * - Sells and refunds graphic
- * 
- * - Pie chart to dissasemble employe salaries waste
- * 
- * - Pie chart to dissasemble provider payment waste
- */
-
 import { useEffect, useMemo, useState } from "react"
 import useTraceStore from "../stores/traceStore"
 import { mostSoldProducts, predictNextTwoDays } from "../utils/economic-util"
