@@ -12,6 +12,7 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
  * @property {() => Promise<void>} loadData
  * @property {() => Promise<void>} closeTrace
  * @property {(trace: Object) => Promise<void>} updateTrace
+ * @property {() => Promise<void>} normalizeTrace
  * @property {(cartItems: Array) => Promise<void>} addSell
  * @property {(product: Object, amount: Number) => Promise<void>} addRefund
  */
@@ -98,6 +99,44 @@ const useTraceStore = create((set, get) => ({
         currentData.toReversed()[0] = { ...currentTrace, ...trace }
 
         const data = writeData('traces', currentData)
+
+        set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
+    },
+
+    normalizeTrace: async () => {
+        const { traceData, traceLoaded } = get()
+
+        if (!traceLoaded) return
+
+        const today = new Date().toLocaleString('sv-SE')
+        let updatedTrace = traceData.toReversed()
+        let groupedTrace = {}
+
+        updatedTrace.forEach(trace => {
+            if (trace.date === today) return
+
+            if (!groupedTrace[trace.date]) {
+                groupedTrace[trace.date] = {
+                    date: trace.date,
+                    refunds: 0,
+                    sells: 0,
+                    total: {
+                        CUP: 0,
+                        USD: 0
+                    }
+                }
+            }
+
+            groupedTrace[trace.date].refunds += parseInt(trace.refunds)
+            groupedTrace[trace.date].sells += parseInt(trace.sells)
+
+            groupedTrace[trace.date].total.CUP += parseInt(trace.total.CUP)
+            groupedTrace[trace.date].total.USD += parseInt(trace.total.USD)
+        })
+
+
+        updatedTrace = Object.values(groupedTrace)
+        const data = writeData('traces', updatedTrace)
 
         set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
     },

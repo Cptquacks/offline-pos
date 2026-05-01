@@ -29,7 +29,7 @@ import useStaffStore from "../stores/staffStore"
 
 
 function EconomyView() {
-    const { traceData, currentTrace, loadData, closeTrace } = useTraceStore()
+    const { traceData, currentTrace, loadData, closeTrace, normalizeTrace } = useTraceStore()
     const { productData, loadData: loadProductData } = useProductStore()
     const { staffData, loadData: loadStaffData } = useStaffStore()
 
@@ -160,6 +160,7 @@ function EconomyView() {
      */
     useEffect(() => {
         loadData()
+        normalizeTrace()
         loadProductData()
         loadStaffData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
