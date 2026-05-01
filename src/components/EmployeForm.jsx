@@ -5,9 +5,14 @@ import DatePicker from "./DatePicker"
 import { useState } from "react"
 import ChargeSelector from "./ChargeSelector"
 import useStaffStore from "../stores/staffStore"
+import useAlertStore from "../stores/alertStore"
+import WarnToast from "./WarnToast"
+import ErrorToast from "./ErrorToast"
 
 function EmployeForm({ onSubmit }) {
     const { staffData } = useStaffStore()
+    const { addAlert } = useAlertStore()
+
     const [isPermantent, setPermanent] = useState(false)
 
     const [formData, setFormData] = useState({
@@ -23,7 +28,13 @@ function EmployeForm({ onSubmit }) {
 
     const handleSubmition = () => {
         const member = staffData.filter(member => member.ID === formData.ID)
-        if (member.length > 0) return
+        if (member.length > 0) {
+            addAlert(
+                <ErrorToast
+                    label="CI Duplicado" />
+            )
+            return
+        }
         onSubmit(formData)
     }
 

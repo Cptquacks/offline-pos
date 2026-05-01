@@ -5,11 +5,12 @@ function AlertRoot() {
     const { alertTrail, removeAlert } = useAlertStore()
 
     useEffect(() => {
-        if (alertTrail.length === 0) return
         setTimeout(() => {
             removeAlert()
-        }, 1000);
-    })
+            return
+        }, 1500);
+    }, [alertTrail, removeAlert])
+
     if (alertTrail.length === 0) return null
     return (
         <div className="

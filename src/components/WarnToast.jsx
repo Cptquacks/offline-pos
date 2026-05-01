@@ -18,9 +18,9 @@ function WarnToast({ label }) {
                 bg-amber-300/20
                 "
                 icon={faWarning}
-                size="2x" />
+                size="xl" />
             <strong className="
-            px-4! py-2!
+            px-1! py-0.5!
             text-2xl
             ">
                 {label}
