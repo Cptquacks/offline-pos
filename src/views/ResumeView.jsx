@@ -6,8 +6,6 @@ import { daysFromToday } from "../utils/date-util"
 import StaffItemSM from "../components/StaffItemSM"
 import useProductStore from "../stores/productStore"
 import ProductItemSM from "../components/ProductItemSM"
-import useAlertStore from "../stores/alertStore"
-import WarnToast from "../components/WarnToast"
 
 function ResumeView() {
     const { traceData, loadData } = useTraceStore()
@@ -98,11 +96,13 @@ function ResumeView() {
             flex flex-col 
             items-center
             col-span-2 row-span-3
-            p-4! gap-3
+            p-4! py-2! gap-2
             bg-(--bg-soft)!
             rounded-md
             ">
-
+                <strong className="self-start text-xl">
+                    Resumen
+                </strong>
                 <BarChart
                     className="
                     p-4!
@@ -164,6 +164,9 @@ function ResumeView() {
             rounded-md
             overflow-y-scroll
             ">
+                <strong className="text-xl -mt-2!">
+                    Empleados temporales
+                </strong>
                 {employeList.map((member, index) =>
                     <StaffItemSM
                         key={index}
@@ -179,6 +182,9 @@ function ResumeView() {
             rounded-md
             overflow-y-scroll
             ">
+                <strong className="text-xl -mt-2!">
+                    Productos perecederos
+                </strong>
                 {productList.map((product, index) =>
                     <ProductItemSM
                         key={index}
