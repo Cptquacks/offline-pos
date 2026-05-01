@@ -126,7 +126,7 @@ const useTraceStore = create((set, get) => ({
 
         updatedTrace.sells -= parseInt(amount)
         updatedTrace.refunds += parseInt(amount)
-        updatedTrace.total[product.currency] -= parseInt(product.price)
+        updatedTrace.total[product.currency] -= parseInt(product.price) * parseInt(amount)
         console.log(updatedTrace)
 
         set({ currentTrace: updatedTrace });
