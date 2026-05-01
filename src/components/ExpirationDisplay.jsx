@@ -2,17 +2,11 @@ import { useMemo } from "react"
 
 function ExpirationDisplay({ days }) {
     const display = useMemo(() => {
-        if (days >= 14) {
-            return 3
-        }
+        if (days > 31) return 4
+        else if (days >= 14) return 3
+        else if (days >= 7) return 2
+        else if (days > 0) return 1
 
-        else if (days >= 7) {
-            return 2
-        }
-
-        else if (days > 0) {
-            return 1
-        }
 
         return 0
     }, [days])
