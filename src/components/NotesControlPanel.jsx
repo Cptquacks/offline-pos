@@ -49,9 +49,9 @@ function NotesControlPanel({ data, notesOpen, handleOpen, addNote }) {
                 hover:not-disabled:bg-white hover:not-disabled:text-(--bg-alt)!
                 disabled:opacity-50
                 "
-                    disabled={(data.notes ?? []).length === 0}
+                    disabled={data.notes.length === 0}
                     onClick={() => handleOpen(!notesOpen)}>
-                    <FontAwesomeIcon icon={notesOpen ? faEllipsisH : faCaretDown} />
+                    <FontAwesomeIcon icon={(notesOpen && data.notes.length > 0) ? faEllipsisH : faCaretDown} />
                 </button>
 
                 <button className="
