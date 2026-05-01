@@ -6,6 +6,8 @@ import { daysFromToday } from "../utils/date-util"
 import StaffItemSM from "../components/StaffItemSM"
 import useProductStore from "../stores/productStore"
 import ProductItemSM from "../components/ProductItemSM"
+import useAlertStore from "../stores/alertStore"
+import WarnToast from "../components/WarnToast"
 
 function ResumeView() {
     const { traceData, loadData } = useTraceStore()
@@ -82,6 +84,7 @@ function ResumeView() {
         loadData()
         loadStaffData()
         loadProductsData()
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

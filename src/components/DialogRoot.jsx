@@ -3,7 +3,7 @@ import useDialogStore from '../stores/dialogStore';
 import DialogView from '../views/DialogView';
 
 function DialogRoot() {
-    const { isOpen, dialogContent, closeDialog } = useDialogStore();
+    const { isOpen, dialogContent } = useDialogStore();
 
     if (!isOpen) return null;
 

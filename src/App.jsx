@@ -1,3 +1,4 @@
+import AlertRoot from './components/AlertRoot'
 import DialogRoot from './components/DialogRoot'
 import SectionDisplay from './components/SectionDisplay'
 import SideBar from './components/SideBar'
@@ -9,6 +10,7 @@ function App() {
       <SideBar />
       <SectionDisplay />
       <DialogRoot />
+      <AlertRoot />
     </main>
   )
 }
