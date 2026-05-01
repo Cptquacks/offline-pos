@@ -3,8 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useMemo } from "react"
 import { daysFromToday } from "../utils/date-util"
 import ExpirationDisplay from "./ExpirationDisplay"
+import useProductStore from "../stores/productStore"
 
-function ProductItem({ data, onDelete, onRestock }) {
+function ProductItem({ data }) {
+    const { modifyProduct, deleteProduct } = useProductStore()
 
     const expirationStatus = useMemo(() => {
         if (!data.expiresAt) return null
@@ -14,7 +16,11 @@ function ProductItem({ data, onDelete, onRestock }) {
     }, [data.expiresAt])
 
     const handleDeletion = () => {
-        onDelete(data.index)
+        deleteProduct(data.index)
+    }
+
+    const handleRestock = () => {
+        modifyProduct({ ...data, current: data.amount }, data.index)
     }
 
     return (
@@ -145,7 +151,7 @@ function ProductItem({ data, onDelete, onRestock }) {
                     hover:not-disabled:text-(--bg-alt)! hover:not-disabled:bg-white
                     disabled:opacity-50
                     "
-                        onClick={() => onRestock(data.index)}
+                        onClick={handleRestock}
                         disabled={data.amount === data.current}>
                         Rellenar
                         <FontAwesomeIcon icon={faRotateLeft} />
