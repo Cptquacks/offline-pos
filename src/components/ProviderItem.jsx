@@ -5,6 +5,7 @@ import { addDays, daysBetween } from "../utils/date-util"
 import NotesControlPanel from "./NotesControlPanel"
 import ProviderBuyIndicator from "./ProviderBuyIndicator"
 import useProviderStore from "../stores/providerStore"
+import NoteItem from "./NoteItem"
 
 function ProviderItem({ data, onDelete, onChange }) {
 
@@ -39,8 +40,14 @@ function ProviderItem({ data, onDelete, onChange }) {
     }
 
     const handleNoteAddition = (note) => {
-        console.log(note)
         let result = { ...data, notes: [...data.notes, { ...note }] }
+        modifyProvider(result, data.index)
+    }
+    const handleNoteDeletion = (target) => {
+        let result = { ...data, notes: [...data.notes.filter((_, index) => index !== target)] }
+        if (result.notes.length === 0)
+            setNotesOpen(false)
+
         modifyProvider(result, data.index)
     }
 
@@ -145,6 +152,22 @@ function ProviderItem({ data, onDelete, onChange }) {
                         days={daysUntilRestock}
                         onRebuy={handleRebuy} />
                 </div>
+
+                {notesOpen &&
+                    <div className="
+                    flex-1
+                    grid grid-cols-2 gap-3
+                    h-fit
+                    ">
+                        {data.notes?.map((note, index) =>
+                            <NoteItem
+                                key={index}
+                                data={note}
+                                onDelete={() => handleNoteDeletion(index)}
+                            />
+                        )}
+                    </div>
+                }
             </div>
         </div >
     )
