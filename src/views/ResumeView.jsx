@@ -1,45 +1,76 @@
-import { faArrowLeft, faArrowRight, faDizzy, faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts"
+import useTraceStore from "../stores/traceStore"
+import useStaffStore from "../stores/staffStore"
+import { daysFromToday } from "../utils/date-util"
+import StaffItemSM from "../components/StaffItemSM"
 
 function ResumeView() {
+    const { traceData, loadData } = useTraceStore()
+    const { staffData, loadData: loadStaffData } = useStaffStore()
 
-    const [isLoading, setLoading] = useState(true)
-    const [chartData, setChartData] = useState([])
-    const [weekIndex, setWeekIndex] = useState(0)
+    const currencyTrace = useMemo(() => {
+        let result = traceData
+        const grouped = {}
 
-    const weekData = useMemo(() => {
-        if (!chartData.length || !chartData[weekIndex]) return [];
+        result.forEach(item => {
+            if (!grouped[item.date]) {
+                grouped[item.date] = {
+                    date: `Día ${item.date.split('-')[2]}`,
+                    CUP: 0,
+                    USD: 0,
+                }
+            }
 
-        const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
-        const currentWeek = chartData[weekIndex]
+            grouped[item.date].CUP += parseInt(item.total.CUP)
+            grouped[item.date].USD += parseInt(item.total.USD)
+        })
 
-        return currentWeek.map((day, index) => ({
-            name: DAY_NAMES[index],
-            ventas: day.sells || 0,
-            devoluciones: day.refunds || 0,
-            totalCUP: day.total?.CUP || 0,
-            totalUSD: day.total?.USD || 0,
-            total: (day.total?.CUP + (day.total?.USD * 525)) || 0
-        }));
-    }, [chartData, weekIndex])
+        result = Object.values(grouped)
 
-    /**
-     * Data loader
-     */
-    const loadChartData = async () => {
-        if (!window.electronAPI) return
+        return result.slice(-5)
+    }, [traceData])
 
-        await window.electronAPI.readJSON('weeks.json')
-            .then(res => { setChartData(res), console.log(res) })
-            .catch(err => console.error(err))
+    const salesTrace = useMemo(() => {
+        let result = traceData
+        const grouped = {}
 
-        setLoading(false)
-    }
+        result.forEach(item => {
+            if (!grouped[item.date]) {
+                grouped[item.date] = {
+                    date: `Día ${item.date.split('-')[2]}`,
+                    refunds: 0,
+                    sales: 0,
+                }
+            }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    useEffect(() => { loadChartData() }, [])
+            grouped[item.date].refunds += parseInt(item.refunds)
+            grouped[item.date].sales += parseInt(item.sells)
+        })
+
+        result = Object.values(grouped)
+
+        return result.slice(-5)
+    }, [traceData])
+
+    const employeList = useMemo(() => {
+        let result = staffData.filter(member => member.endDate !== null)
+
+        result.forEach(member => {
+            member['span'] = daysFromToday(member.endDate)
+        })
+
+        result = result.sort((a, b) => b.span - a.span)
+
+        return result
+    }, [staffData])
+
+    useEffect(() => {
+        loadData()
+        loadStaffData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <section className="
@@ -49,128 +80,78 @@ function ResumeView() {
         ">
             <div className="
             flex flex-col 
+            items-center
             col-span-2 row-span-3
-            p-4! gap-6
+            p-4! gap-3
             bg-(--bg-soft)!
             rounded-md
             ">
-                <div className="flex flex-row items-start justify-between">
-                    <p className="
-                    font-bold! text-2xl
-                    ">
-                        Estadísticas
-                    </p>
 
-                    <div className="
-                        flex flex-row
-                        items-center
-                        w-fit
-                        p-2! gap-3
-                        bg-(--bg)
-                        border border-white/20
-                        rounded-md
-                        ">
-                        <button className="
-                            transition
-                            p-2! py-1.5!
-                            bg-(--accent-alt) hover:bg-white
-                            text-white hover:text-(--bg-alt)
-                            rounded-xs
-                            ">
-                            <FontAwesomeIcon icon={faArrowLeft} />
-                        </button>
+                <BarChart
+                    className="
+                    p-4!
+                    bg-(--bg-soft)
+                    border border-(--border)
+                    rounded-md
+                    "
+                    style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                    data={currencyTrace}>
 
-                        <p className="
-                            text-lg
-                            ">
-                            Semana <strong>{weekIndex + 1}</strong>
-                        </p>
+                    <Bar
+                        dataKey="CUP"
+                        fill="#0081A3" />
+                    <Bar
+                        dataKey="USD"
+                        fill="var(--accent)" />
 
-                        <button className="
-                            transition
-                            p-2! py-1.5!
-                            bg-(--accent-alt) hover:bg-white
-                            text-white hover:text-(--bg-alt)
-                            rounded-xs
-                            ">
-                            <FontAwesomeIcon icon={faArrowRight} />
-                        </button>
-                    </div>
-                </div>
+                    <XAxis dataKey="date" />
 
-                {weekData.length === 0 &&
-                    <div className="
-                    flex flex-row 
-                    self-center justify-self-center
-                    items-center w-fit
-                    p-6! gap-2
-                    bg-(--bg)
-                    opacity-50
-                    border-2 border-dashed border-white/50
-                    ">
-                        {!isLoading &&
-                            <p className="text-2xl font-bold!">
-                                No hay datos que mostrar
-                            </p>
-                        }
-                        <FontAwesomeIcon icon={isLoading ? faSpinner : faDizzy} size="2x" spinPulse={isLoading} />
+                    <Tooltip />
+                    <Legend />
 
-                    </div>
-                }
+                </BarChart>
 
-                {weekData.length !== 0 &&
-                    <div className="
-                    flex flex-col
-                    justify-between
-                    h-full
-                    ">
+                <BarChart
+                    className="
+                    p-4!
+                    bg-(--bg-soft)
+                    border border-(--border)
+                    rounded-md
+                    "
+                    style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                    data={salesTrace}>
 
-                        <LineChart
-                            style={{ width: '100%', aspectRatio: 3, maxWidth: 600 }}
-                            data={weekData}>
+                    <Bar
+                        name="Ventas"
+                        dataKey="sales"
+                        fill="#0081A3" />
 
-                            <CartesianGrid
-                                strokeDasharray="5 5" />
+                    <Bar
+                        name="Devoluciones"
+                        dataKey="refunds"
+                        fill="var(--accent)" />
 
-                            <Line name="CUP" dataKey="totalCUP" />
-                            <Line name="USD" dataKey="totalUSD" stroke="lightgreen" />
+                    <XAxis dataKey="date" />
 
-                            <XAxis dataKey="name" />
-                            <YAxis name="Ganancia" dataKey="totalCUP" />
+                    <Tooltip />
+                    <Legend />
 
-                            <Tooltip />
-                            <Legend />
+                </BarChart>
 
-                        </LineChart>
-
-                        <BarChart
-                            style={{ width: '100%', aspectRatio: 3, maxWidth: 600 }}
-                            data={weekData}>
-
-                            <CartesianGrid
-                                strokeDasharray="5 5" />
-
-                            <Bar dataKey="ventas" fill="var(--accent)" />
-                            <Bar dataKey="devoluciones" fill="lightgreen" />
-
-                            <XAxis dataKey="name" />
-                            <YAxis dataKey="ventas" />
-
-                            <Tooltip />
-                            <Legend />
-
-                        </BarChart>
-                    </div>
-                }
             </div>
 
             <div className="
             flex flex-col 
             row-span-4
+            p-4!
             bg-(--bg-soft)!
             rounded-md
             ">
-                EMPLOYES
+                {employeList.map((member, index) =>
+                    <StaffItemSM
+                        key={index}
+                        data={member} />
+                )}
             </div>
 
             <div className="

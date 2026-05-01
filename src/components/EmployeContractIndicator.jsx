@@ -15,7 +15,7 @@ function EmployeContractIndicator({ days, onRenew }) {
                 <div className="
                 flex flex-row
                 items-center
-                px-4! py-1!
+                px-4! py-0.5!
                 border border-green-600
                 bg-green-950/30
                 text-green-600
@@ -30,7 +30,7 @@ function EmployeContractIndicator({ days, onRenew }) {
                 <div className="
                 flex flex-row
                 items-center
-                px-4! py-1!
+                px-4! py-0.5!
                 border border-amber-600
                 bg-amber-950/30
                 text-amber-600
@@ -45,7 +45,7 @@ function EmployeContractIndicator({ days, onRenew }) {
                 <div className="
                 flex flex-row
                 items-center
-                px-4! py-1!
+                px-4! py-0.5!
                 border border-red-600
                 bg-red-950/30
                 text-red-600
@@ -60,7 +60,7 @@ function EmployeContractIndicator({ days, onRenew }) {
                 <div className="
                 flex flex-row
                 items-center
-                px-4! py-1! gap-3
+                px-4! py-0.5! gap-3
                 border border-red-600
                 bg-red-950/30
                 text-red-600
