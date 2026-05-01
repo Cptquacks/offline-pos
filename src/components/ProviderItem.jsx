@@ -156,7 +156,7 @@ function ProviderItem({ data, onDelete, onChange }) {
                 {notesOpen &&
                     <div className="
                     flex-1
-                    grid grid-cols-2 gap-3
+                    grid grid-cols-3 gap-3
                     h-fit
                     ">
                         {data.notes?.map((note, index) =>

@@ -1,4 +1,3 @@
-import './App.css'
 import DialogRoot from './components/DialogRoot'
 import SectionDisplay from './components/SectionDisplay'
 import SideBar from './components/SideBar'

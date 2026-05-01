@@ -15,8 +15,10 @@ function EmployeForm({ onSubmit }) {
         "ID": "",
         "salary": 0,
         "charge": "",
+        "contact": "",
         "startDate": new Date().toLocaleDateString('sv-SE'),
         "endDate": null,
+        "notes": []
     })
 
     const handleSubmition = () => {
@@ -63,6 +65,9 @@ function EmployeForm({ onSubmit }) {
 
             <FormInput label="Carnet de Identidad" placeholder="CI del empleado..." type="text"
                 onChange={data => setFormData(prev => ({ ...prev, ID: data }))} />
+
+            <FormInput label="Telefono de contacto" placeholder="Telefono del empleado..." type="tel"
+                onChange={data => setFormData(prev => ({ ...prev, contact: data }))} />
 
             <ChargeSelector onChange={
                 data => setFormData(prev => ({ ...prev, charge: data }))

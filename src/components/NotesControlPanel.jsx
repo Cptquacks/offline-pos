@@ -16,7 +16,7 @@ function NotesControlPanel({ data, notesOpen, handleOpen, addNote }) {
         <div className="
         flex flex-row
         items-center justify-between
-        px-4! pr-0.5! py-0.75! gap-3
+        px-4! pr-1! py-1! gap-3
         bg-(--bg-alt)
         border border-(--border)
         rounded-full
@@ -34,6 +34,7 @@ function NotesControlPanel({ data, notesOpen, handleOpen, addNote }) {
 
             <div className="
                 flex flex-row
+                items-center
                 gap-1.25
                 ">
                 <button className="

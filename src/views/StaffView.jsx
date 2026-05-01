@@ -10,7 +10,7 @@ import { loadData as loadTagData } from "../utils/storage-util"
 import { stringSimilarity } from "../utils/string-util"
 
 function StaffView() {
-    const { staffData, salaryWaste, loadData, addStaff, deleteStaff } = useStaffStore()
+    const { staffData, salaryWaste, loadData, addStaff } = useStaffStore()
     const [roles, setRoles] = useState([])
 
     const [filter, setFilter] = useState('All')
@@ -63,7 +63,7 @@ function StaffView() {
             overflow-y-scroll
             ">
                 <div className="grid
-                w-fit
+                w-full
                 px-4! py-2! gap-4
                 ">
 
@@ -103,8 +103,9 @@ function StaffView() {
 
                 <ItemsList>
                     {filteredList.map((member, index) =>
-                        <EmployeItem key={index} data={{ index: index, ...member }}
-                            onDelete={index => deleteStaff(index)} />
+                        <EmployeItem
+                            key={index}
+                            data={{ index: index, ...member }} />
                     )}
                 </ItemsList>
             </div>

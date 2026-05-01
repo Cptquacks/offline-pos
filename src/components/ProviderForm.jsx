@@ -60,7 +60,7 @@ function ProviderForm({ onSubmit }) {
             <ListInput
                 label="Telefonos de contacto"
                 placeHolder="Telefono..."
-                type="phone"
+                type="tel"
                 onChange={data => setProviderData(prev => ({ ...prev, contactData: data }))} />
 
             <DatePicker label="Inicio de compra" value={providerData.startedAt}
