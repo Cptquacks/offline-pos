@@ -14,6 +14,7 @@ function ExpirationDisplay({ days }) {
         <>
 
             {display === 0 && <div className="
+            w-fit h-fit
             px-4! py-0.5!
             rounded-full
             border border-red-600
@@ -28,6 +29,7 @@ function ExpirationDisplay({ days }) {
             </div>}
 
             {display === 1 && <div className="
+            w-fit h-fit
             px-4! py-0.5!
             rounded-full
             border border-red-600
@@ -42,6 +44,7 @@ function ExpirationDisplay({ days }) {
             </div>}
 
             {display === 2 && <div className="
+            w-fit h-fit
             px-4! py-0.5!
             rounded-full
             border border-amber-600
@@ -56,6 +59,7 @@ function ExpirationDisplay({ days }) {
             </div>}
 
             {display === 3 && <div className="
+            w-fit h-fit
             px-4! py-0.5!
             rounded-full
             border border-green-600

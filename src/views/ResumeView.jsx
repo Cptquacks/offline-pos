@@ -1,14 +1,16 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useMemo } from "react"
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts"
 import useTraceStore from "../stores/traceStore"
 import useStaffStore from "../stores/staffStore"
 import { daysFromToday } from "../utils/date-util"
 import StaffItemSM from "../components/StaffItemSM"
+import useProductStore from "../stores/productStore"
+import ProductItemSM from "../components/ProductItemSM"
 
 function ResumeView() {
     const { traceData, loadData } = useTraceStore()
     const { staffData, loadData: loadStaffData } = useStaffStore()
+    const { productData, loadData: loadProductsData } = useProductStore()
 
     const currencyTrace = useMemo(() => {
         let result = traceData
@@ -66,9 +68,20 @@ function ResumeView() {
         return result
     }, [staffData])
 
+    const productList = useMemo(() => {
+        let result = productData.filter(product => product.expiresAt !== null)
+        result.forEach(product => {
+            product['span'] = daysFromToday(product.expiresAt)
+        })
+
+        result = result.sort((a, b) => a.span - b.span)
+        return result
+    }, [productData])
+
     useEffect(() => {
         loadData()
         loadStaffData()
+        loadProductsData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -143,9 +156,10 @@ function ResumeView() {
             <div className="
             flex flex-col 
             row-span-4
-            p-4!
+            p-4! gap-2
             bg-(--bg-soft)!
             rounded-md
+            overflow-y-scroll
             ">
                 {employeList.map((member, index) =>
                     <StaffItemSM
@@ -157,10 +171,16 @@ function ResumeView() {
             <div className="
             flex flex-col 
             col-span-2
+            p-4! gap-2
             bg-(--bg-soft)!
             rounded-md
+            overflow-y-scroll
             ">
-                PRODUCTS
+                {productList.map((product, index) =>
+                    <ProductItemSM
+                        key={index}
+                        data={product} />
+                )}
             </div>
         </section>
     )
