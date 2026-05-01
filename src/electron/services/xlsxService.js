@@ -1,0 +1,44 @@
+import { dialog } from 'electron';
+import * as XLSX from 'xlsx';
+import path from 'path';
+
+class xlsxService {
+
+    async importFile() {
+        const { canceled, filePaths } = await dialog.showOpenDialog({
+            title: "Seleccionar archivo de datos",
+            filters: [
+                { name: 'Hojas de calculo (Excel) ', extensions: ['xlsx', 'xls', 'csv', 'ods'] }
+            ],
+            properties: ['openFile']
+        })
+
+        if (canceled || filePaths.length === 0) {
+            return { canceled: true, data: null }
+        }
+
+        try {
+            const filePath = filePaths[0];
+            const workBook = XLSX.readFile(filePath)
+            const sheetName = workBook.SheetNames[0]
+            const workSheet = workBook.Sheets[sheetName]
+
+            const rawData = XLSX.utils.sheet_to_json(workSheet, { defval: '' })
+            const columns = rawData.length > 0 ? Object.keys(rawData[0]) : []
+
+            return {
+                canceled: false,
+                fileName: path.basename(filePath),
+
+                columns: columns,
+                data: rawData
+            };
+
+        } catch (err) {
+            console.error(`Error at importFile(): ${err}`)
+            return { canceled: true, error: err }
+        }
+    }
+}
+
+export default xlsxService

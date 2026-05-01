@@ -16,10 +16,6 @@ class fileService {
     }
 
     /**
-     * Methods
-     */
-
-    /**
      * 
      * @param {String} filePath 
      * @returns {Object}
@@ -59,6 +55,12 @@ class fileService {
         }
     }
 
+    /**
+     * 
+     * @param {String} filePath 
+     * @param {Object} jsonData 
+     * @returns {Object}
+     */
     async modifyJsonData(filePath, jsonData) {
         if (!filePath || !jsonData) return {}
         const filepath = path.join(this.dataPath, filePath)
