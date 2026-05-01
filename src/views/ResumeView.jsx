@@ -13,7 +13,7 @@ function ResumeView() {
     const { productData, loadData: loadProductsData } = useProductStore()
 
     const currencyTrace = useMemo(() => {
-        let result = traceData
+        let result = traceData.toReversed()
         const grouped = {}
 
         result.forEach(item => {
@@ -35,7 +35,7 @@ function ResumeView() {
     }, [traceData])
 
     const salesTrace = useMemo(() => {
-        let result = traceData
+        let result = traceData.toReversed()
         const grouped = {}
 
         result.forEach(item => {
