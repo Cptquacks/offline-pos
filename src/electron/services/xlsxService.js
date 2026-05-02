@@ -1,6 +1,7 @@
 import { dialog } from 'electron';
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx';
 import path from 'path';
+import fs from 'fs';
 
 class xlsxService {
 
@@ -19,11 +20,24 @@ class xlsxService {
 
         try {
             const filePath = filePaths[0];
-            const workBook = XLSX.readFile(filePath)
+            const fileExtension = path.extname(filePath).toLowerCase();
+
+            let workBook;
+
+            if (fileExtension === '.csv') {
+                // Leer el archivo manualmente con codificación UTF-8
+                const csvContent = fs.readFileSync(filePath, 'utf-8');
+                workBook = XLSX.read(csvContent, { type: 'string' });
+            } else {
+                // Para Excel y otros formatos, readFile funciona bien
+                workBook = XLSX.readFile(filePath);
+            }
+
+
             const sheetName = workBook.SheetNames[0]
             const workSheet = workBook.Sheets[sheetName]
 
-            const rawData = XLSX.utils.sheet_to_json(workSheet, { defval: '' })
+            const rawData = XLSX.utils.sheet_to_json(workSheet, { defval: '', raw: false })
             const columns = rawData.length > 0 ? Object.keys(rawData[0]) : []
 
             return {

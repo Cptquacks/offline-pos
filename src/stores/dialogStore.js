@@ -6,7 +6,7 @@ import { create } from 'zustand';
  * @property {Boolean} isOpen
  * @property {import('react').ReactElement} dialogContent
  * @property {(content : import('react').ReactElement) => void} openDialog 
- * @property {() => void} openDialog 
+ * @property {() => void} closeDialog 
  */
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<dialogStore>>} */

@@ -22,7 +22,7 @@ function AlertRoot() {
         items-stretch
         p-4! gap-3
         bg-black/50
-        min-w-1/5
+        w-1/5
         ">
             {alertTrail.map((alert, index) => <div key={index}>{alert}</div>)}
         </div>

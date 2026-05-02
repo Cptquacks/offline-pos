@@ -8,9 +8,10 @@ import ItemsList from "../components/ItemsList"
 import ProductItem from "../components/ProductItem"
 import { loadData as loadTagData } from "../utils/storage-util"
 import { stringSimilarity } from "../utils/string-util"
+import { daysFromToday } from "../utils/date-util"
 
 function InventoryView() {
-    const { productData, loadData, addProduct } = useProductStore()
+    const { productData, loadData, addProduct, overwriteFile } = useProductStore()
     const [tags, setTags] = useState([])
 
     const [query, setQuery] = useState('')
@@ -48,6 +49,24 @@ function InventoryView() {
      * @param {String} filter 
      */
     const handleFilter = (filter) => setFilter(filter)
+
+    /**
+     * Be carefull
+     * @param {Array} importedData 
+     */
+    const handleImportation = (importedData) => {
+        importedData.forEach(fragment => {
+            fragment.current ? fragment.current : fragment.current = fragment.amount
+            fragment.current = parseInt(fragment.current)
+            fragment.amount = parseInt(fragment.amount)
+            fragment.price = parseInt(fragment.price)
+            fragment.expiresAt ? fragment.span = daysFromToday(fragment.expiresAt) : fragment
+        })
+
+        let result = [...productData, ...importedData]
+        console.log(result)
+        overwriteFile(result)
+    }
 
     useEffect(() => {
         loadData()
@@ -89,7 +108,30 @@ function InventoryView() {
                     flex flex-row
                     px-4! py-2! gap-1
                     ">
-                        <ImportPanel />
+                        <ImportPanel
+                            model={{
+                                "name": "",
+                                "tag": "",
+                                "description": "",
+                                "amount": 0,
+                                "price": 0,
+                                "currency": "",
+                                "expiresAt": null,
+                                "current": 0
+                            }}
+                            previewModel={{
+                                "Nombre": "",
+                                "Categoría": "",
+                                "Descripcion": "",
+                                "Cantidad": 0,
+                                "Precio": 0,
+                                "Moneda": "",
+                                "Fecha de caducidad": null,
+                                "Disponible": 0
+                            }}
+                            optionalFields={['description', 'expiresAt', 'current']}
+                            title="Importar"
+                            onImport={data => handleImportation(data)} />
                     </div>
 
                 </div>

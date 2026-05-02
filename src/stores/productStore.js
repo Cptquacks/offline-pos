@@ -9,6 +9,7 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
  * @property {(product: Object) => Promise<void>} addProduct
  * @property {(product: Object, index: number) => Promise<void>} modifyProduct
  * @property {(target: number) => Promise<void>} deleteProduct
+ * @property {(chunk: Array) => Promise<void>} overwriteFile You could nuke the products, beware
  */
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<productStore>>} */
@@ -39,6 +40,10 @@ const useProductStore = create((set, get) => ({
         updatedData = updatedData.filter((_, index) => index !== target)
         const data = await writeData('products', updatedData)
 
+        set({ productData: data })
+    },
+    overwriteFile: async (chunk) => {
+        const data = await writeData('products', chunk)
         set({ productData: data })
     }
 }))

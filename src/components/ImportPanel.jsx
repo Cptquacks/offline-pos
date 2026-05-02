@@ -1,7 +1,23 @@
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import useDialogStore from "../stores/dialogStore"
+import XLSXImportDialog from "./XLSXImportDialog"
 
-function ImportPanel() {
+function ImportPanel({ title, model, previewModel, optionalFields, onImport }) {
+    const { openDialog } = useDialogStore()
+
+    const handleImport = () => {
+        openDialog(
+            <XLSXImportDialog
+                model={model}
+                previewModel={previewModel}
+                optionalFields={optionalFields}
+                onImport={onImport}
+                title={title}
+            />
+        )
+    }
+
     return (
         <div className="
         flex flex-row
@@ -29,7 +45,7 @@ function ImportPanel() {
                 text-white hover:text-(--bg)
                 text-sm font-bold
                 rounded-xs
-                ">
+                " onClick={handleImport}>
                     <FontAwesomeIcon icon={faFileExcel} size="lg" />
                     Importar desde Excel
                 </button>

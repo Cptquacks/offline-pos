@@ -40,3 +40,30 @@ export function addDays(dateStr, days) {
     const day = String(baseDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+/**
+ * Convierte una cadena de fecha en formato Excel (M/D/YY o M/D/YYYY) a YYYY-MM-DD.
+ * Ejemplo: "8/21/27" → "2027-08-21", "12/5/2027" → "2027-12-05"
+ * @param {string} excelDateStr - Fecha en formato de hoja de cálculo
+ * @returns {string|null} Fecha normalizada o null si el formato es inválido
+ */
+export function normalizeExcelDate(excelDateStr) {
+    if (!excelDateStr || typeof excelDateStr !== 'string') return null;
+    const parts = excelDateStr.split('/');
+    if (parts.length !== 3) return null;
+
+    let [month, day, year] = parts.map(p => parseInt(p, 10));
+    if (isNaN(month) || isNaN(day) || isNaN(year)) return null;
+
+    // Manejar año de dos dígitos (ej. 27 → 2027)
+    if (year < 100) {
+        year += 2000; // asume todos los años >= 2000
+    }
+
+    // Asegurar mes y día con dos dígitos
+    const mm = String(month).padStart(2, '0');
+    const dd = String(day).padStart(2, '0');
+    const yyyy = String(year);
+
+    return `${yyyy}-${mm}-${dd}`;
+}

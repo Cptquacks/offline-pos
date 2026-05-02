@@ -5,7 +5,7 @@ import { daysFromToday } from "../utils/date-util"
 import ExpirationDisplay from "./ExpirationDisplay"
 import useProductStore from "../stores/productStore"
 
-function ProductItem({ data }) {
+function ProductItem({ data, isOnPreview = false }) {
     const { modifyProduct, deleteProduct } = useProductStore()
 
     const expirationStatus = useMemo(() => {
@@ -89,7 +89,7 @@ function ProductItem({ data }) {
                         {data.tag}
                     </p>
 
-                    <div>
+                    {!isOnPreview && <div>
                         <button className="
                         transition-normal cursor-pointer
                         bg-red-500/50
@@ -101,7 +101,7 @@ function ProductItem({ data }) {
                         " onClick={handleDeletion}>
                             <FontAwesomeIcon icon={faTrashAlt} size="lg" />
                         </button>
-                    </div>
+                    </div>}
 
                 </div>
             </div>
@@ -132,14 +132,14 @@ function ProductItem({ data }) {
                             ">
                                 <FontAwesomeIcon icon={faCalendar} />
                                 <strong>
-                                    Expira en: {data.expiresAt}
+                                    Expira en: {data.expiresAt ?? 'ERR'}
                                 </strong>
                             </div>}
 
-                        {expirationStatus !== null && <ExpirationDisplay days={expirationStatus} />}
+                        {(expirationStatus !== null && !isOnPreview) && <ExpirationDisplay days={expirationStatus} />}
                     </div>
 
-                    <button className="
+                    {!isOnPreview && <button className="
                     transition 
                     not-disabled:cursor-pointer disabled:cursor-not-allowed
                     flex flex-row
@@ -155,7 +155,7 @@ function ProductItem({ data }) {
                         disabled={data.amount === data.current}>
                         Rellenar
                         <FontAwesomeIcon icon={faRotateLeft} />
-                    </button>
+                    </button>}
                 </div>
             </div>
         </div>
