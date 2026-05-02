@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faFileImport } from "@fortawesome/free-solid-svg-icons"
 import useDialogStore from "../stores/dialogStore"
 
-function XLSXImportDialog({ title, model, optionalFields, onImport }) {
+function XLSXImportDialog({ title, model, optionalFields, onImport, previewComponent: Preview }) {
 
     const { closeDialog } = useDialogStore()
     const { addAlert } = useAlertStore()
@@ -36,12 +36,13 @@ function XLSXImportDialog({ title, model, optionalFields, onImport }) {
     }, [model])
 
     const resultantData = useMemo(() => {
+        const dateKeys = ['expiresAt', 'startDate', 'endDate']
         if (!fileData.data.length || !programFields.length) return [];
 
         return fileData.data.map(row => {
             const newObj = { ...model } // copia del modelo base
             programFields.forEach(({ key, value }) => {
-                if (key === 'expiresAt' && value && row.hasOwnProperty(value)) {
+                if (dateKeys.includes(key) && value && row.hasOwnProperty(value)) {
                     newObj[key] = normalizeExcelDate(row[value]);
                     return
                 }
@@ -85,7 +86,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport }) {
         <div className="
         flex flex-col
         border border-(--border)
-        min-w-[50dvw] max-w-dvw
+        min-w-[50dvw] max-w-[90dvw]
         min-h-[50dvh] max-h-[90dvh]
         
         bg-(--bg)
@@ -214,7 +215,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport }) {
                         Previsualización
                     </strong>
                     {resultantData.length > 0 &&
-                        <ProductItem
+                        <Preview
                             isOnPreview={true}
                             data={resultantData[0]} />
                     }

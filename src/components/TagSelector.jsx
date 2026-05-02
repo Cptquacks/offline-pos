@@ -1,11 +1,11 @@
 import { faTag } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useState } from "react"
+import useTagStore from "../stores/tagStore"
 
 function TagSelector({ onChange }) {
-    const [tags, setTags] = useState([])
-
-    const [selectedTag, setSelectedTag] = useState(tags[0])
+    const { tagList, loadTags } = useTagStore()
+    const [selectedTag, setSelectedTag] = useState(tagList[0])
 
     const handleChange = (event) => {
         setSelectedTag(event.target.value)
@@ -13,21 +13,15 @@ function TagSelector({ onChange }) {
     }
 
     useEffect(() => {
-        if (!window.electronAPI) return
-        async function awaitAPI() {
-            await window.electronAPI.readJSON('tags.json')
-                .then(res => setTags(res))
-                .catch(err => console.error(err))
-        }
-
-        awaitAPI()
+        loadTags()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
-        onChange(tags[0])
-        setSelectedTag(tags[0])
+        onChange(tagList[0])
+        setSelectedTag(tagList[0])
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tags])
+    }, [tagList])
 
     return (
         <div className="
@@ -68,7 +62,7 @@ function TagSelector({ onChange }) {
             px-2! py-0.5!
             rounded-sm
             ">
-                {tags.map((tag, index) => <option key={index} value={tag}>{tag}</option>
+                {tagList.map((tag, index) => <option key={index} value={tag}>{tag}</option>
                 )}
             </select>
         </div>

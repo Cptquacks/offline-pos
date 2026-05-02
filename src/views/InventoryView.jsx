@@ -6,13 +6,13 @@ import ImportPanel from "../components/ImportPanel"
 import useProductStore from "../stores/productStore"
 import ItemsList from "../components/ItemsList"
 import ProductItem from "../components/ProductItem"
-import { loadData as loadTagData } from "../utils/storage-util"
 import { stringSimilarity } from "../utils/string-util"
 import { daysFromToday } from "../utils/date-util"
+import useTagStore from "../stores/tagStore"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile } = useProductStore()
-    const [tags, setTags] = useState([])
+    const { tagList, loadTags, addTag } = useTagStore()
 
     const [query, setQuery] = useState('')
     const [filter, setFilter] = useState('All')
@@ -51,8 +51,18 @@ function InventoryView() {
      * Be carefull
      * @param {Array} importedData 
      */
-    const handleImportation = (importedData) => {
+    const handleImportation = async (importedData) => {
+        const newTags = []
         importedData.forEach(fragment => {
+
+            if (
+                fragment.tag &&
+                fragment.tag.trim().length > 0 &&
+                !tagList.includes(fragment.tag) &&
+                !newTags.includes(fragment.tag)
+            ) {
+                newTags.push(fragment.tag)
+            }
             fragment.current ? fragment.current : fragment.current = fragment.amount
             fragment.current = parseInt(fragment.current)
             fragment.amount = parseInt(fragment.amount)
@@ -60,16 +70,16 @@ function InventoryView() {
             fragment.expiresAt ? fragment.span = daysFromToday(fragment.expiresAt) : fragment
         })
 
+        for (let index = 0; index < newTags.length; index++) {
+            await addTag(newTags[index])
+        }
+
         let result = [...productData, ...importedData]
         overwriteFile(result)
     }
 
     useEffect(() => {
         loadData()
-        async function loadTags() {
-            const data = await loadTagData('tags')
-            setTags(data)
-        }
         loadTags()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -97,7 +107,7 @@ function InventoryView() {
                     justify-between
                     ">
                         <SearchBar onSearch={query => handleSearch(query)} />
-                        <TagFilter filters={tags} onSelect={filter => handleFilter(filter)} />
+                        <TagFilter filters={tagList} onSelect={filter => handleFilter(filter)} />
                     </div>
 
                     <div className="
@@ -117,7 +127,9 @@ function InventoryView() {
                             }}
                             optionalFields={['description', 'expiresAt', 'current']}
                             title="Importar"
-                            onImport={data => handleImportation(data)} />
+                            onImport={data => handleImportation(data)}
+                            previewComponent={({ data }) => <ProductItem data={data} isOnPreview={true} />}
+                        />
                     </div>
 
                 </div>

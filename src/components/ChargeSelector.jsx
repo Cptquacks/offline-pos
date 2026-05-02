@@ -1,11 +1,11 @@
 import { faUserCog } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useState } from "react"
+import useRoleStore from "../stores/roleStore"
 
 function ChargeSelector({ onChange }) {
-    const [charges, setCharges] = useState([])
-
-    const [selectedCharge, setSelectedCharge] = useState(charges[0])
+    const { roleList, loadRoles } = useRoleStore()
+    const [selectedCharge, setSelectedCharge] = useState(roleList[0])
 
     const handleChange = (event) => {
         setSelectedCharge(event.target.value)
@@ -13,21 +13,15 @@ function ChargeSelector({ onChange }) {
     }
 
     useEffect(() => {
-        if (!window.electronAPI) return
-        async function awaitAPI() {
-            await window.electronAPI.readJSON('roles.json')
-                .then(res => setCharges(res))
-                .catch(err => console.error(err))
-        }
-
-        awaitAPI()
+        loadRoles()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
-        onChange(charges[0])
-        setSelectedCharge(charges[0])
+        onChange(roleList[0])
+        setSelectedCharge(roleList[0])
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [charges])
+    }, [roleList])
 
     return (
         <div className="
@@ -66,7 +60,7 @@ function ChargeSelector({ onChange }) {
             ">
                 <option value="N/A">Ninguno</option>
 
-                {charges.map((charge, index) =>
+                {roleList.map((charge, index) =>
                     <option key={index} value={charge}>
                         {charge}
                     </option>

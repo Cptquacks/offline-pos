@@ -16,16 +16,23 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
 const useRoleStore = create((set, get) => ({
     roleList: [],
     loadRoles: async () => {
-        const data = await loadData('roles')
+        let data = await loadData('roles')
+        data = data.map(tag => `${tag}`)
         set({ roleList: data })
     },
     addRole: async (role) => {
-        const data = await updateData('roles', role)
+        let data = await updateData('roles', { name: `${role}` })
+        data = data.map(tag => `${tag}`)
         set({ roleList: data })
     },
     deleteRoles: async (roles) => {
         const { roleList } = get()
-        const data = await writeData('roles', roleList.filter(role => !roles.includes(role)))
+        const transformedList = roleList
+            .filter(role => !roles.includes(role))
+            .map(entry => ({ name: entry }))
+
+        let data = await writeData('roles', transformedList)
+        data = data.map(tag => `${tag}`)
         set({ roleList: data })
     },
 }))

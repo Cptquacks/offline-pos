@@ -8,9 +8,11 @@ import useStaffStore from "../stores/staffStore"
 import EmployeItem from "../components/EmployeItem"
 import { loadData as loadTagData } from "../utils/storage-util"
 import { stringSimilarity } from "../utils/string-util"
+import useRoleStore from "../stores/roleStore"
 
 function StaffView() {
-    const { staffData, salaryWaste, loadData, addStaff } = useStaffStore()
+    const { staffData, salaryWaste, loadData, addStaff, overwriteFile } = useStaffStore()
+    const { roleList, addRole } = useRoleStore()
     const [roles, setRoles] = useState([])
 
     const [filter, setFilter] = useState('All')
@@ -32,6 +34,34 @@ function StaffView() {
 
         return result
     }, [query, filter, staffData])
+
+    /**
+     * 
+     * @param {Array} importedData 
+     */
+    const handleImportation = async (importedData) => {
+        const newRoles = []
+        importedData.forEach(fragment => {
+            if (
+                fragment.charge &&
+                fragment.charge.trim().length > 0 &&
+                !roleList.includes(fragment.charge) &&
+                !newRoles.includes(fragment.charge)
+            ) {
+                addRole(fragment.charge)
+            }
+
+            fragment.salary = parseInt(fragment.salary)
+            fragment['notes'] = []
+        })
+
+        for (let index = 0; index < newRoles.length; index++) {
+            await addRole(newRoles[index])
+        }
+
+        const result = [...staffData, ...importedData]
+        overwriteFile(result)
+    }
 
     useEffect(() => {
         loadData()
@@ -70,7 +100,21 @@ function StaffView() {
                     </div>
 
                     <div>
-                        <ImportPanel />
+                        <ImportPanel
+                            model={{
+                                "name": "Nombre",
+                                "ID": "Carnet de identidad",
+                                "salary": "Salario",
+                                "charge": "Cargo",
+                                "contact": "Numero telefoníco",
+                                "startDate": "Inicio decontrato",
+                                "endDate": "Fin de contrato"
+                            }}
+                            optionalFields={["charge", "contact", "ID", "startDate", "endDate"]}
+                            title="Importar"
+                            onImport={data => handleImportation(data)}
+                            previewComponent={({ data }) => <EmployeItem data={data} isOnPreview={true} />}
+                        />
                     </div>
 
                     <div className="flex flex-row gap-1">

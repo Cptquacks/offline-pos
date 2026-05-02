@@ -1,4 +1,4 @@
-import { faUserCog, faUser, faTrashAlt, faCalendar } from "@fortawesome/free-solid-svg-icons"
+import { faUser, faCalendar } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import NotesControlPanel from "./NotesControlPanel"
 import { useMemo, useState } from "react"
@@ -6,8 +6,14 @@ import useStaffStore from "../stores/staffStore"
 import EmployeContractIndicator from "./EmployeContractIndicator"
 import NoteItem from "./NoteItem"
 import { addDays, daysBetween, daysFromToday } from "../utils/date-util"
+import TagItem from "./TagItem"
+import DeleteButton from "./DeleteButton"
+import MissingData from "./MissingData"
 
-function EmployeItem({ data }) {
+function EmployeItem({ data, isOnPreview = false }) {
+    const missingData = useMemo(() => {
+        return !data.ID || !data.charge || !data.contact || !data.startDate
+    }, [data])
 
     const { modifyStaff, deleteStaff } = useStaffStore()
     const [notesOpen, setNotesOpen] = useState(false)
@@ -80,9 +86,9 @@ function EmployeItem({ data }) {
                                     {data.name}
                                 </p>
 
-                                <p className="opacity-50 text-sm font-bold!">
+                                {data.ID && <p className="opacity-50 text-sm font-bold!">
                                     CI: {data.ID}
-                                </p>
+                                </p>}
                             </div>
 
                             <p className="font-bold! text-sm">
@@ -96,31 +102,11 @@ function EmployeItem({ data }) {
                 <div className="
                 flex flex-col 
                 self-stretch justify-between items-end
+                gap-3
                 ">
-                    <p className="
-                    flex flex-row
-                    items-center
-                    px-2! py-0.5! gap-1
-                    text-white! font-bold!
-                    bg-(--accent-alt)/40
-                    border-2 border-(--accent)/30
-                    rounded-full
-                    ">
-                        <FontAwesomeIcon icon={faUserCog} />
-                        {data.charge ?? 'N/A'}
-                    </p>
+                    {data.charge && <TagItem icon={'user-tag'} label={data.charge} />}
 
-                    <button className="
-                    transition-normal cursor-pointer
-                    bg-red-500/50
-                    text-white/90
-                    p-1!
-                    rounded-lg
-                    border-2 border-(--border)
-                    hover:shadow-(--shadow)
-                    " onClick={handleDeletion}>
-                        <FontAwesomeIcon icon={faTrashAlt} size="lg" />
-                    </button>
+                    {!isOnPreview && <DeleteButton onDelete={handleDeletion} />}
                 </div>
             </div>
 
@@ -134,33 +120,37 @@ function EmployeItem({ data }) {
                 flex flex-row
                 items-center justify-between
                 ">
-                    <NotesControlPanel
+                    {!isOnPreview && <NotesControlPanel
                         data={data}
                         notesOpen={notesOpen}
                         handleOpen={value => setNotesOpen(value)}
                         addNote={note => handleNoteAddition(note)}
-                    />
+                    />}
 
-                    {daysUntilEOC !== null &&
-                        <EmployeContractIndicator
-                            days={daysUntilEOC}
-                            onRenew={handleRenew} />}
+                    <div className="flex flex-row items-center gap-1">
+                        {missingData && <MissingData />}
 
-                    {daysUntilEOC === null &&
-                        <div className="
-                        flex flex-row
-                        items-center
-                        px-4! py-1! gap-1
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-full
-                        ">
-                            <FontAwesomeIcon icon={faCalendar} />
-                            <strong>
-                                Contratado desde {data.startDate}
-                            </strong>
-                        </div>
-                    }
+                        {(daysUntilEOC !== null && !isOnPreview) &&
+                            <EmployeContractIndicator
+                                days={daysUntilEOC}
+                                onRenew={handleRenew} />}
+
+                        {((daysUntilEOC === null || isOnPreview) && data.startDate) &&
+                            <div className="
+                            flex flex-row
+                            items-center
+                            px-4! py-1! gap-1
+                            bg-(--bg-alt)
+                            border border-(--border)
+                            rounded-full
+                            ">
+                                <FontAwesomeIcon icon={faCalendar} />
+                                <strong>
+                                    Contratado desde {data.startDate}
+                                </strong>
+                            </div>
+                        }
+                    </div>
                 </div>
 
                 {notesOpen &&

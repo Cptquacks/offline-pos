@@ -9,6 +9,7 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
  * @property {(staff: Object) => Promise<void>} addStaff
  * @property {(staff: Object, index: number) => Promise<void>} modifyStaff
  * @property {(target: number) => Promise<void>} deleteStaff
+ * @property {(chunk: Array) => Promise<void>} overwriteFile
  */
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<staffStore>>} */
@@ -68,6 +69,10 @@ const useStaffStore = create((set, get) => ({
         });
 
         set({ staffData: data, salaryWaste: total })
+    },
+    overwriteFile: async (chunk) => {
+        const data = await writeData('staff', chunk)
+        set({ staffData: data })
     }
 }))
 

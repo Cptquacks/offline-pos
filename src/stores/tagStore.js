@@ -16,16 +16,25 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
 const useTagStore = create((set, get) => ({
     tagList: [],
     loadTags: async () => {
-        const data = await loadData('tags')
+        let data = await loadData('tags')
+        data = data.map(tag => `${tag.name}`)
+
         set({ tagList: data })
     },
     addTag: async (tag) => {
-        const data = await updateData('tags', tag)
+        let data = await updateData('tags', { name: tag })
+        data = data.map(tag => `${tag.name}`)
+
         set({ tagList: data })
     },
     deleteTags: async (tags) => {
         const { tagList } = get()
-        const data = await writeData('tags', tagList.filter(tag => !tags.includes(tag)))
+        const transformedList = tagList
+            .filter(tag => !tags.includes(tag))
+            .map(tag => ({ name: tag }))
+
+        let data = await writeData('tags', transformedList)
+        data = data.map(tag => `${tag.name}`)
         set({ tagList: data })
     },
 }))
