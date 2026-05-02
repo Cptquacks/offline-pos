@@ -5,7 +5,7 @@
  * @property {Array} tagList
  * @property {() => Promise<void>} loadTags
  * @property {(tag: String) => Promise<void>} addTag
- * @property {(index: Number) => Promsie<void>} deleteTag
+ * @property {(tags: Array) => Promsie<void>} deleteTags
  */
 
 import { create } from "zustand";
@@ -23,9 +23,9 @@ const useTagStore = create((set, get) => ({
         const data = await updateData('tags', tag)
         set({ tagList: data })
     },
-    deleteTag: async (index) => {
+    deleteTags: async (tags) => {
         const { tagList } = get()
-        const data = await writeData('tags', tagList.filter((_, i) => index !== i))
+        const data = await writeData('tags', tagList.filter(tag => !tags.includes(tag)))
         set({ tagList: data })
     },
 }))

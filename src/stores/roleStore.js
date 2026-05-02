@@ -5,13 +5,13 @@
  * @property {Array} roleList
  * @property {() => Promise<void>} loadRoles
  * @property {(role: String) => Promise<void>} addRole
- * @property {(index: Number) => Promsie<void>} deleteRole
+ * @property {(roles: Array) => Promsie<void>} deleteRoles
  */
 
 import { create } from "zustand";
 import { loadData, updateData, writeData } from "../utils/storage-util";
 
-/**@type {import("zustand").UseBoundStore<import("zustand").StoreApi<tagStore>>} */
+/**@type {import("zustand").UseBoundStore<import("zustand").StoreApi<roleStore>>} */
 
 const useRoleStore = create((set, get) => ({
     roleList: [],
@@ -23,9 +23,9 @@ const useRoleStore = create((set, get) => ({
         const data = await updateData('roles', role)
         set({ roleList: data })
     },
-    deleteRole: async (index) => {
+    deleteRoles: async (roles) => {
         const { roleList } = get()
-        const data = await writeData('roles', roleList.filter((_, i) => index !== i))
+        const data = await writeData('roles', roleList.filter(role => !roles.includes(role)))
         set({ roleList: data })
     },
 }))
