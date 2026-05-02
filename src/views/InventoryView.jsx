@@ -110,24 +110,14 @@ function InventoryView() {
                     ">
                         <ImportPanel
                             model={{
-                                "name": "",
-                                "tag": "",
-                                "description": "",
-                                "amount": 0,
-                                "price": 0,
-                                "currency": "",
-                                "expiresAt": null,
-                                "current": 0
-                            }}
-                            previewModel={{
-                                "Nombre": "",
-                                "Categoría": "",
-                                "Descripcion": "",
-                                "Cantidad": 0,
-                                "Precio": 0,
-                                "Moneda": "",
-                                "Fecha de caducidad": null,
-                                "Disponible": 0
+                                "name": "Nombre",
+                                "tag": "Categoría",
+                                "description": "Descripción",
+                                "amount": "Cantidad",
+                                "price": "Precio",
+                                "currency": "Moneda",
+                                "expiresAt": "Caducidad",
+                                "current": "Disponibilidad"
                             }}
                             optionalFields={['description', 'expiresAt', 'current']}
                             title="Importar"

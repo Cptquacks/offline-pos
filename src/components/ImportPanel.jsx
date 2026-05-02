@@ -3,14 +3,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import useDialogStore from "../stores/dialogStore"
 import XLSXImportDialog from "./XLSXImportDialog"
 
-function ImportPanel({ title, model, previewModel, optionalFields, onImport }) {
+function ImportPanel({ title, model, optionalFields, onImport }) {
     const { openDialog } = useDialogStore()
 
     const handleImport = () => {
         openDialog(
             <XLSXImportDialog
                 model={model}
-                previewModel={previewModel}
                 optionalFields={optionalFields}
                 onImport={onImport}
                 title={title}

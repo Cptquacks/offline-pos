@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faFileImport } from "@fortawesome/free-solid-svg-icons"
 import useDialogStore from "../stores/dialogStore"
 
-function XLSXImportDialog({ title, model, previewModel, optionalFields, onImport }) {
+function XLSXImportDialog({ title, model, optionalFields, onImport }) {
 
     const { closeDialog } = useDialogStore()
     const { addAlert } = useAlertStore()
@@ -24,9 +24,9 @@ function XLSXImportDialog({ title, model, previewModel, optionalFields, onImport
     const [programFields, setProgramFields] = useState([])
 
     const previewFields = useMemo(() => {
-        const result = Object.keys(previewModel)
+        const result = Object.values(model)
         return result
-    }, [previewModel])
+    }, [model])
 
     const transformedFields = useMemo(() => {
         let entries = Object.keys(model)
@@ -234,7 +234,15 @@ function XLSXImportDialog({ title, model, previewModel, optionalFields, onImport
                 "
                     disabled={!readyToImport}
                     onClick={() => {
-                        onImport(resultantData)
+                        let result = resultantData
+                        result.forEach(item => {
+                            Object.keys(model).forEach(entry => {
+                                if (previewFields.some(field => field === item[entry]))
+                                    item[entry] = null
+                            })
+                        })
+
+                        onImport(result)
                         closeDialog()
                     }}>
                     <FontAwesomeIcon icon={faFileImport} />
