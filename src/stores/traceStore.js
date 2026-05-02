@@ -69,7 +69,6 @@ const useTraceStore = create((set, get) => ({
         let updatedData = traceData.toReversed()
         updatedData = updatedData.filter(trace => trace.sells !== 0 || trace.refunds !== 0)
 
-        console.log(updatedData)
         if (!traceLoaded) return
 
         updatedData.push(currentTrace)
@@ -149,12 +148,9 @@ const useTraceStore = create((set, get) => ({
         const updatedTrace = currentTrace;
 
         cartItems.forEach(item => {
-            console.log(item.price)
             updatedTrace.sells += parseInt(item.cart)
             updatedTrace.total[item.currency] += parseInt(item.price) * parseInt(item.cart)
         })
-
-        console.log(updatedTrace)
 
         set({ currentTrace: updatedTrace });
     },
@@ -166,7 +162,6 @@ const useTraceStore = create((set, get) => ({
         updatedTrace.sells -= parseInt(amount)
         updatedTrace.refunds += parseInt(amount)
         updatedTrace.total[product.currency] -= parseInt(product.price) * parseInt(amount)
-        console.log(updatedTrace)
 
         set({ currentTrace: updatedTrace });
     }

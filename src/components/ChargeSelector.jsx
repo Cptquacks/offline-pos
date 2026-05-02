@@ -17,7 +17,7 @@ function ChargeSelector({ onChange }) {
         async function awaitAPI() {
             await window.electronAPI.readJSON('roles.json')
                 .then(res => setCharges(res))
-                .catch(err => console.log(err))
+                .catch(err => console.error(err))
         }
 
         awaitAPI()

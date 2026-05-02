@@ -17,7 +17,7 @@ function TagSelector({ onChange }) {
         async function awaitAPI() {
             await window.electronAPI.readJSON('tags.json')
                 .then(res => setTags(res))
-                .catch(err => console.log(err))
+                .catch(err => console.error(err))
         }
 
         awaitAPI()

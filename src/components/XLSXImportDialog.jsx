@@ -63,7 +63,6 @@ function XLSXImportDialog({ title, model, optionalFields, onImport }) {
     const handleImport = async () => {
         const result = await importFile()
         if (result.canceled) {
-            console.log(result)
             addAlert(
                 <ErrorToast
                     label="Ha ocurrido un error al importar el archivo" />
@@ -87,10 +86,10 @@ function XLSXImportDialog({ title, model, optionalFields, onImport }) {
         flex flex-col
         border border-(--border)
         min-w-[50dvw] max-w-dvw
-        min-h-[50dvh] max-h-dvh
+        min-h-[50dvh] max-h-[90dvh]
         
         bg-(--bg)
-        overflow-hidden overflow-y-scroll
+        overflow-hidden
         rounded-md
         ">
             <DialogTopBar label={title} />
@@ -98,6 +97,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport }) {
             <div className="
             flex flex-col
             p-4! gap-3
+            overflow-y-scroll
             ">
                 <div className="
                 flex flex-col
@@ -146,7 +146,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {fileData.data.slice(0, 8).map((row, towIndex) =>
+                                {fileData.data.slice(0, 3).map((row, towIndex) =>
                                     <tr key={towIndex}>
                                         {fileData.columns.map((col, colIndex) =>
                                             <td
@@ -159,6 +159,13 @@ function XLSXImportDialog({ title, model, optionalFields, onImport }) {
                                         )}
                                     </tr>
                                 )}
+                                <tr className="
+                                border border-(--border)
+                                ">
+                                    <td>
+                                        <strong>...</strong>
+                                    </td>
+                                </tr>
                             </tbody>
                             <tfoot>
                                 <tr>

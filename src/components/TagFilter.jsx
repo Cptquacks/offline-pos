@@ -9,7 +9,6 @@ function TagFilter({ filters = [], onSelect }) {
     const handleSelection = (event) => {
         onSelect(event.target.value)
         setSelection(event.target.value)
-        console.log(event.target.value)
     }
 
     return (

@@ -28,9 +28,6 @@ function StaffView() {
             result = result.map(product => ({ ...product, similarity: stringSimilarity(product.name, query) }))
             result = result.sort((a, b) => b.similarity - a.similarity)
 
-            console.log(query)
-            result.forEach(product => console.log(`${product.name} : ${product.similarity}`))
-
         }
 
         return result

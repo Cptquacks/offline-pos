@@ -32,8 +32,6 @@ function EmployeItem({ data }) {
             endDate: addDays(today, days)
         }
 
-        console.log(result)
-
         modifyStaff(result, data.index)
     }
 

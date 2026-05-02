@@ -31,7 +31,6 @@ export function daysFromToday(target) {
  * @returns {string} Nueva fecha en formato YYYY-MM-DD
  */
 export function addDays(dateStr, days) {
-    console.log(days)
     const [y, m, d] = dateStr.split('-').map(Number);
     const baseDate = new Date(y, m - 1, d);
     baseDate.setDate(baseDate.getDate() + days);
