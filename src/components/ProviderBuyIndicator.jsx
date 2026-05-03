@@ -41,7 +41,7 @@ function ProviderBuyIndicator({ days, onRebuy }) {
             }
             {days < 0 &&
                 <p>
-                    Dias de retraso: {days}
+                    Dias de retraso: {days * -1}
                 </p>
             }
         </div>

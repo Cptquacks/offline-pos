@@ -7,24 +7,36 @@
  * @property {(provider: Object) => Promise<void>} addProvider
  * @property {(provider: Object, index: number) => Promise<void>} modifyProvider
  * @property {(target: number) => Promise<void>} deleteProvider
+ * @property {(chunk: Array) => Promise<void>} overwriteData
  */
 
 import { create } from 'zustand';
 import { loadData, updateData, writeData } from '../utils/storage-util';
+import { addDays, daysFromToday } from '../utils/date-util';
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<providerStore>>} */
 
 const useProviderStore = create((set, get) => ({
     providerData: [],
-    paymentWaste: 0,
+    paymentWaste: {
+        "CUP": 0,
+        "USD": 0
+    },
 
     loadData: async () => {
         const data = await loadData('providers')
-        let total = 0
+        let total = {
+            "CUP": 0,
+            "USD": 0
+        }
 
         data.forEach(provider => {
-            provider.active = !(new Date().toLocaleDateString('sv-SE') >= provider.endsAt)
-            total += parseInt(provider.waste)
+            const endsAt = addDays(provider.startedAt, provider.span)
+            const isExpired = daysFromToday(endsAt) <= 0
+
+            provider.active && isExpired ? provider.active = false : provider.active
+            !provider.active && !isExpired ? provider.active = true : provider.active
+            total[provider.currency] += parseInt(provider.waste)
         })
 
         set({ providerData: data, paymentWaste: total })
@@ -32,11 +44,19 @@ const useProviderStore = create((set, get) => ({
 
     addProvider: async (provider) => {
         const data = await updateData('providers', provider)
-        let total = 0
+        let total = {
+            "CUP": 0,
+            "USD": 0
+        }
 
-        data.forEach(member => {
-            total += parseInt(member.salary)
-        });
+        data.forEach(provider => {
+            const endsAt = addDays(provider.startedAt, provider.span)
+            const isExpired = daysFromToday(endsAt) <= 0
+
+            provider.active && isExpired ? provider.active = false : provider.active
+            !provider.active && !isExpired ? provider.active = true : provider.active
+            total[provider.currency] += parseInt(provider.waste)
+        })
 
         set({ providerData: data, paymentWaste: total })
     },
@@ -47,11 +67,19 @@ const useProviderStore = create((set, get) => ({
         updatedData[index] = provider
 
         const data = await writeData('providers', updatedData)
-        let total = 0
+        let total = {
+            "CUP": 0,
+            "USD": 0
+        }
 
         data.forEach(provider => {
-            total += parseInt(provider.waste)
-        });
+            const endsAt = addDays(provider.startedAt, provider.span)
+            const isExpired = daysFromToday(endsAt) <= 0
+
+            provider.active && isExpired ? provider.active = false : provider.active
+            !provider.active && !isExpired ? provider.active = true : provider.active
+            total[provider.currency] += parseInt(provider.waste)
+        })
 
         set({ providerData: data, paymentWaste: total })
 
@@ -63,11 +91,37 @@ const useProviderStore = create((set, get) => ({
         updatedData = updatedData.filter((_, index) => index !== target)
 
         const data = await writeData('providers', updatedData)
-        let total = 0
+        let total = {
+            "CUP": 0,
+            "USD": 0
+        }
 
         data.forEach(provider => {
-            total += parseInt(provider.waste)
-        });
+            const endsAt = addDays(provider.startedAt, provider.span)
+            const isExpired = daysFromToday(endsAt) <= 0
+
+            provider.active && isExpired ? provider.active = false : provider.active
+            !provider.active && !isExpired ? provider.active = true : provider.active
+            total[provider.currency] += parseInt(provider.waste)
+        })
+
+        set({ providerData: data, paymentWaste: total })
+    },
+    overwriteData: async (chunk) => {
+        const data = await writeData('providers', chunk)
+        let total = {
+            "CUP": 0,
+            "USD": 0
+        }
+
+        data.forEach(provider => {
+            const endsAt = addDays(provider.startedAt, provider.span)
+            const isExpired = daysFromToday(endsAt) <= 0
+
+            provider.active && isExpired ? provider.active = false : provider.active
+            !provider.active && !isExpired ? provider.active = true : provider.active
+            total[provider.currency] += parseInt(provider.waste)
+        })
 
         set({ providerData: data, paymentWaste: total })
     }

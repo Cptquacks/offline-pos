@@ -36,7 +36,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
     }, [model])
 
     const resultantData = useMemo(() => {
-        const dateKeys = ['expiresAt', 'startDate', 'endDate']
+        const dateKeys = ['expiresAt', 'startDate', 'endDate', 'startedAt']
         if (!fileData.data.length || !programFields.length) return [];
 
         return fileData.data.map(row => {
@@ -197,7 +197,8 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                         {previewFields.map((field, index) =>
                             <ColumnSelector
                                 key={index}
-                                label={`${field} K:${programFields[index]?.key ?? 'ERR'}  V:${programFields[index]?.value ?? 'ERR'}`}
+                                //label={`${field} K:${programFields[index]?.key ?? 'ERR'}  V:${programFields[index]?.value ?? 'ERR'}`}
+                                label={field}
                                 columns={fileData.columns}
                                 onSelected={data => {
                                     const fieldsCopy = programFields.map((f, i) =>

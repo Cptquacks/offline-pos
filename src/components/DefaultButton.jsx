@@ -11,6 +11,7 @@ function DefaultButton({ icon, label, disabled = false, onClick, type = "button"
             rounded-xs
 
             hover:not-disabled:bg-white! hover:not-disabled:text-(--bg-alt)!
+            disabled:opacity-50
             "
             onClick={onClick}
             type={type}

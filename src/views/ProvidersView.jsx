@@ -6,9 +6,10 @@ import ProviderForm from "../components/ProviderForm"
 import SearchBar from "../components/SearchBar"
 import ImportPanel from "../components/ImportPanel"
 import { stringSimilarity } from "../utils/string-util"
+import { addDays, daysFromToday } from "../utils/date-util"
 
 function ProvidersView() {
-    const { providerData, paymentWaste, loadData, addProvider, modifyProvider, deleteProvider } = useProviderStore()
+    const { providerData, paymentWaste, loadData, addProvider, overwriteData } = useProviderStore()
 
     const [query, setQuery] = useState('')
     const filteredList = useMemo(() => {
@@ -24,6 +25,30 @@ function ProvidersView() {
         }
         return result
     }, [query, providerData])
+
+    /**
+     * 
+     * @param {Array} importedData 
+     */
+    const handleImportation = (importedData) => {
+        const today = new Date().toLocaleDateString('sv-SE')
+
+        importedData.forEach(fragment => {
+            fragment.waste = parseInt(fragment.waste)
+
+            fragment.startedAt ? fragment.startedAt : fragment.startedAt = today
+            fragment.span ? fragment.span = parseInt(fragment.span) : fragment.span = 31
+
+            const isExpired = daysFromToday(addDays(fragment.startedAt, fragment.span))
+            fragment.active ? fragment.active : fragment.active = !isExpired
+
+            fragment.contactData ? fragment.contactData = [`${fragment.contactData}`] : fragment.contactData = []
+            fragment.notes ? fragment.notes : fragment.notes = []
+        });
+
+        const result = [...providerData, ...importedData]
+        overwriteData(result)
+    }
 
     useEffect(() => {
         loadData()
@@ -50,7 +75,21 @@ function ProvidersView() {
                 px-4! py-2! gap-4
                 ">
                     <SearchBar onSearch={query => setQuery(query)} />
-                    <ImportPanel />
+                    <ImportPanel
+                        model={{
+                            "name": "Nombre",
+                            "waste": "Gasto",
+                            "currency": "Moneda de compra",
+                            "startedAt": "Fecha de contrato",
+                            "span": "Tiempo hasta la recompra (dias)",
+                            "active": "Relacion activa?",
+                            "contactData": "Datos de contacto"
+                        }}
+                        optionalFields={["startedAt", "span", "active", "contactData", "currency"]}
+                        title={"Importar"}
+                        onImport={data => handleImportation(data)}
+                        previewComponent={({ data }) => <ProviderItem data={data} isOnPreview={true} />}
+                    />
                 </div>
 
                 <div className="
@@ -64,16 +103,21 @@ function ProvidersView() {
                     border border-(--border)
                     rounded-md
                     ">
-                        Gasto total: {paymentWaste} CUP
+                        Gasto CUP: {paymentWaste.CUP} CUP
+                    </strong><strong className="
+                    px-2! py-1!
+                    bg-(--bg-alt)
+                    border border-(--border)
+                    rounded-md
+                    ">
+                        Gasto USD: {paymentWaste.USD} USD
                     </strong>
                 </div>
 
                 <ItemsList>
                     {filteredList.map((provider, index) =>
                         <ProviderItem key={index}
-                            data={{ index: index, ...provider }}
-                            onDelete={index => deleteProvider(index)}
-                            onChange={(data, index) => modifyProvider({ ...provider, waste: data }, index)} />
+                            data={{ index: index, ...provider }} />
                     )}
                 </ItemsList>
             </div>

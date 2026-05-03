@@ -1,7 +1,7 @@
 import { useState } from "react"
 
-function FormInput({ label, placeholder, type = 'text', onChange, required = true }) {
-    const [value, setValue] = useState('')
+function FormInput({ label, placeholder, onChange, defaultValue = null, type = 'text', required = true }) {
+    const [value, setValue] = useState(defaultValue ?? '')
 
     const handleChange = (event) => {
         setValue(event.target.value)

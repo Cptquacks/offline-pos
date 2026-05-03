@@ -128,7 +128,7 @@ function EmployeItem({ data, isOnPreview = false }) {
                     />}
 
                     <div className="flex flex-row items-center gap-1">
-                        {missingData && <MissingData />}
+                        {(missingData && isOnPreview) && <MissingData />}
 
                         {(daysUntilEOC !== null && !isOnPreview) &&
                             <EmployeContractIndicator
