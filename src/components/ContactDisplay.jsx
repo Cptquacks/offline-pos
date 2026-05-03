@@ -113,7 +113,7 @@ function ContactDisplay({ data, inEditMode = false, onEdit }) {
                                 <strong className="">
                                     {tel.value}
                                 </strong>
-                                {onEdit && <DeleteButton onDelete={() => {
+                                {inEditMode && <DeleteButton onDelete={() => {
                                     const result = data.filter((_, i) => i !== index)
                                     onEdit(result)
                                 }} />}
