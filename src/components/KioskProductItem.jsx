@@ -1,6 +1,7 @@
 import { faBox, faShoppingCart, faTag, faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useMemo, useState } from "react"
+import TagItem from "./TagItem"
 
 function KioskProductItem({ data, onAdd, onRefund }) {
     const [currentAmount, setAmount] = useState(1)
@@ -63,18 +64,7 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                 gap-2
                 items-end self-stretch justify-between
                 ">
-                    <p className="
-                    flex flex-row gap-1
-                    font-bold! text-lg! text-white!
-                    items-center
-                    px-3! py-px! pl-2.5!
-                    bg-(--accent-alt)/50
-                    border-2 border-(--border)
-                    rounded-full
-                    ">
-                        <FontAwesomeIcon icon={faTag} />
-                        {data.tag}
-                    </p>
+                    <TagItem icon="tag" label={data.tag} />
                 </div>
 
             </div>
