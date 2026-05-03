@@ -6,6 +6,7 @@ import NotesControlPanel from "./NotesControlPanel"
 import ProviderBuyIndicator from "./ProviderBuyIndicator"
 import useProviderStore from "../stores/providerStore"
 import NoteItem from "./NoteItem"
+import ActiveDisplay from "./ActiveDisplay"
 
 function ProviderItem({ data, onDelete, onChange }) {
 
@@ -104,20 +105,7 @@ function ProviderItem({ data, onDelete, onChange }) {
                 h-full
                 justify-between items-end gap-3
                 ">
-                    <p className={`
-                    flex flex-row
-                    item-center
-                    px-4! py-0.5! gap-3
-                    ${data.active ?
-                            'bg-green-950/30 border-green-600 text-green-600!' :
-                            'bg-red-950/30 border-red-600 text-red-600!'}
-                    border 
-                    rounded-full
-
-                    font-bold! 
-                    `}>
-                        {data.active ? 'Activo' : 'Inactivo'}
-                    </p>
+                    <ActiveDisplay isActive={data.active} />
 
                     <button className="
                     transition-normal cursor-pointer

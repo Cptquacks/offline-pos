@@ -1,9 +1,11 @@
-import { faBox, faCalendar, faRotateLeft, faTag, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
+import { faBox, faCalendar, faRotateLeft } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useMemo } from "react"
 import { daysFromToday } from "../utils/date-util"
 import ExpirationDisplay from "./ExpirationDisplay"
 import useProductStore from "../stores/productStore"
+import DeleteButton from "./DeleteButton"
+import TagItem from "./TagItem"
 
 function ProductItem({ data, isOnPreview = false }) {
     const { modifyProduct, deleteProduct } = useProductStore()
@@ -76,32 +78,9 @@ function ProductItem({ data, isOnPreview = false }) {
                 items-end self-stretch justify-between
                 ">
 
-                    <p className="
-                    flex flex-row gap-1
-                    font-bold! text-lg! text-white!
-                    items-center
-                    px-3! py-px! pl-2.5!
-                    bg-(--accent-alt)/40
-                    border-2 border-(--accent)/30
-                    rounded-full
-                    ">
-                        <FontAwesomeIcon icon={faTag} />
-                        {data.tag}
-                    </p>
+                    <TagItem icon={"tag"} label={data.tag} />
 
-                    {!isOnPreview && <div>
-                        <button className="
-                        transition-normal cursor-pointer
-                        bg-red-500/50
-                        text-white/90
-                        p-1!
-                        rounded-lg
-                        border-2 border-(--border)
-                        hover:shadow-(--shadow)
-                        " onClick={handleDeletion}>
-                            <FontAwesomeIcon icon={faTrashAlt} size="lg" />
-                        </button>
-                    </div>}
+                    {!isOnPreview && <DeleteButton onDelete={handleDeletion} />}
 
                 </div>
             </div>

@@ -63,7 +63,7 @@ function ResumeView() {
             member['span'] = daysFromToday(member.endDate)
         })
 
-        result = result.sort((a, b) => b.span - a.span)
+        result = result.sort((a, b) => a.span - b.span)
 
         return result
     }, [staffData])

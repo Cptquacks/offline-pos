@@ -4,6 +4,7 @@ import FormInput from "./FormInput"
 import { useState } from "react"
 import DatePicker from "./DatePicker"
 import ListInput from "./ListInput"
+import ActiveDisplay from "./ActiveDisplay"
 
 function ProviderForm({ onSubmit }) {
     const oneMonthLater = new Date();
@@ -94,20 +95,7 @@ function ProviderForm({ onSubmit }) {
                     </label>
                 </div>
 
-                <p className={`
-                transition
-                flex flex-row
-                px-4! py-0.5!
-                font-bold!
-                ${providerData.active ?
-                        'bg-green-950/30 text-green-600! border-green-600' :
-                        'bg-red-950/30 text-red-600! border-red-600'
-                    }
-                border
-                rounded-full
-                `}>
-                    {providerData.active ? 'Activo' : 'Inactivo'}
-                </p>
+                <ActiveDisplay isActive={providerData.active} />
             </div>
         </form>
     )
