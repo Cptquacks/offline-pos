@@ -11,6 +11,7 @@ import DeleteButton from "./DeleteButton"
 import EditButton from "./EditButton"
 import FormInput from "./FormInput"
 import DefaultButton from "./DefaultButton"
+import ContactDisplay from "./ContactDisplay"
 
 function ProviderItem({ data, isOnPreview = false }) {
 
@@ -63,6 +64,12 @@ function ProviderItem({ data, isOnPreview = false }) {
         modifyProvider(result, data.index)
     }
 
+    const handlePhoneEdition = (phone) => {
+        const result = { ...currentData, contactData: [...phone] }
+        modifyProvider(result, data.index)
+        setCurrentData(result)
+    }
+
     return (
         <div className="
         flex flex-col
@@ -74,7 +81,7 @@ function ProviderItem({ data, isOnPreview = false }) {
             <div className="
             flex flex-row
             w-full
-            items-center
+            items-start
             gap-2
             ">
                 <FontAwesomeIcon className="my-1!" icon={faHandshakeAlt} size="3x" />
@@ -98,7 +105,7 @@ function ProviderItem({ data, isOnPreview = false }) {
                         ">
                             {!editMode &&
                                 <strong className="opacity-75">
-                                    {data.waste} {data.currency}
+                                    Gasto: {data.waste} {data.currency}
                                 </strong>
                             }
                             {editMode &&
@@ -165,6 +172,12 @@ function ProviderItem({ data, isOnPreview = false }) {
                             }
                         </div>
                     </div>
+                    {!isOnPreview &&
+                        <ContactDisplay
+                            data={currentData.contactData}
+                            inEditMode={editMode}
+                            onEdit={data => handlePhoneEdition(data)} />
+                    }
                 </div>
 
                 <div className="

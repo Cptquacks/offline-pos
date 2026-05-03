@@ -35,6 +35,7 @@ function ProvidersView() {
 
         importedData.forEach(fragment => {
             fragment.waste = parseInt(fragment.waste)
+            fragment.currency ? fragment.currency : fragment.currency = "CUP"
 
             fragment.startedAt ? fragment.startedAt : fragment.startedAt = today
             fragment.span ? fragment.span = parseInt(fragment.span) : fragment.span = 31
@@ -42,7 +43,7 @@ function ProvidersView() {
             const isExpired = daysFromToday(addDays(fragment.startedAt, fragment.span))
             fragment.active ? fragment.active : fragment.active = !isExpired
 
-            fragment.contactData ? fragment.contactData = [`${fragment.contactData}`] : fragment.contactData = []
+            fragment.contactData ? fragment.contactData = [{ value: `${fragment.contactData}` }] : fragment.contactData = []
             fragment.notes ? fragment.notes : fragment.notes = []
         });
 

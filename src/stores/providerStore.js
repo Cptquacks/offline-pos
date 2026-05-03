@@ -34,8 +34,7 @@ const useProviderStore = create((set, get) => ({
             const endsAt = addDays(provider.startedAt, provider.span)
             const isExpired = daysFromToday(endsAt) <= 0
 
-            provider.active && isExpired ? provider.active = false : provider.active
-            !provider.active && !isExpired ? provider.active = true : provider.active
+            provider.active = !isExpired
             total[provider.currency] += parseInt(provider.waste)
         })
 
@@ -53,8 +52,7 @@ const useProviderStore = create((set, get) => ({
             const endsAt = addDays(provider.startedAt, provider.span)
             const isExpired = daysFromToday(endsAt) <= 0
 
-            provider.active && isExpired ? provider.active = false : provider.active
-            !provider.active && !isExpired ? provider.active = true : provider.active
+            provider.active = !isExpired
             total[provider.currency] += parseInt(provider.waste)
         })
 
@@ -62,11 +60,11 @@ const useProviderStore = create((set, get) => ({
     },
     modifyProvider: async (provider, index) => {
         const { providerData } = get()
-        const updatedData = providerData
-
+        const updatedData = [...providerData]
         updatedData[index] = provider
 
         const data = await writeData('providers', updatedData)
+
         let total = {
             "CUP": 0,
             "USD": 0
@@ -76,8 +74,7 @@ const useProviderStore = create((set, get) => ({
             const endsAt = addDays(provider.startedAt, provider.span)
             const isExpired = daysFromToday(endsAt) <= 0
 
-            provider.active && isExpired ? provider.active = false : provider.active
-            !provider.active && !isExpired ? provider.active = true : provider.active
+            provider.active = !isExpired
             total[provider.currency] += parseInt(provider.waste)
         })
 
@@ -100,8 +97,7 @@ const useProviderStore = create((set, get) => ({
             const endsAt = addDays(provider.startedAt, provider.span)
             const isExpired = daysFromToday(endsAt) <= 0
 
-            provider.active && isExpired ? provider.active = false : provider.active
-            !provider.active && !isExpired ? provider.active = true : provider.active
+            provider.active = !isExpired
             total[provider.currency] += parseInt(provider.waste)
         })
 
@@ -118,8 +114,7 @@ const useProviderStore = create((set, get) => ({
             const endsAt = addDays(provider.startedAt, provider.span)
             const isExpired = daysFromToday(endsAt) <= 0
 
-            provider.active && isExpired ? provider.active = false : provider.active
-            !provider.active && !isExpired ? provider.active = true : provider.active
+            provider.active = !isExpired
             total[provider.currency] += parseInt(provider.waste)
         })
 
