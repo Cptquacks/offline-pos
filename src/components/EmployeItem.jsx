@@ -15,6 +15,7 @@ import FormInput from "./FormInput"
 import TagSelectorSM from "./TagSelectorSM"
 import useRoleStore from "../stores/roleStore"
 import ContactDisplay from "./ContactDisplay"
+import DatePicker from "./DatePicker"
 
 function EmployeItem({ data, isOnPreview = false }) {
     const missingData = useMemo(() => {
@@ -119,12 +120,26 @@ function EmployeItem({ data, isOnPreview = false }) {
                             </div>}
 
                             {editMode &&
-                                <div className="*:bg-(--bg-alt) w-fit *:border-white/20">
+                                <div className="
+                                flex flex-col
+                                gap-2
+                                w-fit
+                                *:bg-(--bg-alt) 
+                                *:border-white/20
+                                ">
                                     <FormInput
                                         label="Nombre"
                                         placeholder="Nombre de empleado..."
                                         defaultValue={currentData.name}
                                         onChange={data => setCurrentData(prev => ({ ...prev, name: data }))} />
+
+                                    {(!data.ID && editMode) &&
+                                        <FormInput
+                                            label="CI"
+                                            placeholder="Carnet de identidad..."
+                                            defaultValue={currentData.ID}
+                                            onChange={data => setCurrentData(prev => ({ ...prev, ID: data }))} />
+                                    }
                                 </div>
                             }
 
@@ -151,6 +166,12 @@ function EmployeItem({ data, isOnPreview = false }) {
                                         onChange={data => setCurrentData(prev => ({ ...prev, salary: parseInt(data) }))}
                                         defaultValue={currentData.salary}
                                     />
+                                    {(!data.startDate && editMode) &&
+                                        <DatePicker
+                                            label="Inicio de contrato"
+                                            onChange={data => setCurrentData(prev => ({ ...prev, startDate: data }))}
+                                            value={currentData.startDate ?? new Date().toLocaleString('sv-SE')} />
+                                    }
                                 </div>
                             }
                         </div>

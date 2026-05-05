@@ -1,4 +1,4 @@
-import { faBox, faShoppingCart, faTag, faTimes } from "@fortawesome/free-solid-svg-icons"
+import { faBox, faShoppingCart, faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useMemo, useState } from "react"
 import TagItem from "./TagItem"

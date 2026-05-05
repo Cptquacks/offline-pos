@@ -10,6 +10,7 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
  * @property {Object} currentTrace
  * @property {Boolean} traceLoaded
  * @property {() => Promise<void>} loadData
+ * @property {(trace) => Promise<void>} addTrace
  * @property {() => Promise<void>} closeTrace
  * @property {(trace: Object) => Promise<void>} updateTrace
  * @property {() => Promise<void>} normalizeTrace
@@ -61,6 +62,29 @@ const useTraceStore = create((set, get) => ({
         }
 
         set({ traceData: data.toReversed(), traceLoaded: true })
+    },
+
+    addTrace: async (trace) => {
+        const { traceData, traceLoaded } = get()
+        let updatedData = traceData.toReversed()
+        updatedData = updatedData.filter(trace => trace.sells !== 0 || trace.refunds !== 0)
+
+        if (!traceLoaded) return
+
+        updatedData.push(trace)
+        updatedData.push({
+            "date": new Date().toLocaleDateString('sv-SE'),
+            "refunds": 0,
+            "sells": 0,
+            "total": {
+                "CUP": 0,
+                "USD": 0
+            }
+        })
+
+        const data = await writeData('traces', updatedData)
+
+        set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
     },
 
     closeTrace: async () => {

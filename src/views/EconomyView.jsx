@@ -8,11 +8,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCalendar, faCashRegister, faDizzy, faDollarSign, faMoneyBillTransfer, faMoneyBillTrendUp, faSpinner } from "@fortawesome/free-solid-svg-icons"
 import ImportPanel from "../components/ImportPanel"
 import useStaffStore from "../stores/staffStore"
+import EconomyForm from "../components/EconomyForm"
 
 
 
 function EconomyView() {
-    const { traceData, currentTrace, loadData, closeTrace, normalizeTrace } = useTraceStore()
+    const { traceData, currentTrace, loadData, addTrace, closeTrace, normalizeTrace } = useTraceStore()
     const { productData, loadData: loadProductData } = useProductStore()
     const { staffData, loadData: loadStaffData } = useStaffStore()
 
@@ -25,6 +26,7 @@ function EconomyView() {
         return result.length
     }, [traceData, currentTrace])
 
+    const [manualClosing, setManualClosing] = useState(false)
     const [isClosgingDay, setClosingDay] = useState(false)
 
     const handleDayClosing = async () => {
@@ -386,6 +388,25 @@ function EconomyView() {
             bg-(--bg-soft)
             rounded-md
             ">
+                <div className="
+                flex flex-row
+                item-center
+                p-4! py-2! gap-1
+                bg-(--bg-alt)
+                border border-(--border)
+                rounded-md
+                ">
+                    <input
+                        id="auto-close"
+                        type="checkbox"
+                        checked={manualClosing}
+                        onChange={event => setManualClosing(event.target.checked)} />
+
+                    <label htmlFor="auto-close">
+                        Cerrado manual
+                    </label>
+                </div>
+
                 {closesCount > 1 &&
                     <div className="
                     flex flex-row
@@ -399,132 +420,138 @@ function EconomyView() {
                         </p>
                     </div>
                 }
-                <form>
-                    <div className="
-                    flex flex-col
-                    bg-(--bg-soft)
-                    p-2! gap-2
-                    border border-(--border)
-                    rounded-md
-                    ">
-                        <div className="
-                        flex flex-row
-                        px-2! py-0.5! gap-2
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-sm
-                        ">
-                            <strong className="
-                            flex flex-row
-                            items-center
-                            gap-0.5
-                            ">
-                                <FontAwesomeIcon icon={faCalendar} />
-                                Fecha:
-                            </strong>
 
-                            <p className="self-end">
-                                {currentTrace.date ?? 'ERR'}
-                            </p>
-                        </div>
-
+                {!manualClosing &&
+                    <form>
                         <div className="
                         flex flex-col
-                        bg-(--bg-alt)
-                        p-2!
+                        bg-(--bg-soft)
+                        p-2! gap-2
                         border border-(--border)
-                        rounded-sm
-                        ">
-                            <div className="
-                            flex flex-row 
-                            items-center 
-                            gap-1
-                            ">
-                                <FontAwesomeIcon icon={faDollarSign} />
-                                <p>Ventas:</p>
-                                <strong>{currentTrace.sells}</strong>
-                            </div>
-
-                            <div className="
-                            flex flex-row 
-                            items-center
-                            gap-1
-                            ">
-                                <FontAwesomeIcon icon={faMoneyBillTransfer} />
-                                <p>Reembolsos:</p>
-                                <strong>{currentTrace.refunds}</strong>
-                            </div>
-                        </div>
-
-                        <div className="
-                        flex flex-col
-                        bg-(--bg-alt)
-                        p-2!
-                        border border-(--border)
-                        rounded-sm
+                        rounded-md
                         ">
                             <div className="
                             flex flex-row
-                            items-center
-                            gap-1
+                            px-2! py-0.5! gap-2
+                            bg-(--bg-alt)
+                            border border-(--border)
+                            rounded-sm
                             ">
-                                <FontAwesomeIcon icon={faMoneyBillTrendUp} />
-                                <strong>Ganancias</strong>
+                                <strong className="
+                                flex flex-row
+                                items-center
+                                gap-0.5
+                                ">
+                                    <FontAwesomeIcon icon={faCalendar} />
+                                    Fecha:
+                                </strong>
+
+                                <p className="self-end">
+                                    {currentTrace.date ?? 'ERR'}
+                                </p>
                             </div>
 
                             <div className="
-                            flex flex-row
-                            gap-3
+                            flex flex-col
+                            bg-(--bg-alt)
+                            p-2!
+                            border border-(--border)
+                            rounded-sm
                             ">
                                 <div className="
-                                flex flex-row
-                                items-center
-                                gap-1
-                                ">
-                                    <p>CUP:</p>
-                                    <strong>{currentTrace.total?.CUP ?? 'ERR'}</strong>
-                                </div>
-
-                                <div className="
-                                flex flex-row
-                                items-center
-                                gap-1
-                                ">
-                                    <p>USD:</p>
-                                    <strong>{currentTrace.total?.USD ?? 'ERR'}</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button className={`
-                        transition
-                        self-center
-                        px-3! py-1!
-                        font-bold! text-white!
-                        bg-(--accent-alt)
-                        rounded-xs
-
-                        ${isClosgingDay ?
-                                'opacity-50 cursor-wait' :
-                                'hover:bg-white! hover:text-(--bg-alt)! cursor-pointer'
-                            }
-                        `} onClick={handleDayClosing}>
-                            {!isClosgingDay &&
-                                <div className="
-                                flex flex-row
+                                flex flex-row 
                                 items-center 
                                 gap-1
                                 ">
-                                    Cerrar día
-                                    <FontAwesomeIcon icon={faCashRegister} />
+                                    <FontAwesomeIcon icon={faDollarSign} />
+                                    <p>Ventas:</p>
+                                    <strong>{currentTrace.sells}</strong>
                                 </div>
-                            }
-                            {isClosgingDay &&
-                                <FontAwesomeIcon icon={faSpinner} spinPulse={true} />
-                            }
-                        </button>
-                    </div>
-                </form>
+
+                                <div className="
+                                flex flex-row 
+                                items-center
+                                gap-1
+                                ">
+                                    <FontAwesomeIcon icon={faMoneyBillTransfer} />
+                                    <p>Reembolsos:</p>
+                                    <strong>{currentTrace.refunds}</strong>
+                                </div>
+                            </div>
+
+                            <div className="
+                            flex flex-col
+                            bg-(--bg-alt)
+                            p-2!
+                            border border-(--border)
+                            rounded-sm
+                            ">
+                                <div className="
+                                flex flex-row
+                                items-center
+                                gap-1
+                                ">
+                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} />
+                                    <strong>Ganancias</strong>
+                                </div>
+
+                                <div className="
+                                flex flex-row
+                                gap-3
+                                ">
+                                    <div className="
+                                    flex flex-row
+                                    items-center
+                                    gap-1
+                                    ">
+                                        <p>CUP:</p>
+                                        <strong>{currentTrace.total?.CUP ?? 'ERR'}</strong>
+                                    </div>
+
+                                    <div className="
+                                    flex flex-row
+                                    items-center
+                                    gap-1
+                                    ">
+                                        <p>USD:</p>
+                                        <strong>{currentTrace.total?.USD ?? 'ERR'}</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button className={`
+                            transition
+                            self-center
+                            px-3! py-1!
+                            font-bold! text-white!
+                            bg-(--accent-alt)
+                            rounded-xs
+
+                            ${isClosgingDay ?
+                                    'opacity-50 cursor-wait' :
+                                    'hover:bg-white! hover:text-(--bg-alt)! cursor-pointer'
+                                }
+                            `} onClick={handleDayClosing}>
+                                {!isClosgingDay &&
+                                    <div className="
+                                    flex flex-row
+                                    items-center 
+                                    gap-1
+                                    ">
+                                        Cerrar día
+                                        <FontAwesomeIcon icon={faCashRegister} />
+                                    </div>
+                                }
+                                {isClosgingDay &&
+                                    <FontAwesomeIcon icon={faSpinner} spinPulse={true} />
+                                }
+                            </button>
+                        </div>
+                    </form>
+                }
+                {manualClosing &&
+                    <EconomyForm onSubmit={data => addTrace(data)} />
+                }
 
             </div>
 
