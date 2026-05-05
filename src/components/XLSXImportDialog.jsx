@@ -36,7 +36,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
     }, [model])
 
     const resultantData = useMemo(() => {
-        const dateKeys = ['expiresAt', 'startDate', 'endDate', 'startedAt']
+        const dateKeys = ['date', 'expiresAt', 'startDate', 'endDate', 'startedAt']
         if (!fileData.data.length || !programFields.length) return [];
 
         return fileData.data.map(row => {

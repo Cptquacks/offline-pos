@@ -10,11 +10,13 @@ import ImportPanel from "../components/ImportPanel"
 import useStaffStore from "../stores/staffStore"
 import EconomyForm from "../components/EconomyForm"
 import useProviderStore from "../stores/providerStore"
+import GridItemList from "../components/GridItemList"
+import DayItem from "../components/DayItem"
 
 
 
 function EconomyView() {
-    const { traceData, currentTrace, loadData, addTrace, closeTrace, normalizeTrace } = useTraceStore()
+    const { traceData, currentTrace, loadData, addTrace, closeTrace, normalizeTrace, overwriteTrace } = useTraceStore()
     //const { productData, loadData: loadProductData } = useProductStore()
     const { providerData, paymentWaste, loadData: loadProviderData } = useProviderStore()
     const { staffData, salaryWaste, loadData: loadStaffData } = useStaffStore()
@@ -27,6 +29,34 @@ function EconomyView() {
         result = result.filter(trace => trace.refunds !== 0 || trace.sells !== 0)
         return result.length
     }, [traceData, currentTrace])
+
+    const groupedDays = useMemo(() => {
+        let result = traceData
+        let grouped = {}
+
+        result.forEach(trace => {
+            if (!grouped[trace.date]) {
+                grouped[trace.date] = {
+                    date: trace.date,
+                    refunds: 0,
+                    sells: 0,
+                    total: {
+                        CUP: 0,
+                        USD: 0
+                    }
+                }
+            }
+
+            // Grouped trace
+            grouped[trace.date].refunds += trace.refunds
+            grouped[trace.date].sells += trace.sells
+            grouped[trace.date].total.CUP += trace.total.CUP
+            grouped[trace.date].total.USD += trace.total.USD
+        })
+
+        result = Object.values(grouped)
+        return result
+    }, [traceData])
 
     const [manualClosing, setManualClosing] = useState(false)
     const [isClosgingDay, setClosingDay] = useState(false)
@@ -197,6 +227,30 @@ function EconomyView() {
 
     }, [roleTrace, providerTraceCUP, providerTraceUSD, salesTrace])
 
+
+    /**
+     * Importation
+     * @param {Array} importedData
+     */
+    const handleImportation = (importedData) => {
+        let transformedData = []
+        importedData.forEach(fragment =>
+            transformedData.push({
+                date: fragment.date,
+                sells: parseInt(fragment.sells),
+                refunds: parseInt(fragment.refunds),
+                total: {
+                    CUP: parseInt(fragment.CUP),
+                    USD: parseInt(fragment.USD),
+                }
+            })
+        )
+
+        const result = [...traceData, ...transformedData]
+        overwriteTrace(result)
+        normalizeTrace()
+    }
+
     /**
      * Autoload
      */
@@ -218,6 +272,7 @@ function EconomyView() {
         { name: "Ganancias", route: "earnings" },
         { name: "Empleados", route: "staff" },
         { name: "Proveedores", route: "providers" },
+        { name: "Cajas", route: "days" },
     ]
 
     const [currentChip, setCurrentChip] = useState(chips[0])
@@ -253,7 +308,19 @@ function EconomyView() {
                 </div>
 
                 <div className="flex flex-col w-full">
-                    <ImportPanel />
+                    <ImportPanel
+                        model={{
+                            "date": "Fecha",
+                            "sells": "Ventas",
+                            "refunds": "Reembolos",
+                            "CUP": "Ganancia (CUP)",
+                            "USD": "Ganancia (USD)",
+                        }}
+                        optionalFields={["refunds", "USD"]}
+                        title={"Importar"}
+                        previewComponent={({ data }) => <DayItem data={data} isOnPreview={true} />}
+                        onImport={data => handleImportation(data)}
+                    />
                 </div>
 
                 {currentChip.route === 'sells' &&
@@ -522,6 +589,14 @@ function EconomyView() {
                         </BarChart>
 
                     </div>
+                }
+
+                {currentChip.route === 'days' &&
+                    <GridItemList>
+                        {groupedDays.map((trace, index) =>
+                            <DayItem key={index} data={trace} />
+                        )}
+                    </GridItemList>
                 }
             </div>
 

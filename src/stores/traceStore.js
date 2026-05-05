@@ -14,6 +14,7 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
  * @property {() => Promise<void>} closeTrace
  * @property {(trace: Object) => Promise<void>} updateTrace
  * @property {() => Promise<void>} normalizeTrace
+ * @property {(chunk: Array) => Promise<void>} overwriteTrace
  * @property {(cartItems: Array) => Promise<void>} addSell
  * @property {(product: Object, amount: Number) => Promise<void>} addRefund
  */
@@ -161,6 +162,21 @@ const useTraceStore = create((set, get) => ({
 
         updatedTrace = Object.values(groupedTrace)
         const data = await writeData('traces', [...updatedTrace, ...todayTrace])
+
+        set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
+    },
+
+    overwriteTrace: async (chunk) => {
+        const data = await writeData('traces', chunk)
+        data.push({
+            "date": new Date().toLocaleDateString('sv-SE'),
+            "refunds": 0,
+            "sells": 0,
+            "total": {
+                "CUP": 0,
+                "USD": 0
+            }
+        })
 
         set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
     },
