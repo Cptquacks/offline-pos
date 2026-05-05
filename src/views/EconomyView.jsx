@@ -1,21 +1,23 @@
 import { useEffect, useMemo, useState } from "react"
 import useTraceStore from "../stores/traceStore"
 import { mostSoldProducts, predictNextTwoDays } from "../utils/economic-util"
-import { Bar, BarChart, Legend, Line, LineChart, Pie, PieChart, Sector, Tooltip, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, Legend, Line, LineChart, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 import ChipItem from "../components/ChipItem"
-import useProductStore from "../stores/productStore"
+//import useProductStore from "../stores/productStore"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCalendar, faCashRegister, faDizzy, faDollarSign, faMoneyBillTransfer, faMoneyBillTrendUp, faSpinner } from "@fortawesome/free-solid-svg-icons"
+import { faCalendar, faCashRegister, faDollarSign, faMoneyBillTransfer, faMoneyBillTrendUp, faSpinner } from "@fortawesome/free-solid-svg-icons"
 import ImportPanel from "../components/ImportPanel"
 import useStaffStore from "../stores/staffStore"
 import EconomyForm from "../components/EconomyForm"
+import useProviderStore from "../stores/providerStore"
 
 
 
 function EconomyView() {
     const { traceData, currentTrace, loadData, addTrace, closeTrace, normalizeTrace } = useTraceStore()
-    const { productData, loadData: loadProductData } = useProductStore()
-    const { staffData, loadData: loadStaffData } = useStaffStore()
+    //const { productData, loadData: loadProductData } = useProductStore()
+    const { providerData, paymentWaste, loadData: loadProviderData } = useProviderStore()
+    const { staffData, salaryWaste, loadData: loadStaffData } = useStaffStore()
 
     /**
      * Days
@@ -81,7 +83,7 @@ function EconomyView() {
         result.forEach(trace => {
             if (!grouped[trace.date]) {
                 grouped[trace.date] = {
-                    date: trace.date.split('-')[2],
+                    date: `Día ${trace.date.split('-')[2]}`,
                     CUP: 0,
                     USD: 0,
                 }
@@ -92,14 +94,16 @@ function EconomyView() {
         })
 
         result = Object.values(grouped)
-        return result
+        return result.slice(-7)
     }, [traceData])
 
-    const productTrace = useMemo(() => {
-        let result = productData
-        result = mostSoldProducts(result)
-        return result
-    }, [productData])
+    /*
+        const productTrace = useMemo(() => {
+            let result = productData
+            result = mostSoldProducts(result)
+            return result
+        }, [productData])
+        */
 
     /**
      * Waste
@@ -140,21 +144,80 @@ function EconomyView() {
         return result
     }, [staffData])
 
+    const providerTraceCUP = useMemo(() => {
+        let result = providerData
+        result = result.filter(provider => provider.active && provider.currency == 'CUP')
+        result = result.map(provider => ({
+            name: provider.name,
+            waste: provider.waste,
+        }))
+
+        result = result.sort((a, b) => b.waste - a.waste)
+
+        return result
+    }, [providerData])
+
+    const providerTraceUSD = useMemo(() => {
+        let result = providerData
+        result = result.filter(provider => provider.active && provider.currency == 'USD')
+        result = result.map(provider => ({
+            name: provider.name,
+            waste: provider.waste,
+        }))
+
+        result = result.sort((a, b) => b.waste - a.waste)
+
+        return result
+    }, [providerData])
+
+    /**
+     * Net trace
+     */
+
+
+    const netSalesTrace = useMemo(() => {
+        let totalWasteCUP = 0
+        let totalWasteUSD = 0
+
+        roleTrace.forEach(role => totalWasteCUP += role.waste)
+        providerTraceCUP.forEach(provider => totalWasteCUP += provider.waste)
+        providerTraceUSD.forEach(provider => totalWasteUSD += provider.waste)
+
+        totalWasteCUP = Math.round(totalWasteCUP / 31)
+        totalWasteUSD = Math.round(totalWasteUSD / 31)
+
+
+        const result = salesTrace.map(trace => ({
+            ...trace,
+            CUP: trace.CUP - totalWasteCUP,
+            USD: trace.USD - totalWasteUSD,
+        }));
+
+        return result
+
+    }, [roleTrace, providerTraceCUP, providerTraceUSD, salesTrace])
+
     /**
      * Autoload
      */
     useEffect(() => {
         loadData()
         normalizeTrace()
-        loadProductData()
+        //loadProductData()
         loadStaffData()
+        loadProviderData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+
+    /**
+     * Section chips
+     */
     const chips = [
         { name: "Ventas", route: "sells" },
         { name: "Ganancias", route: "earnings" },
-        { name: "Gastos", route: "waste" },
+        { name: "Empleados", route: "staff" },
+        { name: "Proveedores", route: "providers" },
     ]
 
     const [currentChip, setCurrentChip] = useState(chips[0])
@@ -227,11 +290,11 @@ function EconomyView() {
 
                         <BarChart
                             className="
-                    p-4!
-                    bg-(--bg-alt) 
-                    border border-(--border)
-                    rounded-md
-                    "
+                            p-4!
+                            bg-(--bg-alt) 
+                            border border-(--border)
+                            rounded-md
+                            "
                             style={{ width: "100%", aspectRatio: 2.5, maxWidth: 600 }}
                             data={barTrace}>
                             <Bar
@@ -258,44 +321,6 @@ function EconomyView() {
                     w-full
                     gap-3
                     ">
-                        {productTrace.length <= 1 &&
-                            <div className="
-                            flex flex-row
-                            items-center
-                            p-4! gap-1
-                            bg-(--bg-alt)
-                            border-2 border-dashed border-white/30
-                            ">
-                                <strong className="text-xl">
-                                    No se pueden mostrar los productos mas vendidos
-                                </strong>
-                                <FontAwesomeIcon icon={faDizzy} size="xl" />
-                            </div>
-                        }
-
-                        {productTrace.length > 1 &&
-                            <BarChart
-                                className="
-                                p-4!
-                                bg-(--bg-alt) 
-                                border border-(--border)
-                                rounded-md
-                                "
-                                style={{ width: "100%", aspectRatio: 2.5, maxWidth: 600 }}
-                                data={productTrace}>
-                                <Bar
-                                    name="Ventas"
-                                    dataKey="sold"
-                                    fill="#0081A3" />
-
-                                <XAxis dataKey="name" />
-                                <YAxis dataKey="sold" />
-
-                                <Legend />
-                                <Tooltip />
-                            </BarChart>
-                        }
-
                         <LineChart
 
                             className="
@@ -308,8 +333,10 @@ function EconomyView() {
                             data={salesTrace}>
 
                             <Line
+                                name="Ganancia bruta CUP"
                                 dataKey="CUP" />
                             <Line
+                                name="Ganancia bruta USD"
                                 dataKey="USD"
                                 stroke="var(--accent)" />
 
@@ -318,16 +345,57 @@ function EconomyView() {
                             <Legend />
                             <Tooltip />
                         </LineChart>
+
+                        <BarChart
+
+                            className="
+                            p-4!
+                            bg-(--bg-alt) 
+                            border border-(--border)
+                            rounded-md
+                            "
+                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                            data={netSalesTrace}>
+
+                            <Bar
+                                name="Ganancia neta CUP"
+                                dataKey="CUP"
+                                fill="#0081A3" />
+
+                            <Bar
+                                name="Ganancia neta USD"
+                                dataKey="USD"
+                                fill="var(--accent)" />
+
+                            <XAxis dataKey="date" />
+                            <YAxis width="auto" />
+
+                            <ReferenceLine y={0} stroke="#555" />
+
+                            <Tooltip />
+                            <Legend />
+                        </BarChart>
                     </div>
                 }
 
-                {currentChip.route === 'waste' &&
+                {currentChip.route === 'staff' &&
                     <div className="
                     flex flex-col 
                     self-stretch items-center
                     w-full
                     gap-3
                     ">
+                        <div className="
+                        flex flex-row
+                        p-2! gap-3
+                        bg-(--bg-alt)
+                        border border-(--border)
+                        rounded-md
+                        ">
+                            <strong>
+                                Gasto total: {salaryWaste} CUP
+                            </strong>
+                        </div>
                         <BarChart className="
                             flex flex-col
                             gap-3
@@ -377,6 +445,82 @@ function EconomyView() {
                             <Legend />
                             <Tooltip />
                         </BarChart>
+                    </div>
+                }
+
+                {currentChip.route === 'providers' &&
+                    <div className="
+                    flex flex-col 
+                    self-stretch items-center
+                    w-full
+                    gap-3
+                    ">
+                        <div className="
+                        flex flex-row
+                        p-2! gap-3
+                        bg-(--bg-alt)
+                        border border-(--border)
+                        rounded-md
+                        ">
+                            <strong>
+                                Gasto total: {paymentWaste.CUP} CUP
+                            </strong>
+
+                            <strong>
+                                Gasto total: {paymentWaste.USD} USD
+                            </strong>
+                        </div>
+
+                        <BarChart className="
+                            flex flex-col
+                            gap-3
+                            w-full
+                            bg-(--bg-alt)
+                            p-4!
+                            border border-(--border)
+                            rounded-md
+                            "
+                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                            data={providerTraceCUP}>
+
+                            <Bar
+                                name="Gasto en CUP"
+                                dataKey="waste"
+                                fill="#0081A3" />
+
+                            <XAxis dataKey="name" />
+                            <YAxis dataKey="waste" />
+
+                            <Tooltip />
+                            <Legend />
+
+                        </BarChart>
+
+                        <BarChart className="
+                            flex flex-col
+                            gap-3
+                            w-full
+                            bg-(--bg-alt)
+                            p-4!
+                            border border-(--border)
+                            rounded-md
+                            "
+                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                            data={providerTraceUSD}>
+
+                            <Bar
+                                name="Gasto en USD"
+                                dataKey="waste"
+                                fill="#0081A3" />
+
+                            <XAxis dataKey="name" />
+                            <YAxis dataKey="waste" />
+
+                            <Tooltip />
+                            <Legend />
+
+                        </BarChart>
+
                     </div>
                 }
             </div>

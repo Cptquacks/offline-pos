@@ -2,7 +2,7 @@
 /**
  * @typedef {Object} providerStore
  * @property {Array} providerData
- * @property {Number} paymentWaste
+ * @property {Object} paymentWaste
  * @property {() => Promise<void>} loadData
  * @property {(provider: Object) => Promise<void>} addProvider
  * @property {(provider: Object, index: number) => Promise<void>} modifyProvider

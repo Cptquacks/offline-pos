@@ -64,7 +64,7 @@ export function predictNextTwoDays(dataArray) {
         if (!grouped[entry.date]) {
             grouped[entry.date] = { date: entry.date, sells: 0 };
         }
-        grouped[entry.date].sells += entry.sells || 0;
+        grouped[entry.date].sells += entry.sells - entry.refunds || 0;
     });
     const uniqueDays = Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date));
 
@@ -103,6 +103,7 @@ export function predictNextTwoDays(dataArray) {
     }));
 
     // 9. Generar los dos días siguientes
+    // Se puede ajustar para generar mas
     const lastDate = new Date(lastDays[lastIndex].date);
     for (let i = 1; i <= 2; i++) {
         const nextDate = new Date(lastDate);

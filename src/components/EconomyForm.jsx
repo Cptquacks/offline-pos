@@ -46,24 +46,28 @@ function EconomyForm({ onSubmit }) {
                 label="Ventas"
                 placeholder="Ventas del día..."
                 type="number"
+                min={0}
                 onChange={data => setFormData(prev => ({ ...prev, sells: parseInt(data) }))} />
 
             <FormInput
                 label="Reembolsos"
                 placeholder="Reembolsos del día..."
                 type="number"
+                min={0}
                 onChange={data => setFormData(prev => ({ ...prev, refunds: parseInt(data) }))} />
 
             <FormInput
                 label="Ganancias (CUP)"
                 placeholder="Ganancias del día..."
                 type="number"
+                min={-999999999}
                 onChange={data => setFormData(prev => ({ ...prev, total: { ...prev.total, CUP: parseInt(data) } }))} />
 
             <FormInput
                 label="Ganancias (USD)"
                 placeholder="Ganancias del día..."
                 type="number"
+                min={-999999999}
                 onChange={data => setFormData(prev => ({ ...prev, total: { ...prev.total, USD: parseInt(data) } }))} />
 
         </form>

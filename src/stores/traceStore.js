@@ -131,9 +131,10 @@ const useTraceStore = create((set, get) => ({
 
         if (!traceLoaded) return
 
-        const today = new Date().toLocaleString('sv-SE')
+        const today = new Date().toLocaleDateString('sv-SE')
         let updatedTrace = traceData.toReversed()
         let groupedTrace = {}
+        let todayTrace = traceData.toReversed().filter(trace => trace.date === today)
 
         updatedTrace.forEach(trace => {
             if (trace.date === today) return
@@ -159,7 +160,7 @@ const useTraceStore = create((set, get) => ({
 
 
         updatedTrace = Object.values(groupedTrace)
-        const data = writeData('traces', updatedTrace)
+        const data = await writeData('traces', [...updatedTrace, ...todayTrace])
 
         set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
     },
