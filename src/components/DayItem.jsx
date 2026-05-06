@@ -71,7 +71,6 @@ function DayItem({ data, isOnPreview = false }) {
             bg-(--bg-alt)
             p-2!
             ">
-                {!isOnPreview && <DeleteButton />}
             </div>
         </div>
     )
