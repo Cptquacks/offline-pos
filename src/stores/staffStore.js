@@ -43,7 +43,10 @@ const useStaffStore = create((set, get) => ({
         const { staffData } = get()
         const updatedData = staffData
 
-        updatedData[index] = staff
+        const cleanStaff = Object.fromEntries(
+            Object.entries(staff).filter(([key]) => !['index'].includes(key))
+        )
+        updatedData[index] = cleanStaff
 
         const data = await writeData('staff', updatedData)
         let total = 0

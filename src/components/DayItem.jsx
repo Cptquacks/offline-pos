@@ -2,6 +2,7 @@ import { faHandHoldingDollar, faMoneyBillWave, faStamp } from "@fortawesome/free
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import DeleteButton from "./DeleteButton"
 
+// eslint-disable-next-line no-unused-vars
 function DayItem({ data, isOnPreview = false }) {
     return (
         <div className="
