@@ -17,12 +17,15 @@ const useRoleStore = create((set, get) => ({
     roleList: [],
     loadRoles: async () => {
         let data = await loadData('roles')
-        data = data.map(tag => `${tag}`)
+        data = data.map(role => role.name)
+
+        console.log(data)
         set({ roleList: data })
     },
     addRole: async (role) => {
-        let data = await updateData('roles', { name: `${role}` })
-        data = data.map(tag => `${tag}`)
+        let data = await updateData('roles', { name: role })
+        data = data.map(role => role.name)
+
         set({ roleList: data })
     },
     deleteRoles: async (roles) => {
@@ -32,7 +35,7 @@ const useRoleStore = create((set, get) => ({
             .map(entry => ({ name: entry }))
 
         let data = await writeData('roles', transformedList)
-        data = data.map(tag => `${tag}`)
+        data = data.map(role => role.name)
         set({ roleList: data })
     },
 }))

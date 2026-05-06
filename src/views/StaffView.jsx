@@ -6,13 +6,12 @@ import ImportPanel from "../components/ImportPanel"
 import ItemsList from "../components/ItemsList"
 import useStaffStore from "../stores/staffStore"
 import EmployeItem from "../components/EmployeItem"
-import { loadData as loadTagData } from "../utils/storage-util"
 import { stringSimilarity } from "../utils/string-util"
 import useRoleStore from "../stores/roleStore"
 
 function StaffView() {
     const { staffData, salaryWaste, loadData, addStaff, overwriteFile } = useStaffStore()
-    const { roleList, addRole } = useRoleStore()
+    const { roleList, addRole, loadRoles } = useRoleStore()
     const [roles, setRoles] = useState([])
 
     const [filter, setFilter] = useState('All')
@@ -58,7 +57,7 @@ function StaffView() {
                 !roleList.includes(fragment.charge) &&
                 !newRoles.includes(fragment.charge)
             ) {
-                addRole(fragment.charge)
+                newRoles.push(fragment.charge)
             }
 
             fragment.salary = parseInt(fragment.salary)
@@ -75,12 +74,8 @@ function StaffView() {
 
     useEffect(() => {
         loadData()
-        loadData()
-        async function loadTags() {
-            const data = await loadTagData('roles')
-            setRoles(data)
-        }
-        loadTags()
+        loadRoles()
+        setRoles(roleList)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
