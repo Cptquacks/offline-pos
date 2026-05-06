@@ -53,6 +53,36 @@ class xlsxService {
             return { canceled: true, error: err }
         }
     }
+
+    async exportFile(data, defaultFileName = 'Exported') {
+        const { canceled, filePath } = await dialog.showSaveDialog({
+            title: "Guardar archivo de datos",
+            defaultPath: `${defaultFileName}.xlsx`,
+            filters: [
+                { name: 'Excel Workbook', extensions: ['xlsx'] },
+                { name: 'CSV', extensions: ['csv'] }
+            ],
+            properties: ['openFile']
+        })
+
+        if (canceled || !filePath) {
+            return { canceled: true };
+        }
+
+        try {
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
+
+            const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+            await fs.promises.writeFile(filePath, buffer);
+
+            return { success: true, filePath };
+        } catch (err) {
+            console.error('Error al exportar:', err);
+            return { success: false, error: err.message };
+        }
+    }
 }
 
 export default xlsxService

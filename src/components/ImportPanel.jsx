@@ -2,8 +2,9 @@ import { faFileExcel } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import useDialogStore from "../stores/dialogStore"
 import XLSXImportDialog from "./XLSXImportDialog"
+import XLSXExportDialog from "./XLSXExportDialog"
 
-function ImportPanel({ title, model, optionalFields, onImport, previewComponent }) {
+function ImportPanel({ title, model, optionalFields, onImport, previewComponent, exportData = [] }) {
     const { openDialog } = useDialogStore()
 
     const handleImport = () => {
@@ -14,6 +15,15 @@ function ImportPanel({ title, model, optionalFields, onImport, previewComponent 
                 onImport={onImport}
                 title={title}
                 previewComponent={previewComponent}
+            />
+        )
+    }
+
+    const handleExport = () => {
+        openDialog(
+            <XLSXExportDialog
+                model={model}
+                data={exportData}
             />
         )
     }
@@ -59,7 +69,7 @@ function ImportPanel({ title, model, optionalFields, onImport, previewComponent 
                 text-white hover:text-(--bg)
                 text-sm font-bold
                 rounded-xs
-                ">
+                " onClick={handleExport}>
                     <FontAwesomeIcon icon={faFileExcel} size="lg" />
                     Exportar a Excel
                 </button>

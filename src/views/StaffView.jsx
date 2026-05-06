@@ -35,6 +35,16 @@ function StaffView() {
         return result
     }, [query, filter, staffData])
 
+    const exportedData = useMemo(() => {
+
+        const excludedKeys = ['index', 'notes', 'contactData', 'span'];
+
+        return staffData.map(staff =>
+            Object.fromEntries(
+                Object.entries(staff).filter(([key]) => !excludedKeys.includes(key))
+            )
+        );
+    }, [staffData]);
     /**
      * 
      * @param {Array} importedData 
@@ -114,6 +124,7 @@ function StaffView() {
                             title="Importar"
                             onImport={data => handleImportation(data)}
                             previewComponent={({ data }) => <EmployeItem data={data} isOnPreview={true} />}
+                            exportData={exportedData}
                         />
                     </div>
 

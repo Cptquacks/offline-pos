@@ -38,6 +38,7 @@ app.whenReady().then(() => {
 
     //XLSX Service
     ipcMain.handle('import-file', (event) => xlsx.importFile())
+    ipcMain.handle('export-file', (event, data, filePath) => xlsx.exportFile(data, filePath))
 
     createWindow()
 })

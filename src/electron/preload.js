@@ -8,5 +8,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     modifyJSON: (filePath, data) => ipcRenderer.invoke('modify-json', filePath, data),
 
     // XLSX Service
-    importFile: () => ipcRenderer.invoke('import-file')
+    importFile: () => ipcRenderer.invoke('import-file'),
+    exportFile: (data, filePath) => ipcRenderer.invoke('export-file', data, filePath)
 })

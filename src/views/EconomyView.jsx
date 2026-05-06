@@ -228,6 +228,27 @@ function EconomyView() {
     }, [roleTrace, providerTraceCUP, providerTraceUSD, salesTrace])
 
 
+
+
+    const exportedData = useMemo(() => {
+
+        const excludedKeys = ['index', 'notes', 'total'];
+
+        let result = traceData.map(staff =>
+            Object.fromEntries(
+                Object.entries(staff).filter(([key]) => !excludedKeys.includes(key))
+            )
+        );
+
+        result = result.map((trace, index) => ({
+            ...trace,
+            CUP: traceData[index].total.CUP,
+            USD: traceData[index].total.USD,
+        }))
+
+        return result
+    }, [traceData]);
+
     /**
      * Importation
      * @param {Array} importedData
@@ -320,6 +341,7 @@ function EconomyView() {
                         title={"Importar"}
                         previewComponent={({ data }) => <DayItem data={data} isOnPreview={true} />}
                         onImport={data => handleImportation(data)}
+                        exportData={exportedData}
                     />
                 </div>
 

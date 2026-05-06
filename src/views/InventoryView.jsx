@@ -35,6 +35,18 @@ function InventoryView() {
     }, [query, filter, productData])
 
 
+    const exportedData = useMemo(() => {
+
+        const excludedKeys = ['index', 'notes', 'contactData', 'span'];
+
+        return productData.map(staff =>
+            Object.fromEntries(
+                Object.entries(staff).filter(([key]) => !excludedKeys.includes(key))
+            )
+        );
+    }, [productData]);
+
+
     /**
      * 
      * @param {String} query 
@@ -129,6 +141,7 @@ function InventoryView() {
                             title="Importar"
                             onImport={data => handleImportation(data)}
                             previewComponent={({ data }) => <ProductItem data={data} isOnPreview={true} />}
+                            exportData={exportedData}
                         />
                     </div>
 

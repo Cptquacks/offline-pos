@@ -26,6 +26,26 @@ function ProvidersView() {
         return result
     }, [query, providerData])
 
+    const exportedData = useMemo(() => {
+
+        const excludedKeys = ['index', 'notes', 'contactData'];
+
+        let result = providerData.map(provider =>
+            Object.fromEntries(
+                Object.entries(provider).filter(([key]) => !excludedKeys.includes(key))
+            )
+        );
+
+        result = result.map((provider, index) => ({
+            ...provider,
+            active: providerData[index].active ? 'Sí' : '',
+            contactData: providerData[index].contactData[0]?.value ?? null
+        }
+        ))
+
+        return result
+    }, [providerData]);
+
     /**
      * 
      * @param {Array} importedData 
@@ -90,6 +110,7 @@ function ProvidersView() {
                         title={"Importar"}
                         onImport={data => handleImportation(data)}
                         previewComponent={({ data }) => <ProviderItem data={data} isOnPreview={true} />}
+                        exportData={exportedData}
                     />
                 </div>
 
