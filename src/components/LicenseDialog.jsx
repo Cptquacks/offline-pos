@@ -40,7 +40,6 @@ function LicenseDialog() {
 
     useEffect(() => {
         if (licenseList.length === 0) { setLoading(false); return }
-        console.log(checkValidity(licenseList.toReversed()[0]))
 
         if (!checkValidity(licenseList.toReversed()[0])) { setLoading(false); return }
         closeDialog()

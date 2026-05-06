@@ -14,7 +14,6 @@ function XLSXExportDialog({ model, data }) {
         result.push(Object.values(model))
 
         rawData.forEach(entry => result.push(Object.values(entry)))
-        console.log(result)
         return result
     }, [data, model])
 

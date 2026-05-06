@@ -1,6 +1,6 @@
 export async function checkLicense(code) {
     if (!window.electronAPI) {
-        console.log('Electron API not loaded')
+        console.error('Electron API not loaded')
         return null
     }
 
@@ -15,6 +15,5 @@ export async function checkLicense(code) {
 
 export function checkValidity(license) {
     const today = new Date().toLocaleDateString('sv-SE')
-    console.log(`${license.date} ${today}`)
     return today < license.date
 }

@@ -19,7 +19,6 @@ const useRoleStore = create((set, get) => ({
         let data = await loadData('roles')
         data = data.map(role => role.name)
 
-        console.log(data)
         set({ roleList: data })
     },
     addRole: async (role) => {
