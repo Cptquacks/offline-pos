@@ -9,5 +9,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     // XLSX Service
     importFile: () => ipcRenderer.invoke('import-file'),
-    exportFile: (data, filePath) => ipcRenderer.invoke('export-file', data, filePath)
+    exportFile: (data, filePath) => ipcRenderer.invoke('export-file', data, filePath),
+
+    //License Service
+    checkLicense: (code) => ipcRenderer.invoke('check-license', code)
 })

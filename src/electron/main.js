@@ -3,6 +3,7 @@ import fileService from './services/fileService.js'
 import path from 'path'
 import { fileURLToPath } from 'url';
 import xlsxService from './services/xlsxService.js';
+import LicenseService from './services/licenseService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,6 +11,7 @@ const __dirname = path.dirname(__filename);
 const isInDev = process.env.NODE_ENV === 'development'
 const files = new fileService()
 const xlsx = new xlsxService()
+const license = new LicenseService()
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -39,6 +41,19 @@ app.whenReady().then(() => {
     //XLSX Service
     ipcMain.handle('import-file', (event) => xlsx.importFile())
     ipcMain.handle('export-file', (event, data, filePath) => xlsx.exportFile(data, filePath))
+
+    //License Service
+    ipcMain.handle('check-license', (event, code) => {
+        const isValid = license.verifyLicense(code)
+        if (!isValid) {
+            return { valid: false }
+        }
+        return {
+            valid: true,
+            code: code,
+            date: license.getExpirationDate(code)
+        }
+    })
 
     createWindow()
 })

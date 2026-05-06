@@ -189,7 +189,6 @@ const useTraceStore = create((set, get) => ({
         const { currentTrace } = get();
         const updatedTrace = currentTrace;
         cartItems.forEach(item => {
-            alert(item.cart)
             updatedTrace.sells += parseInt(item.cart)
             updatedTrace.total[item.currency] += parseInt(item.price) * parseInt(item.cart)
         })
