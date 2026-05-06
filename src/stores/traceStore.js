@@ -30,10 +30,11 @@ const useTraceStore = create((set, get) => ({
 
         const { traceLoaded, currentTrace } = get()
         const currentDate = new Date().toLocaleDateString('sv-SE') // Obtener fecha local de hoy
-        const lastDay = data.toReversed()[0] // Obtener ultimo dia -> fecha
-        const entries = data.filter(trace => trace.date === currentDate)
 
-        if ((!traceLoaded && entries.length === 0) && currentDate > lastDay.date) {
+        const lastDay = data.toReversed()[0] // Obtener ultimo dia -> fecha
+        const currentTraceValid = Object.values(currentTrace).length > 0
+
+        if (data.length === 0 || (!traceLoaded && currentDate > lastDay.date)) {
             /**
              * Si no hay traza cargada y ademas el dia es mayor al ultimo dia
              * 1. Cerramos automaticamente
@@ -57,7 +58,7 @@ const useTraceStore = create((set, get) => ({
             return
         }
 
-        if (!currentTrace.date) {
+        if (!currentTraceValid) {
             set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0], traceLoaded: true })
             return
         }
@@ -163,7 +164,7 @@ const useTraceStore = create((set, get) => ({
         updatedTrace = Object.values(groupedTrace)
         const data = await writeData('traces', [...updatedTrace, ...todayTrace])
 
-        set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
+        set({ traceData: data.toReversed() })
     },
 
     overwriteTrace: async (chunk) => {
@@ -187,8 +188,8 @@ const useTraceStore = create((set, get) => ({
     addSell: async (cartItems) => {
         const { currentTrace } = get();
         const updatedTrace = currentTrace;
-
         cartItems.forEach(item => {
+            alert(item.cart)
             updatedTrace.sells += parseInt(item.cart)
             updatedTrace.total[item.currency] += parseInt(item.price) * parseInt(item.cart)
         })

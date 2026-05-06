@@ -1,5 +1,6 @@
-import { faShoppingBasket, faTag, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
+import { faShoppingBasket, faTag } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import DeleteButton from "./DeleteButton"
 
 function CartItem({ data, onRemove }) {
     return (
@@ -68,17 +69,7 @@ function CartItem({ data, onRemove }) {
                     {data.tag}
                 </p>
 
-                <button className="
-                transition-normal cursor-pointer
-                px-1! py-0.5!
-                bg-red-500/50
-                text-white!
-                border-2 border-(--border)
-                rounded-lg
-                hover:shadow-(--shadow)
-                " onClick={() => onRemove(data.index)}>
-                    <FontAwesomeIcon icon={faTrashAlt} />
-                </button>
+                <DeleteButton onDelete={() => onRemove(data.index)} />
             </div>
         </div>
     )

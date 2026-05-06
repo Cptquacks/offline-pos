@@ -19,17 +19,21 @@ function KioskView() {
 
     const [cartItems, setCartItems] = useState([])
 
-    const handleSell = () => {
+    const handleSell = async () => {
         addTicket(registerSell(cartItems))
         addSell(cartItems)
 
-        productData.forEach((item, index) => {
-            const data = cartItems.filter(product => item.name === product.name)[0]
-            if (!data) return
+        const productNames = cartItems.map(item => item.name)
 
-            const updatedProduct = { ...item, current: item.current - data.cart }
+        for (let index = 0; index < productData.length; index++) {
+            if (!productNames.includes(productData[index].name)) continue
+
+
+            const data = cartItems.find(product => productData[index].name === product.name)
+            if (!data) return
+            const updatedProduct = { ...data, current: data.current - data.cart }
             modifyProduct(updatedProduct, index)
-        })
+        }
 
         setCartItems([])
     }
@@ -88,7 +92,7 @@ function KioskView() {
                             onAdd={
                                 (data, amount) => setCartItems(prev => ([
                                     ...prev,
-                                    { cart: amount, ...data }
+                                    { ...data, cart: amount }
                                 ]))
                             }
                             onRefund={(data, amount) => handleRefund(data, amount)}

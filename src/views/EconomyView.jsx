@@ -234,6 +234,7 @@ function EconomyView() {
      */
     const handleImportation = (importedData) => {
         let transformedData = []
+
         importedData.forEach(fragment =>
             transformedData.push({
                 date: fragment.date,
@@ -248,7 +249,6 @@ function EconomyView() {
 
         const result = [...traceData, ...transformedData]
         overwriteTrace(result)
-        normalizeTrace()
     }
 
     /**
