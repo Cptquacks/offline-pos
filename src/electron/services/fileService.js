@@ -16,6 +16,42 @@ class fileService {
     }
 
     /**
+     * Garantiza que los archivos por defecto existan.
+     * Si no existen, los crea con un contenido inicial adecuado.
+     */
+    async ensureDefaultFiles() {
+        // Diccionario de archivos y su contenido por defecto
+        const defaultFiles = {
+            'traces.json': [],
+            'products.json': [],
+            'providers.json': [],
+            'staff.json': [],
+            'tags.json': [],
+            'roles.json': [],
+            'tickets.json': [],
+            'licenses.json': []
+        };
+
+        for (const [fileName, defaultContent] of Object.entries(defaultFiles)) {
+            const filePath = path.join(this.dataPath, fileName);
+            try {
+                await fs.access(filePath); // comprueba si existe
+            } catch {
+                // No existe → crearlo
+                try {
+                    await fs.writeFile(
+                        filePath,
+                        JSON.stringify(defaultContent, null, 4),
+                        'utf-8'
+                    );
+                } catch (writeErr) {
+                    console.error(`Error al crear ${fileName}:`, writeErr);
+                }
+            }
+        }
+    }
+
+    /**
      * 
      * @param {String} filePath 
      * @returns {Object}

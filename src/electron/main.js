@@ -21,7 +21,7 @@ const createWindow = () => {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
-            devTools: isInDev
+            devTools: true//isInDev
         },
     })
 
@@ -30,10 +30,14 @@ const createWindow = () => {
         win.webContents.openDevTools()
     }
     else
-        win.loadFile('./index.html')
+        win.loadFile(path.join(__dirname, '../../dist/index.html'))
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+
+    //create default files
+    await files.ensureDefaultFiles()
+
     // File Service
     ipcMain.handle('read-json', (event, path) => files.readJsonData(path))
     ipcMain.handle('write-json', (event, path, data) => files.writeJsonData(path, data))

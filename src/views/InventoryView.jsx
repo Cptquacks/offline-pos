@@ -9,6 +9,7 @@ import ProductItem from "../components/ProductItem"
 import { stringSimilarity } from "../utils/string-util"
 import { daysFromToday } from "../utils/date-util"
 import useTagStore from "../stores/tagStore"
+import { filterObjectKeysFromStructure } from "../utils/filter-util"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile } = useProductStore()
@@ -36,14 +37,7 @@ function InventoryView() {
 
 
     const exportedData = useMemo(() => {
-
-        const excludedKeys = ['index', 'notes', 'contactData', 'span'];
-
-        return productData.map(staff =>
-            Object.fromEntries(
-                Object.entries(staff).filter(([key]) => !excludedKeys.includes(key))
-            )
-        );
+        return filterObjectKeysFromStructure(productData, ['index', 'span'])
     }, [productData]);
 
 
@@ -152,7 +146,6 @@ function InventoryView() {
                         <ProductItem
                             key={index}
                             data={{ index: index, ...product }} />
-
                     )}
                 </ItemsList>
             </div>

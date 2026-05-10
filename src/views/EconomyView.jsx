@@ -328,7 +328,7 @@ function EconomyView() {
                             onSelected={() => setCurrentChip(item)} />)}
                 </div>
 
-                <div className="flex flex-col w-full">
+                <div className="flex flex-row w-full justify-between">
                     <ImportPanel
                         model={{
                             "date": "Fecha",
@@ -343,6 +343,40 @@ function EconomyView() {
                         onImport={data => handleImportation(data)}
                         exportData={exportedData}
                     />
+
+                    {currentChip.route === 'staff' &&
+
+                        <div className="
+                        flex flex-row
+                        p-4! gap-3
+                        bg-(--bg-alt)
+                        border border-(--border)
+                        rounded-md
+                        ">
+                            <strong>
+                                Gasto total: {salaryWaste} CUP
+                            </strong>
+                        </div>
+                    }
+
+                    {currentChip.route === 'providers' &&
+
+                        <div className="
+                        flex flex-col
+                        p-2! gap-3
+                        bg-(--bg-alt)
+                        border border-(--border)
+                        rounded-md
+                        ">
+                            <strong>
+                                Gasto total: {paymentWaste.CUP} CUP
+                            </strong>
+
+                            <strong>
+                                Gasto total: {paymentWaste.USD} USD
+                            </strong>
+                        </div>
+                    }
                 </div>
 
                 {currentChip.route === 'sells' &&
@@ -474,17 +508,6 @@ function EconomyView() {
                     w-full
                     gap-3
                     ">
-                        <div className="
-                        flex flex-row
-                        p-2! gap-3
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            <strong>
-                                Gasto total: {salaryWaste} CUP
-                            </strong>
-                        </div>
                         <BarChart className="
                             flex flex-col
                             gap-3
@@ -544,22 +567,6 @@ function EconomyView() {
                     w-full
                     gap-3
                     ">
-                        <div className="
-                        flex flex-row
-                        p-2! gap-3
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            <strong>
-                                Gasto total: {paymentWaste.CUP} CUP
-                            </strong>
-
-                            <strong>
-                                Gasto total: {paymentWaste.USD} USD
-                            </strong>
-                        </div>
-
                         <BarChart className="
                             flex flex-col
                             gap-3

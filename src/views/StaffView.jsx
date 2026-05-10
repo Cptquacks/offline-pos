@@ -8,6 +8,7 @@ import useStaffStore from "../stores/staffStore"
 import EmployeItem from "../components/EmployeItem"
 import { stringSimilarity } from "../utils/string-util"
 import useRoleStore from "../stores/roleStore"
+import { filterObjectKeysFromStructure } from "../utils/filter-util"
 
 function StaffView() {
     const { staffData, salaryWaste, loadData, addStaff, overwriteFile } = useStaffStore()
@@ -36,14 +37,9 @@ function StaffView() {
 
     const exportedData = useMemo(() => {
 
-        const excludedKeys = ['index', 'notes', 'contactData', 'span'];
-
-        return staffData.map(staff =>
-            Object.fromEntries(
-                Object.entries(staff).filter(([key]) => !excludedKeys.includes(key))
-            )
-        );
+        return filterObjectKeysFromStructure(staffData, ['index', 'notes'])
     }, [staffData]);
+
     /**
      * 
      * @param {Array} importedData 

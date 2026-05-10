@@ -94,15 +94,13 @@ function ResumeView() {
         ">
             <div className="
             flex flex-col 
-            items-center
+            items-center justify-between
             col-span-2 row-span-3
             p-4! py-2! gap-2
             bg-(--bg-soft)!
             rounded-md
+            overflow-y-auto
             ">
-                <strong className="self-start text-xl">
-                    Resumen
-                </strong>
                 <BarChart
                     className="
                     p-4!

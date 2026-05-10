@@ -7,6 +7,7 @@ import SearchBar from "../components/SearchBar"
 import ImportPanel from "../components/ImportPanel"
 import { stringSimilarity } from "../utils/string-util"
 import { addDays, daysFromToday } from "../utils/date-util"
+import { filterObjectKeysFromStructure } from "../utils/filter-util"
 
 function ProvidersView() {
     const { providerData, paymentWaste, loadData, addProvider, overwriteData } = useProviderStore()
@@ -28,20 +29,12 @@ function ProvidersView() {
 
     const exportedData = useMemo(() => {
 
-        const excludedKeys = ['index', 'notes', 'contactData'];
+        let result = filterObjectKeysFromStructure(providerData, ['index', 'notes'])
 
-        let result = providerData.map(provider =>
-            Object.fromEntries(
-                Object.entries(provider).filter(([key]) => !excludedKeys.includes(key))
-            )
-        );
-
-        result = result.map((provider, index) => ({
+        result = result.map(provider => ({
             ...provider,
-            active: providerData[index].active ? 'Sí' : '',
-            contactData: providerData[index].contactData[0]?.value ?? null
-        }
-        ))
+            contactData: provider?.contactData[0]?.value ?? ''
+        }))
 
         return result
     }, [providerData]);
