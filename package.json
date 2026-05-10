@@ -9,7 +9,7 @@
     "dev:renderer": "vite",
     "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
     "build": "vite build",
-    "build:electron": "npm run build && npx --verbose electron-builder --win",
+    "build:electron": "npm run build && npx --verbose --prefer-offline electron-builder --win",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -30,7 +30,7 @@
       "icon": "public/icon.ico"
     },
     "linux": {
-      "taget": "AppImage",
+      "target": "AppImage",
       "icon": "public/icon.ico",
       "category": "Utilites"
     }

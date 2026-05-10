@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import useTraceStore from "../stores/traceStore"
-import { mostSoldProducts, predictNextTwoDays } from "../utils/economic-util"
+import { /*mostSoldProducts,*/ predictNextTwoDays } from "../utils/economic-util"
 import { Bar, BarChart, Legend, Line, LineChart, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 import ChipItem from "../components/ChipItem"
 //import useProductStore from "../stores/productStore"
@@ -384,7 +384,8 @@ function EconomyView() {
                     flex flex-col 
                     self-stretch items-center
                     w-full
-                    gap-3
+                    gap-3 
+                    overflow-y-auto
                     ">
                         <LineChart
                             className="
@@ -442,7 +443,8 @@ function EconomyView() {
                     flex flex-col 
                     self-stretch items-center
                     w-full
-                    gap-3
+                    gap-3 
+                    overflow-y-auto
                     ">
                         <LineChart
 
@@ -506,7 +508,8 @@ function EconomyView() {
                     flex flex-col 
                     self-stretch items-center
                     w-full
-                    gap-3
+                    gap-3 
+                    overflow-y-auto
                     ">
                         <BarChart className="
                             flex flex-col
@@ -565,7 +568,8 @@ function EconomyView() {
                     flex flex-col 
                     self-stretch items-center
                     w-full
-                    gap-3
+                    gap-3 
+                    overflow-y-auto
                     ">
                         <BarChart className="
                             flex flex-col
