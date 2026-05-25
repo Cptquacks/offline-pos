@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { hexToLCH, lchToHex } from "../utils/tag-util"
 
 function TagListWrapper({ children, color, onSelected, isSelected, onColorSelected }) {
     const [currentColor, setCurrentColor] = useState(lchToHex(color) ?? '#000')
+    const colorPicker = useRef(null)
 
     const handleColorChange = (color) => {
         setCurrentColor(color)
@@ -29,7 +30,32 @@ function TagListWrapper({ children, color, onSelected, isSelected, onColorSelect
                 onClick={() => onSelected()}>
                 {children}
             </div>
-            <input type="color" value={currentColor} onChange={event => handleColorChange(event.target.value)} />
+
+            <div className="
+            relative
+            w-6 h-6
+            ">
+                <div
+                    className="
+                    inset-0
+                    h-full w-full
+                    rounded-full
+                    border-2 border-white/30
+                    "
+                    style={{ background: currentColor }}
+                    onClick={() => colorPicker.current?.click()} />
+
+                <input
+                    ref={colorPicker}
+                    className="
+                    absolute inset-0
+                    w-0 h-0 opacity-0          
+                    "
+                    style={{ background: currentColor }}
+                    type="color"
+                    value={currentColor}
+                    onChange={event => handleColorChange(event.target.value)} />
+            </div>
         </div>
     )
 }
