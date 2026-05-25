@@ -10,7 +10,7 @@ function SideBar() {
 
     const showLabel = useMemo(() => {
         const result = preferenceData.find(pref => pref.key === 'sideBarExpanded')
-        return result.value
+        return result?.value ?? true
     }, [preferenceData])
 
     const [currentSelection, setSelection] = useState('/resume')
