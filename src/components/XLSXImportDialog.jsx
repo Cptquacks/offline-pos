@@ -98,7 +98,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
             <div className="
             flex flex-col
             p-4! gap-3
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <div className="
                 flex flex-col
@@ -200,6 +200,8 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                                 //label={`${field} K:${programFields[index]?.key ?? 'ERR'}  V:${programFields[index]?.value ?? 'ERR'}`}
                                 label={field}
                                 columns={fileData.columns}
+                                optional={optionalFields.includes(programFields[index]?.key)}
+
                                 onSelected={data => {
                                     const fieldsCopy = programFields.map((f, i) =>
                                         i === index ? { ...f, value: data } : f

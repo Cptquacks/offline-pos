@@ -74,12 +74,12 @@ function KioskView() {
             gap-3
             bg-(--bg-soft)
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <div className="
                 flex flex-row
                 justify-between
-                p-4!
+                p-4! gap-3
                 ">
                     <SearchBar />
                     <TagFilter />
@@ -105,7 +105,7 @@ function KioskView() {
             p-4! gap-3
             bg-(--bg-soft)
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <div className="flex flex-row justify-between items-end">
                     <div className="flex flex-row items-center gap-1">
@@ -185,7 +185,7 @@ function KioskView() {
             p-4! gap-3
             bg-(--bg-soft)
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <div className="flex flex-row justify-between items-end">
 

@@ -82,7 +82,7 @@ function ProvidersView() {
             gap-3
             bg-(--bg-soft)
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <div className="
                 flex flex-col
@@ -142,7 +142,7 @@ function ProvidersView() {
             p-4! gap-3
             bg-(--bg-soft)
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <ProviderForm onSubmit={data => addProvider(data)} />
             </div>

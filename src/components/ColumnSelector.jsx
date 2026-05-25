@@ -1,24 +1,46 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import TagItem from "./TagItem"
+import { stringSimilarity } from "../utils/string-util"
 
-function ColumnSelector({ label, columns, onSelected }) {
-    const [currentColumn, setCurrentColumn] = useState(null)
+function ColumnSelector({ label, columns, onSelected, optional = false }) {
+    const [currentColumn, setCurrentColumn] = useState("null")
 
     const handleSelection = (selection) => {
         onSelected(selection)
         setCurrentColumn(selection)
     }
 
+    useEffect(() => {
+        if (columns.length === 0) return
+        let filteredColumns = columns.filter(entry => stringSimilarity(entry, label) >= 0.75)
+        filteredColumns = filteredColumns.sort((a, b) => stringSimilarity(a, label) - stringSimilarity(b, label))
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setCurrentColumn(filteredColumns[0])
+    }, [columns, label])
+
     return (
         <div className="
         flex flex-col
-        p-4! gap-px
+        p-4! gap-3
+        justify-between
         border border-(--border)
         bg-(--bg-alt)
         rounded-md
         ">
-            <strong>
-                {label}
-            </strong>
+            <div className="
+            flex flex-row
+            justify-between items-start
+            gap-3
+            ">
+                <strong>
+                    {label}
+                </strong>
+
+                {optional &&
+                    <TagItem label={'Opcional'} icon={'user-cog'} />
+                }
+            </div>
+
             <select
                 className="bg-(--bg-alt)"
                 value={currentColumn}

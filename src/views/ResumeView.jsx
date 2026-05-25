@@ -160,7 +160,7 @@ function ResumeView() {
             p-4! gap-2
             bg-(--bg-soft)!
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <strong className="text-xl -mt-2!">
                     Empleados temporales
@@ -178,7 +178,7 @@ function ResumeView() {
             p-4! gap-2
             bg-(--bg-soft)!
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <strong className="text-xl -mt-2!">
                     Productos perecederos

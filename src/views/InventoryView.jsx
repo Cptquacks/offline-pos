@@ -109,7 +109,7 @@ function InventoryView() {
             col-span-2
             bg-(--bg-soft)!
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <div className="grid">
 
@@ -160,7 +160,7 @@ function InventoryView() {
             flex flex-col 
             bg-(--bg-soft)!
             rounded-md
-            p-4! overflow-y-scroll
+            p-4! overflow-y-auto
             ">
                 <ProductForm onSubmit={data => addProduct(data)} />
             </div>

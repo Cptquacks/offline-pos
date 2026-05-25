@@ -92,7 +92,7 @@ function StaffView() {
             col-span-2
             bg-(--bg-soft)!
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <div className="grid
                 w-full
@@ -161,7 +161,7 @@ function StaffView() {
             flex flex-col 
             bg-(--bg-soft)!
             rounded-md
-            overflow-y-scroll
+            overflow-y-auto
             ">
                 <EmployeForm onSubmit={data => addStaff(data)} />
             </div>
