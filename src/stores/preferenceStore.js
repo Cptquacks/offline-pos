@@ -24,9 +24,8 @@ const usePreferenceStore = create((set, get) => ({
         let updatedData = [...preferenceData]
         updatedData[index].value = value
 
-        console.log(updatedData)
         const data = await writeData('preferences', updatedData)
-        console.log(data)
+
         set({ preferenceData: data })
     }
 }))

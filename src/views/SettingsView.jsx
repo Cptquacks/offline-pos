@@ -10,8 +10,8 @@ import { randomLCH } from "../utils/tag-util"
 function SettingsView() {
 
     const { preferenceData, loadData, setPreference } = usePreferenceStore()
-    const { roleList, loadRoles, deleteRoles, addRole } = useRoleStore()
-    const { tagList, loadTags, deleteTags, addTag } = useTagStore()
+    const { roleList, loadRoles, deleteRoles, addRole, modifyRole } = useRoleStore()
+    const { tagList, loadTags, deleteTags, addTag, modifyTag } = useTagStore()
 
     const [selectedTags, setSelectedTags] = useState([])
     const [selectedCharges, setSelectedCharges] = useState([])
@@ -42,102 +42,34 @@ function SettingsView() {
                 ">
                     <TagList
                         label="Categorías"
-                        selected={selectedTags}
+                        elements={tagList}
+                        icon={'tag'}
+
                         onAdd={data => addTag({ name: data, color: randomLCH() })}
-                        onDelete={() => {
-                            deleteTags(selectedTags)
-                            setSelectedTags([])
-                        }}>
-
-                        {tagList.map((tag, index) =>
-                            <div
-                                key={index}
-                                className="
-                                flex flex-row 
-                                items-center
-                                gap-1
-                                ">
-
-                                <div
-                                    className="
-                                    flex flex-row 
-                                    items-center justify-center
-                                    p-2!
-                                    bg-(--bg-alt)
-                                    rounded-sm
-                                    border border-(--border)
-                                    ">
-
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedTags.includes(index)}
-                                        onChange={() => {
-                                            if (selectedTags.includes(index)) {
-                                                setSelectedTags(prev => [...prev.filter(entry => entry !== index)])
-                                                return
-                                            }
-                                            setSelectedTags(prev => [...prev, index])
-                                        }} />
-                                </div>
-
-                                <TagItem
-                                    key={index}
-                                    label={tag.name}
-                                    color={tag.color}
-                                    icon="tag" />
-                            </div>
-                        )}
-                    </TagList>
+                        onDelete={(data) => {
+                            deleteTags(data)
+                        }}
+                        onModified={(data, index) => {
+                            modifyTag(data, index)
+                            loadTags()
+                        }}
+                    />
 
                     <TagList
                         label="Cargos"
                         selected={selectedCharges}
+                        elements={roleList}
+                        icon={'user-tag'}
+
                         onAdd={data => addRole({ name: data, color: randomLCH() })}
-                        onDelete={() => {
-                            deleteRoles(selectedCharges)
-                            setSelectedCharges([])
+                        onDelete={(data) => {
+                            deleteRoles(data)
                         }}
-                    >
+                        onModified={(data, index) => {
+                            modifyRole(data, index)
+                            loadRoles()
+                        }} />
 
-                        {roleList.map((tag, index) =>
-                            <div
-                                key={index}
-                                className="
-                                flex flex-row 
-                                items-center
-                                gap-1
-                                ">
-
-                                <div
-                                    className="
-                                    flex flex-row 
-                                    items-center justify-center
-                                    p-2!
-                                    bg-(--bg-alt)
-                                    rounded-sm
-                                    border border-(--border)
-                                    ">
-
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedCharges.includes(index)}
-                                        onChange={() => {
-                                            if (selectedCharges.includes(index)) {
-                                                setSelectedCharges(prev => [...prev.filter(entry => entry !== index)])
-                                                return
-                                            }
-                                            setSelectedCharges(prev => [...prev, index])
-                                        }} />
-                                </div>
-
-                                <TagItem
-                                    key={index}
-                                    label={tag.name}
-                                    color={tag.color}
-                                    icon="user-tag" />
-                            </div>
-                        )}
-                    </TagList>
                 </div>
 
                 <div className="

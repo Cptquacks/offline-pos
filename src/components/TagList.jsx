@@ -2,10 +2,21 @@ import { useState } from "react";
 import DefaultButton from "./DefaultButton";
 import DeleteButton from "./DeleteButton";
 import EmptyList from "./EmptyList";
+import TagListWrapper from "./TagListWrapper";
+import TagItem from "./TagItem";
 
-function TagList({ label, children, onAdd, onDelete, selected }) {
+function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
 
     const [newItem, setNewItem] = useState(null)
+    const [selectedIndexes, setSelectedIndexes] = useState([])
+
+    const handleSelection = (index) => {
+        if (selectedIndexes.includes(index)) {
+            setSelectedIndexes(prev => prev.filter(entry => entry != index))
+            return
+        }
+        setSelectedIndexes(prev => ([...prev, index]))
+    }
 
     return (
         <div className="
@@ -45,26 +56,42 @@ function TagList({ label, children, onAdd, onDelete, selected }) {
                         icon="plus"
                         label="Añadir"
                         type="submit"
-                        onClick={() => { }}
                     />
                 </form>
             </div>
 
             <div className="
             flex-1
-            flex flex-col gap-1
+            flex flex-col 
+            p-2! gap-1
             w-full
-            overflow-y-scroll
+            overflow-y-auto
             ">
 
-                {(children && children.length === 0) &&
+                {(elements && elements.length === 0) &&
                     <EmptyList />
                 }
 
-                {children}
+                {elements && elements.map((element, index) =>
+                    <TagListWrapper
+                        key={index}
+                        color={element.color}
+                        isSelected={selectedIndexes.includes(index)}
+
+                        onSelected={() => {
+                            handleSelection(index)
+                        }}
+                        onColorSelected={data => onModified({ name: element.name, color: data }, index)}
+                    >
+                        <TagItem
+                            label={element.name}
+                            color={element.color}
+                            icon={icon} />
+                    </TagListWrapper>
+                )}
             </div>
 
-            {(selected && selected.length > 0) && <div className="
+            {(selectedIndexes && selectedIndexes.length > 0) && <div className="
             flex flex-row
             items-center
             p-2!
@@ -74,9 +101,12 @@ function TagList({ label, children, onAdd, onDelete, selected }) {
             rounded-md
             ">
                 <strong>
-                    Elementos seleccionados: {selected.length ?? 0}
+                    Elementos seleccionados: {selectedIndexes.length ?? 0}
                 </strong>
-                <DeleteButton onDelete={onDelete} />
+                <DeleteButton onDelete={() => {
+                    onDelete(selectedIndexes)
+                    setSelectedIndexes([])
+                }} />
             </div>}
         </div>
     )
