@@ -1,7 +1,15 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import usePreferenceStore from "../stores/preferenceStore";
+import { useMemo } from "react";
 
 function TagItem({ label, color, icon }) {
-    const customStyle = color
+    const { preferenceData } = usePreferenceStore()
+    const coloredTags = useMemo(() => {
+        if (preferenceData.length == 0) return false
+        return preferenceData.find(preference => preference.key === 'coloredTags').value
+    }, [preferenceData])
+
+    const customStyle = color && coloredTags
         ? { backgroundColor: `lch(${color} / 0.3)`, }
         : {}
     return (
