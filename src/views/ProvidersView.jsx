@@ -79,62 +79,69 @@ function ProvidersView() {
             <div className="
             flex flex-col
             col-span-2
-            gap-3
             bg-(--bg-soft)
             rounded-md
-            overflow-y-auto
             ">
+                <div className="py-2! px-4!">
+                    <SearchBar onSearch={query => setQuery(query)} />
+                </div>
+
                 <div className="
                 flex flex-col
-                px-4! py-2! gap-4
+                gap-3
+                overflow-y-auto
                 ">
-                    <SearchBar onSearch={query => setQuery(query)} />
-                    <ImportPanel
-                        model={{
-                            "name": "Nombre",
-                            "waste": "Gasto",
-                            "currency": "Moneda de compra",
-                            "startedAt": "Fecha de contrato",
-                            "span": "Tiempo hasta la recompra (dias)",
-                            "active": "Relacion activa?",
-                            "contactData": "Datos de contacto"
-                        }}
-                        optionalFields={["startedAt", "span", "active", "contactData", "currency"]}
-                        title={"Importar"}
-                        onImport={data => handleImportation(data)}
-                        previewComponent={({ data }) => <ProviderItem data={data} isOnPreview={true} />}
-                        exportData={exportedData}
-                    />
-                </div>
-
-                <div className="
-                grid grid-cols-2
-                w-fit
-                px-4! gap-3
-                ">
-                    <strong className="
-                    px-2! py-1!
-                    bg-(--bg-alt)
-                    border border-(--border)
-                    rounded-md
+                    <div className="
+                    flex flex-col
+                    px-4! py-2! gap-4
                     ">
-                        Gasto CUP: {paymentWaste.CUP} CUP
-                    </strong><strong className="
-                    px-2! py-1!
-                    bg-(--bg-alt)
-                    border border-(--border)
-                    rounded-md
-                    ">
-                        Gasto USD: {paymentWaste.USD} USD
-                    </strong>
-                </div>
+                        <ImportPanel
+                            model={{
+                                "name": "Nombre",
+                                "waste": "Gasto",
+                                "currency": "Moneda de compra",
+                                "startedAt": "Fecha de contrato",
+                                "span": "Tiempo hasta la recompra (dias)",
+                                "active": "Relacion activa?",
+                                "contactData": "Datos de contacto"
+                            }}
+                            optionalFields={["startedAt", "span", "active", "contactData", "currency"]}
+                            title={"Importar"}
+                            onImport={data => handleImportation(data)}
+                            previewComponent={({ data }) => <ProviderItem data={data} isOnPreview={true} />}
+                            exportData={exportedData}
+                        />
+                    </div>
 
-                <ItemsList>
-                    {filteredList.map((provider, index) =>
-                        <ProviderItem key={index}
-                            data={{ index: index, ...provider }} />
-                    )}
-                </ItemsList>
+                    <div className="
+                    grid grid-cols-2
+                    w-fit
+                    px-4! gap-3
+                    ">
+                        <strong className="
+                        px-2! py-1!
+                        bg-(--bg-alt)
+                        border border-(--border)
+                        rounded-md
+                        ">
+                            Gasto CUP: {paymentWaste.CUP} CUP
+                        </strong><strong className="
+                        px-2! py-1!
+                        bg-(--bg-alt)
+                        border border-(--border)
+                        rounded-md
+                        ">
+                            Gasto USD: {paymentWaste.USD} USD
+                        </strong>
+                    </div>
+
+                    <ItemsList>
+                        {filteredList.map((provider, index) =>
+                            <ProviderItem key={index}
+                                data={{ index: index, ...provider }} />
+                        )}
+                    </ItemsList>
+                </div>
             </div>
 
             <div className="

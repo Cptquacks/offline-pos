@@ -109,51 +109,56 @@ function InventoryView() {
             col-span-2
             bg-(--bg-soft)!
             rounded-md
-            overflow-y-auto
             ">
-                <div className="grid">
 
-                    <div className="
-                    flex flex-row
-                    px-4! py-2! gap-3
-                    justify-between
-                    ">
-                        <SearchBar onSearch={query => handleSearch(query)} />
-                        <TagFilter filters={tagNames} onSelect={filter => handleFilter(filter)} />
-                    </div>
-
-                    <div className="
-                    flex flex-row
-                    px-4! py-2! gap-1
-                    ">
-                        <ImportPanel
-                            model={{
-                                "name": "Nombre",
-                                "tag": "Categoría",
-                                "description": "Descripción",
-                                "amount": "Cantidad",
-                                "price": "Precio",
-                                "currency": "Moneda",
-                                "expiresAt": "Caducidad",
-                                "current": "Disponibilidad"
-                            }}
-                            optionalFields={['description', 'expiresAt', 'current']}
-                            title="Importar"
-                            onImport={data => handleImportation(data)}
-                            previewComponent={({ data }) => <ProductItem data={data} isOnPreview={true} />}
-                            exportData={exportedData}
-                        />
-                    </div>
-
+                <div className="
+                flex flex-row
+                px-4! py-2! gap-3
+                justify-between
+                ">
+                    <SearchBar onSearch={query => handleSearch(query)} />
+                    <TagFilter filters={tagNames} onSelect={filter => handleFilter(filter)} />
                 </div>
 
-                <ItemsList>
-                    {filteredList.map((product, index) =>
-                        <ProductItem
-                            key={index}
-                            data={{ index: index, ...product }} />
-                    )}
-                </ItemsList>
+                <div className="
+                flex flex-col
+                overflow-y-auto
+                ">
+                    <div className="grid">
+
+                        <div className="
+                        flex flex-row
+                        px-4! py-2! gap-1
+                        ">
+                            <ImportPanel
+                                model={{
+                                    "name": "Nombre",
+                                    "tag": "Categoría",
+                                    "description": "Descripción",
+                                    "amount": "Cantidad",
+                                    "price": "Precio",
+                                    "currency": "Moneda",
+                                    "expiresAt": "Caducidad",
+                                    "current": "Disponibilidad"
+                                }}
+                                optionalFields={['description', 'expiresAt', 'current']}
+                                title="Importar"
+                                onImport={data => handleImportation(data)}
+                                previewComponent={({ data }) => <ProductItem data={data} isOnPreview={true} />}
+                                exportData={exportedData}
+                            />
+                        </div>
+
+                    </div>
+
+                    <ItemsList>
+                        {filteredList.map((product, index) =>
+                            <ProductItem
+                                key={index}
+                                data={{ index: index, ...product }} />
+                        )}
+                    </ItemsList>
+                </div>
             </div>
 
             <div className="

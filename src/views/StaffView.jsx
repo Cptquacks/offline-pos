@@ -92,69 +92,79 @@ function StaffView() {
             col-span-2
             bg-(--bg-soft)!
             rounded-md
-            overflow-y-auto
             ">
-                <div className="grid
-                w-full
-                px-4! py-2! gap-4
+
+                <div className="
+                flex flex-row 
+                gap-2 py-2! px-4! 
+                justify-between
                 ">
-
-                    <div className="flex flex-row gap-2 justify-between">
-                        <SearchBar onSearch={query => setQuery(query)} />
-                        <TagFilter filters={roleNames} onSelect={filter => setFilter(filter)} />
-                    </div>
-
-                    <div>
-                        <ImportPanel
-                            model={{
-                                "name": "Nombre",
-                                "ID": "Carnet de identidad",
-                                "salary": "Salario",
-                                "charge": "Cargo",
-                                "contact": "Numero telefoníco",
-                                "startDate": "Inicio decontrato",
-                                "endDate": "Fin de contrato"
-                            }}
-                            optionalFields={["charge", "contact", "ID", "startDate", "endDate"]}
-                            title="Importar"
-                            onImport={data => handleImportation(data)}
-                            previewComponent={({ data }) => <EmployeItem data={data} isOnPreview={true} />}
-                            exportData={exportedData}
-                        />
-                    </div>
-
-                    <div className="flex flex-row gap-1">
-                        <p className="
-                        font-bold!
-                        w-fit
-                        px-2! py-1!
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            Empleados: {staffData.length}
-                        </p>
-
-                        <p className="
-                        font-bold!
-                        w-fit
-                        px-2! py-1!
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            Gasto de salarios: {salaryWaste} CUP
-                        </p>
-                    </div>
+                    <SearchBar onSearch={query => setQuery(query)} />
+                    <TagFilter filters={roleNames} onSelect={filter => setFilter(filter)} />
                 </div>
 
-                <ItemsList>
-                    {filteredList.map((member, index) =>
-                        <EmployeItem
-                            key={index}
-                            data={{ index: index, ...member }} />
-                    )}
-                </ItemsList>
+                <div className="
+                flex flex-col
+                overflow-y-auto
+                ">
+                    <div className="
+                    grid
+                    w-full
+                    px-4! py-2! gap-4
+                    ">
+
+                        <div>
+                            <ImportPanel
+                                model={{
+                                    "name": "Nombre",
+                                    "ID": "Carnet de identidad",
+                                    "salary": "Salario",
+                                    "charge": "Cargo",
+                                    "contact": "Numero telefoníco",
+                                    "startDate": "Inicio decontrato",
+                                    "endDate": "Fin de contrato"
+                                }}
+                                optionalFields={["charge", "contact", "ID", "startDate", "endDate"]}
+                                title="Importar"
+                                onImport={data => handleImportation(data)}
+                                previewComponent={({ data }) => <EmployeItem data={data} isOnPreview={true} />}
+                                exportData={exportedData}
+                            />
+                        </div>
+
+                        <div className="flex flex-row gap-1">
+                            <p className="
+                            font-bold!
+                            w-fit
+                            px-2! py-1!
+                            bg-(--bg-alt)
+                            border border-(--border)
+                            rounded-md
+                            ">
+                                Empleados: {staffData.length}
+                            </p>
+
+                            <p className="
+                            font-bold!
+                            w-fit
+                            px-2! py-1!
+                            bg-(--bg-alt)
+                            border border-(--border)
+                            rounded-md
+                            ">
+                                Gasto de salarios: {salaryWaste} CUP
+                            </p>
+                        </div>
+                    </div>
+
+                    <ItemsList>
+                        {filteredList.map((member, index) =>
+                            <EmployeItem
+                                key={index}
+                                data={{ index: index, ...member }} />
+                        )}
+                    </ItemsList>
+                </div>
             </div>
 
             <div className="

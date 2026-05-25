@@ -74,30 +74,35 @@ function KioskView() {
             gap-3
             bg-(--bg-soft)
             rounded-md
-            overflow-y-auto
             ">
                 <div className="
                 flex flex-row
                 justify-between
-                p-4! gap-3
+                py-2! px-4! gap-3
                 ">
                     <SearchBar />
                     <TagFilter />
                 </div>
-                <ItemsList>
-                    {productData.map((item, index) =>
-                        <KioskProductItem
-                            key={index}
-                            data={{ index: index, ...item }}
-                            onAdd={
-                                (data, amount) => setCartItems(prev => ([
-                                    ...prev,
-                                    { ...data, cart: amount }
-                                ]))
-                            }
-                            onRefund={(data, amount) => handleRefund(data, amount)}
-                        />)}
-                </ItemsList>
+
+                <div className="
+                flex flex-col
+                overflow-y-auto
+                ">
+                    <ItemsList>
+                        {productData.map((item, index) =>
+                            <KioskProductItem
+                                key={index}
+                                data={{ index: index, ...item }}
+                                onAdd={
+                                    (data, amount) => setCartItems(prev => ([
+                                        ...prev,
+                                        { ...data, cart: amount }
+                                    ]))
+                                }
+                                onRefund={(data, amount) => handleRefund(data, amount)}
+                            />)}
+                    </ItemsList>
+                </div>
             </div>
 
             <div className="
