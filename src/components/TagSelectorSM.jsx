@@ -3,7 +3,7 @@ import { useState } from "react"
 
 function TagSelectorSM({ icon = 'times', tags, currentTag, onSelected }) {
 
-    const [selection, setSelection] = useState(currentTag)
+    const [selection, setSelection] = useState(currentTag ?? 'N/A')
 
     const handleSelection = (value) => {
         onSelected(value)
@@ -24,6 +24,7 @@ function TagSelectorSM({ icon = 'times', tags, currentTag, onSelected }) {
         ">
             <FontAwesomeIcon icon={`${icon}`} />
             <select value={selection} onChange={event => handleSelection(event.target.value)}>
+                <option value="N/A">N/A</option>
                 {tags.map((tag, index) =>
                     <option key={index} value={tag}>{tag}</option>
                 )}
