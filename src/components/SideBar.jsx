@@ -13,13 +13,18 @@ function SideBar() {
         return result?.value ?? true
     }, [preferenceData])
 
+    const hasKiosk = useMemo(() => {
+        const result = preferenceData.find(pref => pref.key === 'hasKiosk')
+        return result?.value ?? true
+    }, [preferenceData])
+
     const [currentSelection, setSelection] = useState('/resume')
     const menuItems = [
         { label: 'Resumen', icon: 'tasks', route: '/resume' },
         { label: 'Proveedores', icon: 'sitemap', route: '/providers' },
         { label: 'Inventario', icon: 'dolly', route: '/inventory' },
         { label: 'Empleados', icon: 'users', route: '/employees' },
-        { label: 'Kiosko', icon: 'store', route: '/kiosk' },
+        hasKiosk ? { label: 'Kiosko', icon: 'store', route: '/kiosk' } : null,
         { label: 'Economía', icon: 'chart-line', route: '/business' },
         { label: 'Configuración', icon: 'sliders-h', route: '/settings' },
     ]
@@ -43,7 +48,7 @@ function SideBar() {
             ">
 
                 {menuItems.map((item, index) =>
-                    <SideBarButton
+                    item && <SideBarButton
                         key={index}
                         label={item.label}
                         icon={item.icon}
@@ -51,6 +56,7 @@ function SideBar() {
                         selected={item.route === currentSelection}
                         showLabel={showLabel}
                         onSelected={route => setSelection(route)} />
+
                 )}
 
             </div>
