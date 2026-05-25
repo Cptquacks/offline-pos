@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 /**
  * @param {Number} index
@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
  * @param {Function} onSelected
  * @returns {import("react").ReactElement}
  */
-function SideBarButton({ label, icon, route, selected, onSelected }) {
+function SideBarButton({ label, icon, route, selected, onSelected, showLabel = true }) {
     const navigate = useNavigate()
 
     const handleSelection = () => {
@@ -21,9 +21,10 @@ function SideBarButton({ label, icon, route, selected, onSelected }) {
         transition-normal cursor-pointer
 
         flex flex-row
-        h-fit w-full
+        h-fit 
         items-center
         gap-2 p-4! py-3!
+        ${showLabel ? 'w-full' : 'w-fit py-4!'}
 
         bg-(--bg-alt) ${selected ? 'bg-(--accent)/30! text-white' : ''}
         border border-(--border) rounded-md
@@ -31,11 +32,13 @@ function SideBarButton({ label, icon, route, selected, onSelected }) {
         hover:shadow-(--shadow)
         `} onClick={handleSelection}>
             <FontAwesomeIcon icon={`fas fa-${icon}`} size="lg" />
-            <p className={`
-            font-bold! ${selected ? 'text-white!' : ''}
-            `}>
-                {label}
-            </p>
+            {showLabel &&
+                <p className={`
+                font-bold! ${selected ? 'text-white!' : ''}
+                `}>
+                    {label}
+                </p>
+            }
         </div>
     )
 }

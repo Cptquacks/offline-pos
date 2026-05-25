@@ -3,9 +3,12 @@ import useRoleStore from "../stores/roleStore"
 import useTagStore from "../stores/tagStore"
 import TagItem from "../components/TagItem"
 import TagList from "../components/TagList"
+import usePreferenceStore from "../stores/preferenceStore"
+import PreferenceSwitch from "../components/PreferenceSwitch"
 
 function SettingsView() {
 
+    const { preferenceData, loadData, setPreference } = usePreferenceStore()
     const { roleList, loadRoles, deleteRoles, addRole } = useRoleStore()
     const { tagList, loadTags, deleteTags, addTag } = useTagStore()
 
@@ -15,6 +18,7 @@ function SettingsView() {
     useEffect(() => {
         loadRoles()
         loadTags()
+        loadData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -131,6 +135,19 @@ function SettingsView() {
                             </div>
                         )}
                     </TagList>
+                </div>
+
+                <div className="
+                flex flex-col
+                gap-3
+                ">
+                    {preferenceData.map((fragment, index) =>
+                        <PreferenceSwitch
+                            key={index}
+                            name={fragment.name}
+                            value={fragment.value}
+                            onChange={value => setPreference(index, value)} />
+                    )}
                 </div>
             </div>
 
