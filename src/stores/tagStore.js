@@ -17,7 +17,6 @@ const useTagStore = create((set, get) => ({
     tagList: [],
     loadTags: async () => {
         let data = await loadData('tags')
-        data = data.map(tag => `${tag.name}`)
 
         set({ tagList: data })
     },

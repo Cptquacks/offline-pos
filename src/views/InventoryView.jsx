@@ -18,6 +18,10 @@ function InventoryView() {
     const [query, setQuery] = useState('')
     const [filter, setFilter] = useState('All')
 
+    const tagNames = useMemo(() => {
+        return tagList.map(tag => `${tag.name}`)
+    }, [tagList])
+
     const filteredList = useMemo(() => {
         let result = productData
 
@@ -113,7 +117,7 @@ function InventoryView() {
                     justify-between
                     ">
                         <SearchBar onSearch={query => handleSearch(query)} />
-                        <TagFilter filters={tagList} onSelect={filter => handleFilter(filter)} />
+                        <TagFilter filters={tagNames} onSelect={filter => handleFilter(filter)} />
                     </div>
 
                     <div className="

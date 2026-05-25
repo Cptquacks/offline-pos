@@ -1,11 +1,23 @@
-import { faTag } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import useTagStore from "../stores/tagStore"
+import TagItem from "./TagItem"
+import { colorParser } from "../utils/tag-util"
 
 function TagSelector({ onChange }) {
     const { tagList, loadTags } = useTagStore()
-    const [selectedTag, setSelectedTag] = useState(tagList[0])
+
+    const [selectedTag, setSelectedTag] = useState('N/A')
+
+    const currentTag = useMemo(() => {
+        let tag = { name: selectedTag, color: '0%,0,0' }
+        const filteredTag = tagList.find(tag => tag.name === selectedTag) ?? {}
+
+        if (filteredTag.color) {
+            filteredTag.color = `${colorParser(filteredTag.color)}`
+        }
+
+        return { ...tag, ...filteredTag }
+    }, [tagList, selectedTag])
 
     const handleChange = (event) => {
         setSelectedTag(event.target.value)
@@ -18,8 +30,10 @@ function TagSelector({ onChange }) {
     }, [])
 
     useEffect(() => {
-        onChange(tagList[0])
-        setSelectedTag(tagList[0])
+        if (tagList.length === 0) return
+
+        onChange(tagList[0].name)
+        setSelectedTag(tagList[0].name)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagList])
 
@@ -41,19 +55,7 @@ function TagSelector({ onChange }) {
                     Categoría
                 </p>
 
-                <p className={`
-                flex flex-row
-                text-white! font-bold!
-                items-center
-                px-3! py-0.5! gap-1
-                rounded-full
-                bg-(--accent-alt)/60
-                border-2 border-(--border)
-                
-                `}>
-                    {selectedTag}
-                    <FontAwesomeIcon icon={faTag} />
-                </p>
+                <TagItem label={currentTag.name} color={currentTag.color} icon="tag" />
             </div>
 
             <select value={selectedTag} onChange={handleChange} className="
@@ -62,7 +64,7 @@ function TagSelector({ onChange }) {
             px-2! py-0.5!
             rounded-sm
             ">
-                {tagList.map((tag, index) => <option key={index} value={tag}>{tag}</option>
+                {tagList.map((tag, index) => <option key={index} value={tag.name}>{tag.name}</option>
                 )}
             </select>
         </div>

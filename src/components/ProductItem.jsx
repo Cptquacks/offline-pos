@@ -6,9 +6,23 @@ import ExpirationDisplay from "./ExpirationDisplay"
 import useProductStore from "../stores/productStore"
 import DeleteButton from "./DeleteButton"
 import TagItem from "./TagItem"
+import useTagStore from "../stores/tagStore"
+import { colorParser } from "../utils/tag-util"
 
 function ProductItem({ data, isOnPreview = false }) {
+    const { tagList } = useTagStore()
     const { modifyProduct, deleteProduct } = useProductStore()
+
+    const currentTag = useMemo(() => {
+        let tag = { name: data.tag, color: '0%,0,0' }
+        const filteredTag = tagList.find(tag => tag.name === data.tag) ?? {}
+
+        if (filteredTag.color) {
+            filteredTag.color = `${colorParser(filteredTag.color)}`
+        }
+
+        return { ...tag, ...filteredTag }
+    }, [tagList, data.tag])
 
     const expirationStatus = useMemo(() => {
         if (!data.expiresAt) return null
@@ -78,7 +92,7 @@ function ProductItem({ data, isOnPreview = false }) {
                 items-end self-stretch justify-between
                 ">
 
-                    <TagItem icon={"tag"} label={data.tag} />
+                    <TagItem label={currentTag.name} color={currentTag.color} icon={"tag"} />
 
                     {!isOnPreview && <DeleteButton onDelete={handleDeletion} />}
 
