@@ -1,11 +1,22 @@
-import { faUserCog } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import useRoleStore from "../stores/roleStore"
+import TagItem from "./TagItem"
+import { colorParser } from "../utils/tag-util"
 
 function ChargeSelector({ onChange }) {
     const { roleList, loadRoles } = useRoleStore()
-    const [selectedCharge, setSelectedCharge] = useState(roleList[0])
+    const [selectedCharge, setSelectedCharge] = useState('N/A')
+
+    const currentTag = useMemo(() => {
+        let tag = { name: selectedCharge, color: '0%,0,0' }
+        const filteredTag = roleList.find(tag => tag.name === selectedCharge) ?? {}
+
+        if (filteredTag.color) {
+            filteredTag.color = `${colorParser(filteredTag.color)}`
+        }
+
+        return { ...tag, ...filteredTag }
+    }, [roleList, selectedCharge])
 
     const handleChange = (event) => {
         setSelectedCharge(event.target.value)
@@ -18,8 +29,9 @@ function ChargeSelector({ onChange }) {
     }, [])
 
     useEffect(() => {
-        onChange(roleList[0])
-        setSelectedCharge(roleList[0])
+        if (roleList.length === 0) return
+        onChange(roleList[0].name)
+        setSelectedCharge(roleList[0].name)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [roleList])
 
@@ -39,17 +51,7 @@ function ChargeSelector({ onChange }) {
                     Cargo del empleado
                 </p>
 
-                <p className="
-                flex flex-row 
-                items-center justify-self-end
-                px-2! py-0.5! gap-1
-                bg-(--accent-alt)/50 text-white! font-bold!
-                border-2 border-(--border)
-                rounded-full
-                ">
-                    <FontAwesomeIcon icon={faUserCog} />
-                    {selectedCharge}
-                </p>
+                <TagItem label={currentTag.name} color={currentTag.color} icon={'user-tag'} />
             </div>
 
             <select value={selectedCharge} onChange={handleChange} className="
@@ -61,8 +63,8 @@ function ChargeSelector({ onChange }) {
                 <option value="N/A">Ninguno</option>
 
                 {roleList.map((charge, index) =>
-                    <option key={index} value={charge}>
-                        {charge}
+                    <option key={index} value={charge.name}>
+                        {charge.name}
                     </option>
                 )}
             </select>

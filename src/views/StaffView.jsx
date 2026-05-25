@@ -13,7 +13,11 @@ import { filterObjectKeysFromStructure } from "../utils/filter-util"
 function StaffView() {
     const { staffData, salaryWaste, loadData, addStaff, overwriteFile } = useStaffStore()
     const { roleList, addRole, loadRoles } = useRoleStore()
-    const [roles, setRoles] = useState([])
+
+    const roleNames = useMemo(() => {
+        let result = roleList
+        return result.map(role => role.name)
+    }, [roleList])
 
     const [filter, setFilter] = useState('All')
     const [query, setQuery] = useState('')
@@ -36,7 +40,6 @@ function StaffView() {
     }, [query, filter, staffData])
 
     const exportedData = useMemo(() => {
-
         return filterObjectKeysFromStructure(staffData, ['index', 'notes'])
     }, [staffData]);
 
@@ -71,7 +74,6 @@ function StaffView() {
     useEffect(() => {
         loadData()
         loadRoles()
-        setRoles(roleList)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -97,7 +99,7 @@ function StaffView() {
 
                     <div className="flex flex-row gap-2 justify-between">
                         <SearchBar onSearch={query => setQuery(query)} />
-                        <TagFilter filters={roles} onSelect={filter => setFilter(filter)} />
+                        <TagFilter filters={roleNames} onSelect={filter => setFilter(filter)} />
                     </div>
 
                     <div>

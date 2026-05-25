@@ -16,6 +16,7 @@ import TagSelectorSM from "./TagSelectorSM"
 import useRoleStore from "../stores/roleStore"
 import ContactDisplay from "./ContactDisplay"
 import DatePicker from "./DatePicker"
+import { colorParser } from "../utils/tag-util"
 
 function EmployeItem({ data, isOnPreview = false }) {
     const missingData = useMemo(() => {
@@ -30,13 +31,28 @@ function EmployeItem({ data, isOnPreview = false }) {
     const [currentData, setCurrentData] = useState(data)
     const [editMode, setEditMode] = useState(false)
 
+    const currentTag = useMemo(() => {
+        let tag = { name: data.charge, color: '0%,0,0' }
+        const filteredTag = roleList.find(tag => tag.name === data.charge) ?? {}
+
+        if (filteredTag.color) {
+            filteredTag.color = `${colorParser(filteredTag.color)}`
+        }
+
+        return { ...tag, ...filteredTag }
+    }, [roleList, data.charge])
+
+    const roleNames = useMemo(() => {
+        let result = roleList
+        return result.map(role => role.name)
+    }, [roleList])
+
     const daysUntilEOC = useMemo(() => {
         if (!data.endDate) return null
         const result = daysFromToday(data.endDate)
         return result
 
     }, [data.endDate])
-
 
     const canSaveChanges = useMemo(() => {
         if (!data || !currentData) return false;
@@ -219,12 +235,13 @@ function EmployeItem({ data, isOnPreview = false }) {
                 self-stretch justify-between items-end
                 gap-3
                 ">
-                    {(data.charge && !editMode) && <TagItem icon={'user-tag'} label={data.charge} />}
+                    {(data.charge && !editMode) && <TagItem label={currentTag.name} color={currentTag.color} icon={'user-tag'} />}
+
                     {editMode &&
                         <TagSelectorSM
                             currentTag={data.charge}
                             onSelected={data => setCurrentData(prev => ({ ...prev, charge: data }))}
-                            tags={roleList}
+                            tags={roleNames}
                             icon="user-tag"
                         />
                     }
