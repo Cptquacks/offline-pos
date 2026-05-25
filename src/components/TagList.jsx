@@ -7,7 +7,7 @@ import TagItem from "./TagItem";
 
 function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
 
-    const [newItem, setNewItem] = useState(null)
+    const [newItem, setNewItem] = useState('')
     const [selectedIndexes, setSelectedIndexes] = useState([])
 
     const handleSelection = (index) => {
@@ -52,6 +52,7 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
                         value={newItem}
                         onChange={event => setNewItem(event.target.value)}
                         required />
+
                     <DefaultButton
                         icon="plus"
                         label="Añadir"

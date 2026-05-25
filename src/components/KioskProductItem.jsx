@@ -2,8 +2,19 @@ import { faBox, faShoppingCart, faTimes } from "@fortawesome/free-solid-svg-icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useMemo, useState } from "react"
 import TagItem from "./TagItem"
+import useTagStore from "../stores/tagStore"
 
 function KioskProductItem({ data, onAdd, onRefund }) {
+
+
+    const { tagList } = useTagStore()
+    const currentTag = useMemo(() => {
+        let tag = { name: data.tag, color: '0%,0,0' }
+        const filteredTag = tagList.find(tag => tag.name === data.tag) ?? {}
+
+        return { ...tag, ...filteredTag }
+    }, [tagList, data.tag])
+
     const [currentAmount, setAmount] = useState(1)
     const outOfStock = useMemo(() => data.current <= 0, [data])
 
@@ -64,7 +75,7 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                 gap-2
                 items-end self-stretch justify-between
                 ">
-                    <TagItem icon="tag" label={data.tag} />
+                    <TagItem label={currentTag.name} color={currentTag.color} icon="tag" />
                 </div>
 
             </div>

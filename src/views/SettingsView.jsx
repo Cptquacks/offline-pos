@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import useRoleStore from "../stores/roleStore"
 import useTagStore from "../stores/tagStore"
 import TagItem from "../components/TagItem"
@@ -12,9 +12,6 @@ function SettingsView() {
     const { preferenceData, loadData, setPreference } = usePreferenceStore()
     const { roleList, loadRoles, deleteRoles, addRole, modifyRole } = useRoleStore()
     const { tagList, loadTags, deleteTags, addTag, modifyTag } = useTagStore()
-
-    const [selectedTags, setSelectedTags] = useState([])
-    const [selectedCharges, setSelectedCharges] = useState([])
 
     useEffect(() => {
         loadRoles()
@@ -45,7 +42,10 @@ function SettingsView() {
                         elements={tagList}
                         icon={'tag'}
 
-                        onAdd={data => addTag({ name: data, color: randomLCH() })}
+                        onAdd={data => {
+                            addTag({ name: data, color: randomLCH() })
+                            loadTags()
+                        }}
                         onDelete={(data) => {
                             deleteTags(data)
                         }}
@@ -57,11 +57,13 @@ function SettingsView() {
 
                     <TagList
                         label="Cargos"
-                        selected={selectedCharges}
                         elements={roleList}
                         icon={'user-tag'}
 
-                        onAdd={data => addRole({ name: data, color: randomLCH() })}
+                        onAdd={data => {
+                            addRole({ name: data, color: randomLCH() })
+                            loadRoles()
+                        }}
                         onDelete={(data) => {
                             deleteRoles(data)
                         }}

@@ -9,6 +9,7 @@ import EmployeItem from "../components/EmployeItem"
 import { stringSimilarity } from "../utils/string-util"
 import useRoleStore from "../stores/roleStore"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
+import { randomLCH } from "../utils/tag-util"
 
 function StaffView() {
     const { staffData, salaryWaste, loadData, addStaff, overwriteFile } = useStaffStore()
@@ -64,11 +65,12 @@ function StaffView() {
         })
 
         for (let index = 0; index < newRoles.length; index++) {
-            await addRole(newRoles[index])
+            await addRole({ name: newRoles[index], color: randomLCH() })
         }
 
         const result = [...staffData, ...importedData]
         overwriteFile(result)
+        loadRoles()
     }
 
     useEffect(() => {

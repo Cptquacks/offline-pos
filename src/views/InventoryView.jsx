@@ -10,6 +10,7 @@ import { stringSimilarity } from "../utils/string-util"
 import { daysFromToday } from "../utils/date-util"
 import useTagStore from "../stores/tagStore"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
+import { randomLCH } from "../utils/tag-util"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile } = useProductStore()
@@ -81,11 +82,12 @@ function InventoryView() {
         })
 
         for (let index = 0; index < newTags.length; index++) {
-            await addTag(newTags[index])
+            await addTag({ name: newTags[index], color: randomLCH() })
         }
 
         let result = [...productData, ...importedData]
         overwriteFile(result)
+        loadTags()
     }
 
     useEffect(() => {

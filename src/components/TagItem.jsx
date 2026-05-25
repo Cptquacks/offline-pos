@@ -14,6 +14,7 @@ function TagItem({ label, color, icon }) {
         : {}
     return (
         <div className="
+        transition
         flex flex-row
         items-center
         h-fit w-fit
