@@ -290,25 +290,27 @@ function EmployeItem({ data, isOnPreview = false }) {
                                 </div>
                             }
                         </div>
-                        <div className="
-                        flex flex-col
-                        gap-1 items-stretch
-                        ">
-                            <EditButton
-                                canSave={canSaveChanges}
-                                onEditMode={editMode}
-                                onSave={() => {
-                                    modifyStaff(currentData, data.index)
-                                    setEditMode(false)
-                                }}
-                                onClick={() => setEditMode(true)} />
-                            {editMode &&
-                                <DefaultButton
-                                    label="Cancelar"
-                                    icon="times"
-                                    onClick={() => setEditMode(false)} />
-                            }
-                        </div>
+                        {!isOnPreview &&
+                            <div className="
+                            flex flex-col
+                            gap-1 items-stretch
+                            ">
+                                <EditButton
+                                    canSave={canSaveChanges}
+                                    onEditMode={editMode}
+                                    onSave={() => {
+                                        modifyStaff(currentData, data.index)
+                                        setEditMode(false)
+                                    }}
+                                    onClick={() => setEditMode(true)} />
+                                {editMode &&
+                                    <DefaultButton
+                                        label="Cancelar"
+                                        icon="times"
+                                        onClick={() => setEditMode(false)} />
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
 
