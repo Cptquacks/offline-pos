@@ -16,7 +16,6 @@ import TagSelectorSM from "./TagSelectorSM"
 import useRoleStore from "../stores/roleStore"
 import ContactDisplay from "./ContactDisplay"
 import DatePicker from "./DatePicker"
-import { colorParser } from "../utils/tag-util"
 
 function EmployeItem({ data, isOnPreview = false }) {
     const missingData = useMemo(() => {
@@ -34,10 +33,6 @@ function EmployeItem({ data, isOnPreview = false }) {
     const currentTag = useMemo(() => {
         let tag = { name: data.charge, color: '0%,0,0' }
         const filteredTag = roleList.find(tag => tag.name === data.charge) ?? {}
-
-        if (filteredTag.color) {
-            filteredTag.color = `${colorParser(filteredTag.color)}`
-        }
 
         return { ...tag, ...filteredTag }
     }, [roleList, data.charge])

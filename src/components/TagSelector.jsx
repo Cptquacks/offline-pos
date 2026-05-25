@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import useTagStore from "../stores/tagStore"
 import TagItem from "./TagItem"
-import { colorParser } from "../utils/tag-util"
 
 function TagSelector({ onChange }) {
     const { tagList, loadTags } = useTagStore()
@@ -11,10 +10,6 @@ function TagSelector({ onChange }) {
     const currentTag = useMemo(() => {
         let tag = { name: selectedTag, color: '0%,0,0' }
         const filteredTag = tagList.find(tag => tag.name === selectedTag) ?? {}
-
-        if (filteredTag.color) {
-            filteredTag.color = `${colorParser(filteredTag.color)}`
-        }
 
         return { ...tag, ...filteredTag }
     }, [tagList, selectedTag])

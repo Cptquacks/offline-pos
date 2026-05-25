@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import useRoleStore from "../stores/roleStore"
 import TagItem from "./TagItem"
-import { colorParser } from "../utils/tag-util"
 
 function ChargeSelector({ onChange }) {
     const { roleList, loadRoles } = useRoleStore()
@@ -10,10 +9,6 @@ function ChargeSelector({ onChange }) {
     const currentTag = useMemo(() => {
         let tag = { name: selectedCharge, color: '0%,0,0' }
         const filteredTag = roleList.find(tag => tag.name === selectedCharge) ?? {}
-
-        if (filteredTag.color) {
-            filteredTag.color = `${colorParser(filteredTag.color)}`
-        }
 
         return { ...tag, ...filteredTag }
     }, [roleList, selectedCharge])

@@ -10,6 +10,7 @@
 
 import { create } from "zustand";
 import { loadData, updateData, writeData } from "../utils/storage-util";
+import { colorParser } from "../utils/tag-util";
 
 /**@type {import("zustand").UseBoundStore<import("zustand").StoreApi<tagStore>>} */
 
@@ -17,20 +18,19 @@ const useTagStore = create((set, get) => ({
     tagList: [],
 
     loadTags: async () => {
-        const data = await loadData('tags')
+        let data = await loadData('tags')
+        data = data.map(tag => ({ ...tag, color: colorParser(tag.color) }))
 
         set({ tagList: data })
     },
     addTag: async (tag) => {
-        const data = await updateData('tags', { name: tag })
+        const data = await updateData('tags', tag)
 
         set({ tagList: data })
     },
-    deleteTags: async (tags) => {
+    deleteTags: async (indexes) => {
         const { tagList } = get()
-        const transformedList = tagList
-            .filter(tag => !tags.includes(tag))
-            .map(tag => ({ name: tag }))
+        const transformedList = tagList.filter((_, index) => !indexes.includes(index))
 
         const data = await writeData('tags', transformedList)
         set({ tagList: data })

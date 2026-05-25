@@ -5,6 +5,7 @@ import TagItem from "../components/TagItem"
 import TagList from "../components/TagList"
 import usePreferenceStore from "../stores/preferenceStore"
 import PreferenceSwitch from "../components/PreferenceSwitch"
+import { randomLCH } from "../utils/tag-util"
 
 function SettingsView() {
 
@@ -42,7 +43,7 @@ function SettingsView() {
                     <TagList
                         label="Categorías"
                         selected={selectedTags}
-                        onAdd={data => addTag(data)}
+                        onAdd={data => addTag({ name: data, color: randomLCH() })}
                         onDelete={() => {
                             deleteTags(selectedTags)
                             setSelectedTags([])
@@ -69,19 +70,20 @@ function SettingsView() {
 
                                     <input
                                         type="checkbox"
-                                        checked={selectedTags.includes(tag)}
+                                        checked={selectedTags.includes(index)}
                                         onChange={() => {
-                                            if (selectedTags.includes(tag)) {
-                                                setSelectedTags(prev => [...prev.filter(entry => entry !== tag)])
+                                            if (selectedTags.includes(index)) {
+                                                setSelectedTags(prev => [...prev.filter(entry => entry !== index)])
                                                 return
                                             }
-                                            setSelectedTags(prev => [...prev, tag])
+                                            setSelectedTags(prev => [...prev, index])
                                         }} />
                                 </div>
 
                                 <TagItem
                                     key={index}
-                                    label={tag}
+                                    label={tag.name}
+                                    color={tag.color}
                                     icon="tag" />
                             </div>
                         )}
@@ -90,7 +92,7 @@ function SettingsView() {
                     <TagList
                         label="Cargos"
                         selected={selectedCharges}
-                        onAdd={data => addRole(data)}
+                        onAdd={data => addRole({ name: data, color: randomLCH() })}
                         onDelete={() => {
                             deleteRoles(selectedCharges)
                             setSelectedCharges([])
@@ -118,19 +120,20 @@ function SettingsView() {
 
                                     <input
                                         type="checkbox"
-                                        checked={selectedCharges.includes(tag)}
+                                        checked={selectedCharges.includes(index)}
                                         onChange={() => {
-                                            if (selectedCharges.includes(tag)) {
-                                                setSelectedCharges(prev => [...prev.filter(entry => entry !== tag)])
+                                            if (selectedCharges.includes(index)) {
+                                                setSelectedCharges(prev => [...prev.filter(entry => entry !== index)])
                                                 return
                                             }
-                                            setSelectedCharges(prev => [...prev, tag])
+                                            setSelectedCharges(prev => [...prev, index])
                                         }} />
                                 </div>
 
                                 <TagItem
                                     key={index}
-                                    label={tag}
+                                    label={tag.name}
+                                    color={tag.color}
                                     icon="user-tag" />
                             </div>
                         )}

@@ -7,7 +7,6 @@ import useProductStore from "../stores/productStore"
 import DeleteButton from "./DeleteButton"
 import TagItem from "./TagItem"
 import useTagStore from "../stores/tagStore"
-import { colorParser } from "../utils/tag-util"
 
 function ProductItem({ data, isOnPreview = false }) {
     const { tagList } = useTagStore()
@@ -16,10 +15,6 @@ function ProductItem({ data, isOnPreview = false }) {
     const currentTag = useMemo(() => {
         let tag = { name: data.tag, color: '0%,0,0' }
         const filteredTag = tagList.find(tag => tag.name === data.tag) ?? {}
-
-        if (filteredTag.color) {
-            filteredTag.color = `${colorParser(filteredTag.color)}`
-        }
 
         return { ...tag, ...filteredTag }
     }, [tagList, data.tag])
