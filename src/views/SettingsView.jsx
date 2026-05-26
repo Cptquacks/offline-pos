@@ -37,25 +37,13 @@ function SettingsView() {
             bg-(--bg-soft)
             rounded-md
             p-4! gap-4
+            overflow-y-auto
             ">
                 <div className="
-                flex flex-row
-                gap-3 h-1/2
+                grid grid-cols-2 grid-rows-3
+                w-fit
+                gap-3
                 ">
-
-                    <div className="
-                    flex flex-col
-                    w-full
-                    gap-3
-                    ">
-                        {preferenceData.map((fragment, index) =>
-                            <PreferenceSwitch
-                                key={index}
-                                name={fragment.name}
-                                value={fragment.value}
-                                onChange={value => setPreference(index, value)} />
-                        )}
-                    </div>
 
                     <TagList
                         label="Categorías"
@@ -75,6 +63,19 @@ function SettingsView() {
                         }}
                     />
 
+                    <div className="
+                    flex flex-col
+                    gap-3
+                    ">
+                        {preferenceData.map((fragment, index) =>
+                            <PreferenceSwitch
+                                key={index}
+                                name={fragment.name}
+                                value={fragment.value}
+                                onChange={value => setPreference(index, value)} />
+                        )}
+                    </div>
+
                     <TagList
                         label="Cargos"
                         elements={roleList}
@@ -91,20 +92,18 @@ function SettingsView() {
                             modifyRole(data, index)
                             loadRoles()
                         }} />
-                </div>
 
-                <div className="
-                flex flex-row
-                gap-3 h-1/2
-                ">
                     <TagList
                         label="Monedas"
                         elements={currencyList}
                         icon="dollar-sign"
                         onAdd={data => addCurrency(data)}
                         onDelete={data => deleteCurrency(data)} />
-                </div>
 
+                    <span className="mb-4! col-span-full opacity-0">
+                        Si estas leyendo esto vamos a tener problemas tu y yo
+                    </span>
+                </div>
 
             </div>
 

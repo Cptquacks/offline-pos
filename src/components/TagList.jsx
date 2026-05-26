@@ -21,6 +21,7 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
     return (
         <div className="
         flex flex-col
+        w-full h-128
         p-4! gap-3
         bg-(--bg-soft)
         border border-(--border)
@@ -46,6 +47,7 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
                         className="
                         items-center self-stretch 
                         border-b border-b-(--accent-alt)
+                        w-fit
                         "
                         type="text"
                         placeholder="Nueva entrada"
