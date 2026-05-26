@@ -1,12 +1,12 @@
 import FormInput from "./FormInput"
 import DatePicker from "./DatePicker"
 import { useState } from "react"
-import ChargeSelector from "./ChargeSelector"
 import useStaffStore from "../stores/staffStore"
 import useAlertStore from "../stores/alertStore"
 import ErrorToast from "./ErrorToast"
 import DefaultButton from "./DefaultButton"
 import PreferenceSwitch from "./PreferenceSwitch"
+import TagSelector from "./TagSelector"
 
 function EmployeForm({ onSubmit }) {
     const { staffData } = useStaffStore()
@@ -73,9 +73,11 @@ function EmployeForm({ onSubmit }) {
             <FormInput label="Telefono de contacto" placeholder="Telefono del empleado..." type="tel"
                 onChange={data => setFormData(prev => ({ ...prev, contact: data }))} />
 
-            <ChargeSelector onChange={
-                data => setFormData(prev => ({ ...prev, charge: data }))
-            } />
+            <TagSelector
+                useRoles
+                onChange={
+                    data => setFormData(prev => ({ ...prev, charge: data }))
+                } />
 
             <FormInput label="Salario base (CUP)" placeholder="Salario del empleado..." type="number"
                 onChange={data => setFormData(prev => ({ ...prev, salary: data }))} />

@@ -1,36 +1,47 @@
 import { useEffect, useMemo, useState } from "react"
 import useTagStore from "../stores/tagStore"
 import TagItem from "./TagItem"
+import useRoleStore from "../stores/roleStore"
 
-function TagSelector({ onChange }) {
+function TagSelector({ onChange, useRoles = false }) {
     const { tagList, loadTags } = useTagStore()
+    const { roleList, loadRoles } = useRoleStore()
 
-    const [selectedTag, setSelectedTag] = useState('N/A')
+    const [selected, setSelected] = useState('N/A')
 
-    const currentTag = useMemo(() => {
-        let tag = { name: selectedTag, color: '0%,0,0' }
-        const filteredTag = tagList.find(tag => tag.name === selectedTag) ?? {}
+    const current = useMemo(() => {
+        let current = { name: selected, color: '0%,0,0' }
+        let filteredTag = {}
 
-        return { ...tag, ...filteredTag }
-    }, [tagList, selectedTag])
+        if (!useRoles) {
+            filteredTag = tagList.find(tag => tag.name === selected) ?? {}
+        }
+
+        else if (useRoles) {
+            filteredTag = roleList.find(role => role.name === selected) ?? {}
+        }
+
+        return { ...current, ...filteredTag }
+    }, [tagList, roleList, selected, useRoles])
 
     const handleChange = (event) => {
-        setSelectedTag(event.target.value)
+        setSelected(event.target.value)
         onChange(event.target.value)
     }
 
     useEffect(() => {
         loadTags()
+        loadRoles()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
         if (tagList.length === 0) return
 
-        onChange(tagList[0].name)
-        setSelectedTag(tagList[0].name)
+        onChange((useRoles ? roleList[0] : tagList[0]).name)
+        setSelected((useRoles ? roleList[0] : tagList[0]).name)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tagList])
+    }, [tagList, roleList])
 
     return (
         <div className="
@@ -41,7 +52,9 @@ function TagSelector({ onChange }) {
         rounded-md
         ">
             <div className="
+            flex-1
             flex flex-row
+            w-full
             justify-between items-center
             ">
                 <p className="
@@ -50,16 +63,17 @@ function TagSelector({ onChange }) {
                     Categoría
                 </p>
 
-                <TagItem label={currentTag.name} color={currentTag.color} icon="tag" />
+                <TagItem label={current.name} color={current.name !== 'N/A' ? current.color : null} icon="tag" />
             </div>
 
-            <select value={selectedTag} onChange={handleChange} className="
+            <select value={selected} onChange={handleChange} className="
             border border-white/20
             bg-(--bg)
             px-2! py-0.5!
             rounded-sm
             ">
-                {tagList.map((tag, index) => <option key={index} value={tag.name}>{tag.name}</option>
+                <option value="N/A">Ninguno</option>
+                {(useRoles ? roleList : tagList).map((tag, index) => <option key={index} value={tag.name}>{tag.name}</option>
                 )}
             </select>
         </div>
