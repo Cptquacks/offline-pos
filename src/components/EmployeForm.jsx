@@ -1,5 +1,3 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import FormInput from "./FormInput"
 import DatePicker from "./DatePicker"
 import { useState } from "react"
@@ -7,6 +5,7 @@ import ChargeSelector from "./ChargeSelector"
 import useStaffStore from "../stores/staffStore"
 import useAlertStore from "../stores/alertStore"
 import ErrorToast from "./ErrorToast"
+import DefaultButton from "./DefaultButton"
 
 function EmployeForm({ onSubmit }) {
     const { staffData } = useStaffStore()
@@ -55,19 +54,7 @@ function EmployeForm({ onSubmit }) {
                     Formulario de empleado
                 </p>
 
-                <button className="
-                transition-normal cursor-pointer
-                flex flex-row
-                items-center
-                px-3! py-1! gap-1
-                font-bold
-                bg-(--accent-alt) hover:bg-white
-                text-white! hover:text-(--bg)!
-                rounded-xs
-                ">
-                    Añadir
-                    <FontAwesomeIcon icon={faPlus} />
-                </button>
+                <DefaultButton label="Añadir" icon="plus" type="submit" iconLeft />
             </div>
 
             <FormInput label="Nombre " placeholder="Nombre del empleado..." type="text"

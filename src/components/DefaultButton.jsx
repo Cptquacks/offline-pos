@@ -1,18 +1,18 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function DefaultButton({ icon, label, disabled = false, onClick, type = "button" }) {
+function DefaultButton({ icon, label, onClick, type = "button", disabled = false, iconLeft = false }) {
     return (
         <button
-            className="
+            className={`
             transition cursor-pointer disabled:cursor-not-allowed
-            flex flex-row items-center
+            flex ${iconLeft ? 'flex-row-reverse' : 'flex-row'} items-center
             px-3! py-1! gap-1
             bg-(--accent-alt) text-white!
             rounded-xs
 
             hover:not-disabled:bg-white! hover:not-disabled:text-(--bg-alt)!
             disabled:opacity-50
-            "
+            `}
             onClick={onClick}
             type={type}
             disabled={disabled}>

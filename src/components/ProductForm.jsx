@@ -1,11 +1,10 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import FormInput from "./FormInput"
-import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import { useState } from "react"
 import TagSelector from "./TagSelector"
 import CurrencySelector from "./CurrencySelector"
 import PriceSelector from "./PriceSelector"
 import DatePicker from "./DatePicker"
+import DefaultButton from "./DefaultButton"
 
 function ProductForm({ onSubmit }) {
     let oneMonthSpan = new Date()
@@ -63,19 +62,7 @@ function ProductForm({ onSubmit }) {
                     Formulario de producto
                 </p>
 
-                <button className="
-                cursor-pointer transition-normal
-                flex flex-row
-                items-center
-                font-bold!
-                bg-(--accent-alt) hover:bg-white
-                px-3! py-1! gap-1
-                text-white! hover:text-(--bg)!
-                rounded-xs
-                ">
-                    Añadir
-                    <FontAwesomeIcon icon={faPlus} />
-                </button>
+                <DefaultButton label="Añadir" icon="plus" type="submit" iconLeft />
             </div>
 
             <FormInput label="Nombre" type="text" placeholder="Nombre del producto..."

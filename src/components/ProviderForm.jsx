@@ -1,10 +1,9 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import FormInput from "./FormInput"
 import { useState } from "react"
 import DatePicker from "./DatePicker"
 import ListInput from "./ListInput"
 import ActiveDisplay from "./ActiveDisplay"
+import DefaultButton from "./DefaultButton"
 
 function ProviderForm({ onSubmit }) {
     const oneMonthLater = new Date();
@@ -33,19 +32,7 @@ function ProviderForm({ onSubmit }) {
                     Formulario de proveedor
                 </p>
 
-                <button className="
-                transition cursor-pointer
-                flex flex-row
-                items-center
-                px-3! py-1! gap-1
-                bg-(--accent-alt) text-white font-bold!
-                rounded-xs
-
-                hover:bg-white hover:text-(--bg-alt)
-                ">
-                    Añadir
-                    <FontAwesomeIcon icon={faPlus} />
-                </button>
+                <DefaultButton label="Añadir" icon="plus" type="submit" iconLeft />
             </div>
 
             <FormInput label="Nombre" placeholder="Nombre del proveedor..."
