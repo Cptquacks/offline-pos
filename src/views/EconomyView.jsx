@@ -4,22 +4,23 @@ import { /*mostSoldProducts,*/ predictNextTwoDays } from "../utils/economic-util
 import { Bar, BarChart, Legend, Line, LineChart, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 import ChipItem from "../components/ChipItem"
 //import useProductStore from "../stores/productStore"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCalendar, faCashRegister, faDollarSign, faMoneyBillTransfer, faMoneyBillTrendUp, faSpinner } from "@fortawesome/free-solid-svg-icons"
 import ImportPanel from "../components/ImportPanel"
 import useStaffStore from "../stores/staffStore"
 import EconomyForm from "../components/EconomyForm"
 import useProviderStore from "../stores/providerStore"
 import GridItemList from "../components/GridItemList"
 import DayItem from "../components/DayItem"
+import useCurrencyStore from "../stores/currencyStore"
+import { colorParser, lchToHex, randomLCH } from "../utils/tag-util"
+import AutomaticEconomyForm from "../components/AutomaticEconomyForm"
 
 
 
 function EconomyView() {
     const { traceData, currentTrace, loadData, addTrace, closeTrace, normalizeTrace, overwriteTrace } = useTraceStore()
-    //const { productData, loadData: loadProductData } = useProductStore()
     const { providerData, paymentWaste, loadData: loadProviderData } = useProviderStore()
     const { staffData, salaryWaste, loadData: loadStaffData } = useStaffStore()
+    const { currencyList, loadData: loadCurrency } = useCurrencyStore()
 
     /**
      * Days
@@ -108,32 +109,46 @@ function EconomyView() {
      */
     const salesTrace = useMemo(() => {
         let result = traceData.toReversed()
+        let currencies = {}
         let grouped = {}
+
+        result.forEach(trace =>
+            Object.keys(trace.total).forEach(entry => {
+                currencies[entry] = 0
+            })
+        )
 
         result.forEach(trace => {
             if (!grouped[trace.date]) {
                 grouped[trace.date] = {
                     date: `Día ${trace.date.split('-')[2]}`,
-                    CUP: 0,
-                    USD: 0,
+                    ...currencies
                 }
             }
+            console.table({ ...trace.total })
 
-            grouped[trace.date].CUP += trace.total.CUP
-            grouped[trace.date].USD += trace.total.USD
+            Object.keys(grouped[trace.date]).forEach(key => {
+                if (key === 'date') return
+                grouped[trace.date][key] += trace.total[key] || 0
+            })
         })
 
         result = Object.values(grouped)
+        console.table(result)
+
         return result.slice(-7)
     }, [traceData])
 
-    /*
-        const productTrace = useMemo(() => {
-            let result = productData
-            result = mostSoldProducts(result)
-            return result
-        }, [productData])
-        */
+    const traceCurrencies = useMemo(() => {
+        let grouped = []
+        salesTrace.forEach(trace =>
+            Object.keys(trace).forEach(fragment => {
+                if (grouped.includes(fragment) || fragment === 'date') return
+                grouped.push(fragment)
+            })
+        )
+        return grouped
+    }, [salesTrace])
 
     /**
      * Waste
@@ -160,6 +175,7 @@ function EconomyView() {
                 grouped[staff.charge] = {
                     role: staff.charge,
                     waste: 0,
+                    currency: staff.currency ?? 'CUP'
                     //fill: `hsla(${Math.floor(Math.random() * 360)}, 70%, 60%, 1)`,
                 }
             }
@@ -200,32 +216,55 @@ function EconomyView() {
         return result
     }, [providerData])
 
+    const providerTrace = useMemo(() => {
+        let result = providerData
+
+        result = result.filter(provider => provider.active)
+        result = result.map(provider => ({
+            name: provider.name,
+            waste: provider.waste,
+            currency: provider.currency,
+        }))
+
+        result = result.sort((a, b) => b.waste - a.waste)
+
+        return result
+    }, [providerData])
+
     /**
      * Net trace
      */
-
-
     const netSalesTrace = useMemo(() => {
-        let totalWasteCUP = 0
-        let totalWasteUSD = 0
+        let totalWaste = currencyList.map(waste => ({ currency: waste, waste: 0 })) ?? []
 
-        roleTrace.forEach(role => totalWasteCUP += role.waste)
-        providerTraceCUP.forEach(provider => totalWasteCUP += provider.waste)
-        providerTraceUSD.forEach(provider => totalWasteUSD += provider.waste)
+        roleTrace.forEach(role =>
+            totalWaste.find(waste => waste.currency === role.currency).waste += role.waste
+        )
+        providerTrace.map(provider =>
+            totalWaste.find(waste => waste.currency === provider.currency).waste += provider.waste
+        )
 
-        totalWasteCUP = Math.round(totalWasteCUP / 31)
-        totalWasteUSD = Math.round(totalWasteUSD / 31)
 
 
-        const result = salesTrace.map(trace => ({
-            ...trace,
-            CUP: trace.CUP - totalWasteCUP,
-            USD: trace.USD - totalWasteUSD,
-        }));
+        totalWaste = totalWaste.map(
+            waste => ({ ...waste, waste: Math.round(parseInt(waste.waste / 31)) })
+        )
+
+        let result = salesTrace.map(trace => ({ ...trace }))
+
+        result.forEach(trace =>
+
+            totalWaste.forEach(waste => {
+
+                if (!trace[waste.currency]) trace[waste.currency] = 0
+                trace[waste.currency] -= waste.waste
+
+            })
+        )
 
         return result
 
-    }, [roleTrace, providerTraceCUP, providerTraceUSD, salesTrace])
+    }, [currencyList, salesTrace, roleTrace, providerTrace])
 
 
 
@@ -278,7 +317,7 @@ function EconomyView() {
     useEffect(() => {
         loadData()
         normalizeTrace()
-        //loadProductData()
+        loadCurrency()
         loadStaffData()
         loadProviderData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -457,13 +496,14 @@ function EconomyView() {
                             style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
                             data={salesTrace}>
 
-                            <Line
-                                name="Ganancia bruta CUP"
-                                dataKey="CUP" />
-                            <Line
-                                name="Ganancia bruta USD"
-                                dataKey="USD"
-                                stroke="var(--accent)" />
+                            {traceCurrencies.map((currency, index) =>
+                                <Line
+                                    key={index}
+                                    name={`Ganancia bruta en ${currency}`}
+                                    dataKey={currency}
+                                    stroke={lchToHex(colorParser(randomLCH()))}
+                                />
+                            )}
 
                             <XAxis dataKey="date" />
 
@@ -482,15 +522,15 @@ function EconomyView() {
                             style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
                             data={netSalesTrace}>
 
-                            <Bar
-                                name="Ganancia neta CUP"
-                                dataKey="CUP"
-                                fill="#0081A3" />
 
-                            <Bar
-                                name="Ganancia neta USD"
-                                dataKey="USD"
-                                fill="var(--accent)" />
+                            {traceCurrencies.map((currency, index) =>
+                                <Bar
+                                    key={index}
+                                    name={`Ganancia neta en ${currency}`}
+                                    dataKey={currency}
+                                    fill={lchToHex(colorParser(randomLCH()))}
+                                />
+                            )}
 
                             <XAxis dataKey="date" />
                             <YAxis width="auto" />
@@ -674,132 +714,11 @@ function EconomyView() {
                 }
 
                 {!manualClosing &&
-                    <form>
-                        <div className="
-                        flex flex-col
-                        bg-(--bg-soft)
-                        p-2! gap-2
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            <div className="
-                            flex flex-row
-                            px-2! py-0.5! gap-2
-                            bg-(--bg-alt)
-                            border border-(--border)
-                            rounded-sm
-                            ">
-                                <strong className="
-                                flex flex-row
-                                items-center
-                                gap-0.5
-                                ">
-                                    <FontAwesomeIcon icon={faCalendar} />
-                                    Fecha:
-                                </strong>
-
-                                <p className="self-end">
-                                    {currentTrace.date ?? 'ERR'}
-                                </p>
-                            </div>
-
-                            <div className="
-                            flex flex-col
-                            bg-(--bg-alt)
-                            p-2!
-                            border border-(--border)
-                            rounded-sm
-                            ">
-                                <div className="
-                                flex flex-row 
-                                items-center 
-                                gap-1
-                                ">
-                                    <FontAwesomeIcon icon={faDollarSign} />
-                                    <p>Ventas:</p>
-                                    <strong>{currentTrace.sells}</strong>
-                                </div>
-
-                                <div className="
-                                flex flex-row 
-                                items-center
-                                gap-1
-                                ">
-                                    <FontAwesomeIcon icon={faMoneyBillTransfer} />
-                                    <p>Reembolsos:</p>
-                                    <strong>{currentTrace.refunds}</strong>
-                                </div>
-                            </div>
-
-                            <div className="
-                            flex flex-col
-                            bg-(--bg-alt)
-                            p-2!
-                            border border-(--border)
-                            rounded-sm
-                            ">
-                                <div className="
-                                flex flex-row
-                                items-center
-                                gap-1
-                                ">
-                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} />
-                                    <strong>Ganancias</strong>
-                                </div>
-
-                                <div className="
-                                flex flex-row
-                                gap-3
-                                ">
-                                    <div className="
-                                    flex flex-row
-                                    items-center
-                                    gap-1
-                                    ">
-                                        <p>CUP:</p>
-                                        <strong>{currentTrace.total?.CUP ?? 'ERR'}</strong>
-                                    </div>
-
-                                    <div className="
-                                    flex flex-row
-                                    items-center
-                                    gap-1
-                                    ">
-                                        <p>USD:</p>
-                                        <strong>{currentTrace.total?.USD ?? 'ERR'}</strong>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button className={`
-                            transition
-                            self-center
-                            px-3! py-1!
-                            font-bold! text-white!
-                            bg-(--accent-alt)
-                            rounded-xs
-
-                            ${isClosgingDay ?
-                                    'opacity-50 cursor-wait' :
-                                    'hover:bg-white! hover:text-(--bg-alt)! cursor-pointer'
-                                }
-                            `} onClick={handleDayClosing}>
-                                {!isClosgingDay &&
-                                    <div className="
-                                    flex flex-row
-                                    items-center 
-                                    gap-1
-                                    ">
-                                        Cerrar día
-                                        <FontAwesomeIcon icon={faCashRegister} />
-                                    </div>
-                                }
-                                {isClosgingDay &&
-                                    <FontAwesomeIcon icon={faSpinner} spinPulse={true} />
-                                }
-                            </button>
-                        </div>
-                    </form>
+                    <AutomaticEconomyForm
+                        closingDay={isClosgingDay}
+                        currentTrace={currentTrace}
+                        onClose={handleDayClosing}
+                    />
                 }
                 {manualClosing &&
                     <EconomyForm onSubmit={data => addTrace(data)} />
