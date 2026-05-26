@@ -1,54 +1,53 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import useCurrencyStore from "../stores/currencyStore"
+import CurrencyItem from "./CurrencyItem"
+import TagItem from "./TagItem"
 
 function CurrencySelector({ onChange, current }) {
+    const { currencyList, loadData } = useCurrencyStore()
     const [currency, setCurrency] = useState(current ?? 'CUP')
 
-    const handleChange = (event) => {
-        setCurrency(event.target.value)
-        onChange(event.target.value)
+    const handleChange = (data) => {
+        setCurrency(data)
+        onChange(data)
     }
+
+    useEffect(() => {
+        loadData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <div className="
         flex flex-col
-        gap-2 px-4! py-3!
+        gap-3 px-4! py-3!
         bg-(--bg-soft)!
         border border-(--border)
         rounded-md
         ">
-            <p className="
-            font-bold!
-            ">
-                Tipo de pago
-            </p>
+            <div className="flex flex-row items-center justify-between gap-3 ">
+                <p className="font-bold!">
+                    Tipo de pago
+                </p>
+                <TagItem label={currency} icon='dollar-sign' />
+            </div>
 
             <div className="
             flex flex-row
             ">
                 <fieldset className="
-                flex flex-row
-                gap-4
+                grid grid-cols-3
+                gap-1 w-full
                 ">
-
-                    <div className="
-                    flex flex-row gap-1
-                    ">
-                        <input id="CUP" name="currency" type="radio" value="CUP"
-                            checked={currency === 'CUP'} onChange={handleChange} />
-                        <label htmlFor="CUP">
-                            CUP
-                        </label>
-                    </div>
-
-                    <div className="
-                    flex flex-row gap-1
-                    ">
-                        <input id="USD" name="currency" type="radio" value="USD"
-                            checked={currency === 'USD'} onChange={handleChange} />
-                        <label htmlFor="USD">
-                            USD
-                        </label>
-                    </div>
+                    {currencyList.map((item, index) =>
+                        <CurrencyItem
+                            key={index}
+                            group="currency"
+                            currency={item}
+                            checked={currency === item}
+                            onChange={data => handleChange(data)}
+                        />
+                    )}
 
                 </fieldset>
             </div>

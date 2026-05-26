@@ -4,6 +4,7 @@ import DatePicker from "./DatePicker"
 import ListInput from "./ListInput"
 import ActiveDisplay from "./ActiveDisplay"
 import DefaultButton from "./DefaultButton"
+import CurrencySelector from "./CurrencySelector"
 
 function ProviderForm({ onSubmit }) {
     const oneMonthLater = new Date();
@@ -12,6 +13,7 @@ function ProviderForm({ onSubmit }) {
     const [providerData, setProviderData] = useState({
         "name": '',
         "waste": 0,
+        "currency": "CUP",
         "startedAt": new Date().toLocaleDateString('sv-SE'),
         "span": 0,
         "active": true,
@@ -44,6 +46,11 @@ function ProviderForm({ onSubmit }) {
                 onChange={
                     data => setProviderData(prev => ({ ...prev, waste: parseInt(data) }))
                 } />
+
+            <CurrencySelector
+                current={providerData.currency}
+                onChange={data => setProviderData(prev => ({ ...prev, currency: data }))}
+            />
 
             <ListInput
                 label="Telefonos de contacto"
