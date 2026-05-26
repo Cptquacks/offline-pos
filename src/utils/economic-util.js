@@ -52,7 +52,7 @@ export function findPromedium(valueArray) {
  * @param {Array} dataArray - Array de objetos diarios con date, sells, etc.
  * @returns {Array} Array de objetos { date, real, predicted } (7 elementos si hay >=5 días, o 5 si hay 3-4)
  */
-export function predictNextTwoDays(dataArray) {
+export function predictNextTwoDays(dataArray, predicted = 2) {
     if (!dataArray || dataArray.length === 0) return [];
 
     // 1. Ordenar por fecha
@@ -105,7 +105,7 @@ export function predictNextTwoDays(dataArray) {
     // 9. Generar los dos días siguientes
     // Se puede ajustar para generar mas
     const lastDate = new Date(lastDays[lastIndex].date);
-    for (let i = 1; i <= 2; i++) {
+    for (let i = 1; i <= predicted; i++) {
         const nextDate = new Date(lastDate);
         nextDate.setDate(nextDate.getDate() + i);
         const nextDateStr = nextDate.toISOString().split('T')[0];

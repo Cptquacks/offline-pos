@@ -28,7 +28,7 @@ function TagItem({ label, color, icon }) {
             }>
             <FontAwesomeIcon icon={`${icon ?? 'times'}`} />
             <strong>
-                {label ?? 'N/A'}
+                {label || 'N/A'}
             </strong>
         </div>
     )

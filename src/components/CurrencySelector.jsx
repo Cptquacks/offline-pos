@@ -1,7 +1,7 @@
 import { useState } from "react"
 
-function CurrencySelector({ onChange }) {
-    const [currency, setCurrency] = useState('CUP')
+function CurrencySelector({ onChange, current }) {
+    const [currency, setCurrency] = useState(current ?? 'CUP')
 
     const handleChange = (event) => {
         setCurrency(event.target.value)

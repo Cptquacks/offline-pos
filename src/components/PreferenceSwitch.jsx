@@ -6,7 +6,7 @@ function PreferenceSwitch({ name, value, onChange }) {
         flex flex-row
         w-full
         items-center justify-between
-        px-2! py-1! gap-12
+        px-1! py-1! gap-12
         bg-(--bg-alt)
         border border-(--border)
         rounded-md

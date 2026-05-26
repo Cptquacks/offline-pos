@@ -129,6 +129,7 @@ function ProviderItem({ data, isOnPreview = false }) {
                                     />
 
                                     <CurrencySelector
+                                        current={currentData.currency}
                                         onChange={data => setCurrentData(prev => ({ ...prev, currency: data }))} />
 
                                     <FormInput
