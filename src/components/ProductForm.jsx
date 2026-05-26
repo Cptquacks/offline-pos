@@ -5,6 +5,7 @@ import CurrencySelector from "./CurrencySelector"
 import PriceSelector from "./PriceSelector"
 import DatePicker from "./DatePicker"
 import DefaultButton from "./DefaultButton"
+import PreferenceSwitch from "./PreferenceSwitch"
 
 function ProductForm({ onSubmit }) {
     let oneMonthSpan = new Date()
@@ -31,16 +32,6 @@ function ProductForm({ onSubmit }) {
 
         const price = cost + (cost * (profit / 100))
         setFormData(prev => ({ ...prev, price: Math.round(price) }))
-    }
-
-    const handleExpirationSet = (checked) => {
-        setProductExpires(checked)
-
-        if (!checked) {
-            setFormData(prev => ({ ...prev, expiresAt: null }))
-            return
-        }
-        setFormData(prev => ({ ...prev, expiresAt: oneMonthSpan }))
     }
 
     const handleSubmition = () => {
@@ -105,21 +96,7 @@ function ProductForm({ onSubmit }) {
 
             <CurrencySelector onChange={data => setFormData(prev => ({ ...prev, currency: data }))} />
 
-            <div className="
-            flex flex-row
-            p-4! py-2! gap-1
-            bg-(--bg-alt)
-            border border-(--border)
-            rounded-md
-            ">
-                <input
-                    id="product-expires"
-                    type="checkbox"
-                    checked={productExpires}
-                    onChange={event => handleExpirationSet(event.target.checked)} />
-
-                <label htmlFor="product-expires">Fecha de caducidad?</label>
-            </div>
+            <PreferenceSwitch name="Fecha de caducidad?" value={productExpires} onChange={data => setProductExpires(data)} />
 
             {productExpires &&
                 <DatePicker label="Fecha de caducidad"

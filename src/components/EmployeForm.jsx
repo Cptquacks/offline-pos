@@ -6,6 +6,7 @@ import useStaffStore from "../stores/staffStore"
 import useAlertStore from "../stores/alertStore"
 import ErrorToast from "./ErrorToast"
 import DefaultButton from "./DefaultButton"
+import PreferenceSwitch from "./PreferenceSwitch"
 
 function EmployeForm({ onSubmit }) {
     const { staffData } = useStaffStore()
@@ -36,9 +37,15 @@ function EmployeForm({ onSubmit }) {
         onSubmit(formData)
     }
 
-    const setNullable = () => {
-        if (!isPermantent)
+    const setNullable = (data) => {
+        if (data)
             setFormData(prev => ({ ...prev, endDate: null }))
+
+        if (!data) {
+            setFormData(prev => ({ ...prev, endDate: new Date().toLocaleDateString('sv-SE') }))
+        }
+
+        setPermanent(data)
     }
 
     return (
@@ -73,24 +80,8 @@ function EmployeForm({ onSubmit }) {
             <FormInput label="Salario base (CUP)" placeholder="Salario del empleado..." type="number"
                 onChange={data => setFormData(prev => ({ ...prev, salary: data }))} />
 
-            <div className="
-            flex flex-row
-            items-center
-            font-bold!
-            px-4! py-2! gap-1 mt-6!
-            bg-(--bg-alt)
-            border border-(--border)
-            rounded-md
-            ">
-                <input id="permanence" type="checkbox"
-                    checked={isPermantent} onChange={event => {
-                        setPermanent(event.target.checked)
-                        setNullable()
-                    }} />
-                <label htmlFor="permanence">
-                    Contrato permanente
-                </label>
-            </div>
+            <p>{formData.endDate}</p>
+            <PreferenceSwitch name="Contrato permanente" value={isPermantent} onChange={data => setNullable(data)} />
 
             <DatePicker label="Inicio de contrato"
                 onChange={data => setFormData(prev => ({ ...prev, startDate: data }))} />

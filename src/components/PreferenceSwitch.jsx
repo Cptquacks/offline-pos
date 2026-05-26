@@ -4,8 +4,8 @@ function PreferenceSwitch({ name, value, onChange }) {
     return (
         <div className="
         flex flex-row
-        w-fit
-        items-center
+        w-full
+        items-center justify-between
         px-2! py-1! gap-12
         bg-(--bg-alt)
         border border-(--border)

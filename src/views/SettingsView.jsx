@@ -28,15 +28,32 @@ function SettingsView() {
         ">
 
             <div className="
+            flex-1
             flex flex-col
+            w-full self-stretch
             bg-(--bg-soft)
             rounded-md
             p-4! gap-4
             ">
                 <div className="
                 flex flex-row
-                gap-4 h-1/2
+                gap-3 h-1/2
                 ">
+
+                    <div className="
+                    flex flex-col
+                    w-full
+                    gap-3
+                    ">
+                        {preferenceData.map((fragment, index) =>
+                            <PreferenceSwitch
+                                key={index}
+                                name={fragment.name}
+                                value={fragment.value}
+                                onChange={value => setPreference(index, value)} />
+                        )}
+                    </div>
+
                     <TagList
                         label="Categorías"
                         elements={tagList}
@@ -71,21 +88,9 @@ function SettingsView() {
                             modifyRole(data, index)
                             loadRoles()
                         }} />
-
                 </div>
 
-                <div className="
-                flex flex-col
-                gap-3
-                ">
-                    {preferenceData.map((fragment, index) =>
-                        <PreferenceSwitch
-                            key={index}
-                            name={fragment.name}
-                            value={fragment.value}
-                            onChange={value => setPreference(index, value)} />
-                    )}
-                </div>
+
             </div>
 
         </section>
