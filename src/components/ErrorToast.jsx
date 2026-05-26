@@ -7,25 +7,35 @@ function ErrorToast({ label }) {
         <div className="
         flex flex-row
         w-full self-stretch
+        gap-2
+
         bg-red-950
         border border-red-300/20
         text-red-200!
-        overflow-hidden
+
         rounded-lg
+        overflow-hidden
         ">
-            <FontAwesomeIcon
-                className="
-                p-1.5! py-2!
-                bg-red-300/20
-                "
-                icon={faTimes}
-                size="xl" />
-            <strong className="
-            px-1! py-0.5!
-            text-md
+            <div className="
+            flex flex-col
+            w-fit
+            items-center justify-center 
+            bg-red-300/20
             ">
-                {label}
-            </strong>
+                <FontAwesomeIcon
+                    className="
+                    flex-1
+                    px-4!
+                    "
+                    icon={faTimes}
+                    size="md" />
+            </div>
+
+            <div className="flex-1">
+                <strong className="text-md">
+                    {label}
+                </strong>
+            </div>
         </div>
     )
 }
