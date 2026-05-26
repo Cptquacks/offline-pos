@@ -69,7 +69,7 @@ function TagSelector({ onChange, useRoles = false }) {
             <select value={selected} onChange={handleChange} className="
             border border-white/20
             bg-(--bg)
-            px-2! py-0.5!
+            px-2! py-1!
             rounded-sm
             ">
                 <option value="N/A">Ninguno</option>
