@@ -31,31 +31,33 @@ function TagListWrapper({ children, color, onSelected, isSelected, onColorSelect
                 {children}
             </div>
 
-            <div className="
-            relative
-            w-6 h-6
-            ">
-                <div
-                    className="
-                    inset-0
-                    h-full w-full
-                    rounded-full
-                    border-2 border-white/30
-                    "
-                    style={{ background: currentColor }}
-                    onClick={() => colorPicker.current?.click()} />
+            {color &&
+                <div className="
+                relative
+                w-6 h-6
+                ">
+                    <div
+                        className="
+                        inset-0
+                        h-full w-full
+                        rounded-full
+                        border-2 border-white/30
+                        "
+                        style={{ background: currentColor }}
+                        onClick={() => colorPicker.current?.click()} />
 
-                <input
-                    ref={colorPicker}
-                    className="
-                    absolute inset-0
-                    w-0 h-0 opacity-0          
-                    "
-                    style={{ background: currentColor }}
-                    type="color"
-                    value={currentColor}
-                    onChange={event => handleColorChange(event.target.value)} />
-            </div>
+                    <input
+                        ref={colorPicker}
+                        className="
+                        absolute inset-0
+                        w-0 h-0 opacity-0          
+                        "
+                        style={{ background: currentColor }}
+                        type="color"
+                        value={currentColor}
+                        onChange={event => handleColorChange(event.target.value)} />
+                </div>
+            }
         </div>
     )
 }

@@ -76,7 +76,7 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
                 {elements && elements.map((element, index) =>
                     <TagListWrapper
                         key={index}
-                        color={element.color}
+                        color={element.color ?? null}
                         isSelected={selectedIndexes.includes(index)}
 
                         onSelected={() => {
@@ -85,8 +85,8 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
                         onColorSelected={data => onModified({ name: element.name, color: data }, index)}
                     >
                         <TagItem
-                            label={element.name}
-                            color={element.color}
+                            label={element.name ?? element}
+                            color={element.color ?? null}
                             icon={icon} />
                     </TagListWrapper>
                 )}

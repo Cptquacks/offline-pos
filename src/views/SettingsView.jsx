@@ -6,17 +6,20 @@ import TagList from "../components/TagList"
 import usePreferenceStore from "../stores/preferenceStore"
 import PreferenceSwitch from "../components/PreferenceSwitch"
 import { randomLCH } from "../utils/tag-util"
+import useCurrencyStore from "../stores/currencyStore"
 
 function SettingsView() {
 
     const { preferenceData, loadData, setPreference } = usePreferenceStore()
     const { roleList, loadRoles, deleteRoles, addRole, modifyRole } = useRoleStore()
     const { tagList, loadTags, deleteTags, addTag, modifyTag } = useTagStore()
+    const { currencyList, loadData: loadCurrencies, addCurrency, deleteCurrency } = useCurrencyStore()
 
     useEffect(() => {
+        loadData()
         loadRoles()
         loadTags()
-        loadData()
+        loadCurrencies()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -88,6 +91,18 @@ function SettingsView() {
                             modifyRole(data, index)
                             loadRoles()
                         }} />
+                </div>
+
+                <div className="
+                flex flex-row
+                gap-3 h-1/2
+                ">
+                    <TagList
+                        label="Monedas"
+                        elements={currencyList}
+                        icon="dollar-sign"
+                        onAdd={data => addCurrency(data)}
+                        onDelete={data => deleteCurrency(data)} />
                 </div>
 
 
