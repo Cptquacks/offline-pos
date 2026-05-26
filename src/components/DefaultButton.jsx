@@ -5,7 +5,8 @@ function DefaultButton({ icon, label, onClick, type = "button", disabled = false
         <button
             className={`
             transition cursor-pointer disabled:cursor-not-allowed
-            flex ${iconLeft ? 'flex-row-reverse' : 'flex-row'} items-center
+            flex ${iconLeft ? 'flex-row-reverse' : 'flex-row'} 
+            items-center
             px-3! py-1! gap-1
             bg-(--accent-alt) text-white!
             rounded-xs

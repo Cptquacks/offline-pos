@@ -1,31 +1,23 @@
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import DefaultButton from "./DefaultButton"
 
 function ProviderBuyIndicator({ days, onRebuy }) {
     return (
         <div className="
         flex flex-row
+        h-fit
         items-center
-        px-4! py-0.5! gap-3
+        px-6! py-0.5! gap-3
         bg-(--bg-alt)
         border border-(--border)
         rounded-full
         ">
             {days <= 0 &&
-                <button className="
-                transition cursor-pointer
-                flex flex-row
-                items-center
-                px-3! py-1! gap-1
-                bg-(--accent-alt) text-white!
-                hover:bg-white! hover:text-(--bg-alt)!
-                rounded-xs
-                " onClick={onRebuy}>
-                    <strong>
-                        Recompra
-                    </strong>
-                    <FontAwesomeIcon icon={faRotateLeft} />
-                </button>
+                <DefaultButton
+                    label="Recompra"
+                    icon="rotate-left"
+                    onClick={onRebuy} />
             }
 
             {days > 0 && <FontAwesomeIcon icon={faRotateLeft} />}

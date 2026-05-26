@@ -12,6 +12,7 @@ import EditButton from "./EditButton"
 import FormInput from "./FormInput"
 import DefaultButton from "./DefaultButton"
 import ContactDisplay from "./ContactDisplay"
+import CurrencySelector from "./CurrencySelector"
 
 function ProviderItem({ data, isOnPreview = false }) {
 
@@ -20,18 +21,18 @@ function ProviderItem({ data, isOnPreview = false }) {
     const [currentData, setCurrentData] = useState(data)
     const [editMode, setEditMode] = useState(false)
 
-    const restockDate = useMemo(() => {
-        let result = addDays(data.startedAt, data.span)
-
-        return result
-    }, [data.startedAt, data.span])
-
     const daysUntilRestock = useMemo(() => {
         const result = addDays(data.startedAt, data.span)
         const today = new Date().toLocaleDateString('sv-SE')
 
         return daysBetween(today, result)
     }, [data.startedAt, data.span])
+
+    const restockDate = useMemo(() => {
+        let result = addDays(data.startedAt, data.span - daysUntilRestock)
+
+        return result
+    }, [data.startedAt, data.span, daysUntilRestock])
 
     const canSaveChanges = useMemo(() => {
         if (!data || !currentData) return false;
@@ -108,13 +109,15 @@ function ProviderItem({ data, isOnPreview = false }) {
                                     Gasto: {data.waste} {data.currency}
                                 </strong>
                             }
+
                             {editMode &&
                                 <div className="
                                 flex-1
                                 flex flex-row
+                                flex-wrap
                                 items-center
                                 gap-3
-                                *:bg-(--bg-alt)
+                                *:bg-(--bg-alt)!
                                 *:border-white/20
                                 ">
                                     <FormInput
@@ -125,49 +128,14 @@ function ProviderItem({ data, isOnPreview = false }) {
                                         type="number"
                                     />
 
-                                    <fieldset className="
-                                    flex flex-col
-                                    p-4! self-stretch
-                                    border border-white/20
-                                    rounded-md  
-                                    ">
-                                        <strong>
-                                            Moneda de compra
-                                        </strong>
+                                    <CurrencySelector
+                                        onChange={data => setCurrentData(prev => ({ ...prev, currency: data }))} />
 
-                                        <div className="
-                                        flex flex-row
-                                        items-center
-                                        gap-3
-                                        ">
-                                            <div className="flex flex-row items-center gap-1">
-                                                <input
-                                                    type="radio"
-                                                    id="CUP"
-
-                                                    name="buy-currency"
-                                                    value="CUP"
-                                                    checked={currentData.currency === "CUP"}
-                                                    onChange={event => setCurrentData(prev => ({ ...prev, currency: event.target.value }))} />
-
-                                                <label htmlFor="CUP">CUP</label>
-                                            </div>
-
-                                            <div className="flex flex-row items-center gap-1">
-                                                <input
-                                                    type="radio"
-                                                    id="USD"
-
-                                                    name="buy-currency"
-                                                    value="USD"
-                                                    checked={currentData.currency === "USD"}
-                                                    onChange={event => setCurrentData(prev => ({ ...prev, currency: event.target.value }))} />
-
-                                                <label htmlFor="USD">USD</label>
-                                            </div>
-                                        </div>
-
-                                    </fieldset>
+                                    <FormInput
+                                        label="Días hasta recompra"
+                                        defaultValue={currentData.span}
+                                        type="number"
+                                        onChange={data => setCurrentData(prev => ({ ...prev, span: parseInt(data) }))} />
                                 </div>
                             }
                         </div>
@@ -208,48 +176,51 @@ function ProviderItem({ data, isOnPreview = false }) {
             <hr className="border-(--border)" />
 
             <div className="flex flex-col gap-3">
-                {!isOnPreview && <div className="
-                flex flex-row
-                items-center justify-between
-                ">
-                    <NotesControlPanel
-                        data={data}
-                        notesOpen={notesOpen}
-                        handleOpen={value => setNotesOpen(value)}
-                        addNote={note => handleNoteAddition(note)} />
-
+                {!isOnPreview &&
                     <div className="
                     flex flex-row
-                    items-center
-                    gap-3
+                    items-start justify-between
                     ">
-
-                        <ProviderBuyIndicator
-                            days={daysUntilRestock}
-                            onRebuy={handleRebuy} />
+                        <NotesControlPanel
+                            data={data}
+                            notesOpen={notesOpen}
+                            handleOpen={value => setNotesOpen(value)}
+                            addNote={note => handleNoteAddition(note)} />
 
                         <div className="
-                        flex flex-col
-                        gap-0.5
+                        flex flex-row
+                        h-full
+                        items-start
+                        gap-3
                         ">
-                            <EditButton
-                                onClick={() => setEditMode(true)}
-                                onSave={() => {
-                                    setEditMode(false)
-                                    modifyProvider(currentData, data.index)
-                                }}
-                                onEditMode={editMode}
-                                canSave={canSaveChanges} />
 
-                            {editMode &&
-                                <DefaultButton
-                                    label="Cancelar"
-                                    icon="times"
-                                    onClick={() => setEditMode(false)} />
-                            }
+                            <ProviderBuyIndicator
+                                days={daysUntilRestock}
+                                onRebuy={handleRebuy} />
+
+                            <div className="
+                            flex flex-col
+                            gap-0.5
+                            ">
+                                <EditButton
+                                    onClick={() => setEditMode(true)}
+                                    onSave={() => {
+                                        setEditMode(false)
+                                        modifyProvider(currentData, data.index)
+                                    }}
+                                    onEditMode={editMode}
+                                    canSave={canSaveChanges} />
+
+                                {editMode &&
+                                    <DefaultButton
+                                        label="Cancelar"
+                                        icon="times"
+                                        onClick={() => setEditMode(false)} />
+                                }
+                            </div>
                         </div>
                     </div>
-                </div>}
+                }
 
                 {notesOpen &&
                     <div className="
