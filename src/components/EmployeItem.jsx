@@ -16,8 +16,13 @@ import TagSelectorSM from "./TagSelectorSM"
 import useRoleStore from "../stores/roleStore"
 import ContactDisplay from "./ContactDisplay"
 import DatePicker from "./DatePicker"
+import PreferenceSwitch from "./PreferenceSwitch"
 
 function EmployeItem({ data, isOnPreview = false }) {
+    let oneMonthSpan = new Date()
+    oneMonthSpan.setMonth(oneMonthSpan.getMonth() + 1)
+    oneMonthSpan = oneMonthSpan.toLocaleDateString('sv-SE')
+
     const missingData = useMemo(() => {
         return !data.ID || !data.charge || !data.contact || !data.startDate
     }, [data])
@@ -41,6 +46,11 @@ function EmployeItem({ data, isOnPreview = false }) {
         let result = roleList
         return result.map(role => role.name)
     }, [roleList])
+
+    const temporalContract = useMemo(() => {
+        if (data.endDate) return true
+        return false
+    }, [data.endDate])
 
     const daysUntilEOC = useMemo(() => {
         if (!data.endDate) return null
@@ -182,6 +192,26 @@ function EmployeItem({ data, isOnPreview = false }) {
                                             label="Inicio de contrato"
                                             onChange={data => setCurrentData(prev => ({ ...prev, startDate: data }))}
                                             value={currentData.startDate ?? new Date().toLocaleString('sv-SE')} />
+                                    }
+                                    <PreferenceSwitch
+                                        name="Contrato temporal"
+                                        value={temporalContract}
+                                        onChange={
+                                            data => {
+                                                if (!data) {
+                                                    setCurrentData(prev => ({ ...prev, endDate: null }))
+                                                    return
+                                                }
+
+                                                setCurrentData(prev => ({ ...prev, endDate: oneMonthSpan }))
+                                            }
+                                        } />
+
+                                    {(currentData.endDate && editMode) &&
+                                        <DatePicker
+                                            label="Fecha de fin de contrato"
+                                            value={currentData.endDate}
+                                            onChange={data => setCurrentData(prev => ({ ...prev, endDate: data }))} />
                                     }
                                 </div>
                             }
