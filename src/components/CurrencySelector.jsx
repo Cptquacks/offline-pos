@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import useCurrencyStore from "../stores/currencyStore"
 import CurrencyItem from "./CurrencyItem"
 import TagItem from "./TagItem"
+import EmptyList from "./EmptyList"
 
 function CurrencySelector({ onChange, current }) {
     const { currencyList, loadData } = useCurrencyStore()
@@ -39,6 +40,9 @@ function CurrencySelector({ onChange, current }) {
                 grid grid-cols-3
                 gap-1 w-full
                 ">
+                    {(!currencyList || currencyList.length === 0) &&
+                        <EmptyList />
+                    }
                     {currencyList.map((item, index) =>
                         <CurrencyItem
                             key={index}
