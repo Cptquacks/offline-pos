@@ -8,9 +8,10 @@ import ImportPanel from "../components/ImportPanel"
 import { stringSimilarity } from "../utils/string-util"
 import { addDays, daysFromToday } from "../utils/date-util"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
+import TotalWasteDisplay from "../components/TotalWasteDisplay"
 
 function ProvidersView() {
-    const { providerData, paymentWaste, loadData, addProvider, overwriteData } = useProviderStore()
+    const { providerData, loadData, addProvider, overwriteData } = useProviderStore()
 
     const [query, setQuery] = useState('')
     const filteredList = useMemo(() => {
@@ -118,21 +119,9 @@ function ProvidersView() {
                     w-fit
                     px-4! gap-3
                     ">
-                        <strong className="
-                        px-2! py-1!
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            Gasto CUP: {paymentWaste.CUP} CUP
-                        </strong><strong className="
-                        px-2! py-1!
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            Gasto USD: {paymentWaste.USD} USD
-                        </strong>
+                        <TotalWasteDisplay
+                            elements={providerData}
+                        />
                     </div>
 
                     <ItemsList>

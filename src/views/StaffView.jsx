@@ -10,9 +10,10 @@ import { stringSimilarity } from "../utils/string-util"
 import useRoleStore from "../stores/roleStore"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import { randomLCH } from "../utils/tag-util"
+import TotalWasteDisplay from "../components/TotalWasteDisplay"
 
 function StaffView() {
-    const { staffData, salaryWaste, loadData, addStaff, overwriteFile } = useStaffStore()
+    const { staffData, loadData, addStaff, overwriteFile } = useStaffStore()
     const { roleList, addRole, loadRoles } = useRoleStore()
 
     const roleNames = useMemo(() => {
@@ -133,27 +134,10 @@ function StaffView() {
                         </div>
 
                         <div className="flex flex-row gap-1">
-                            <p className="
-                            font-bold!
-                            w-fit
-                            px-2! py-1!
-                            bg-(--bg-alt)
-                            border border-(--border)
-                            rounded-md
-                            ">
-                                Empleados: {staffData.length}
-                            </p>
-
-                            <p className="
-                            font-bold!
-                            w-fit
-                            px-2! py-1!
-                            bg-(--bg-alt)
-                            border border-(--border)
-                            rounded-md
-                            ">
-                                Gasto de salarios: {salaryWaste} CUP
-                            </p>
+                            <TotalWasteDisplay
+                                elements={staffData}
+                                wasteKey="salary"
+                            />
                         </div>
                     </div>
 

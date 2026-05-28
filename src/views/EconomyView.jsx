@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import useTraceStore from "../stores/traceStore"
-import { /*mostSoldProducts,*/ predictNextTwoDays } from "../utils/economic-util"
+import { predictNextTwoDays } from "../utils/economic-util"
 import { Bar, BarChart, Legend, Line, LineChart, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts"
 import ChipItem from "../components/ChipItem"
-//import useProductStore from "../stores/productStore"
 import ImportPanel from "../components/ImportPanel"
 import useStaffStore from "../stores/staffStore"
 import EconomyForm from "../components/EconomyForm"
@@ -13,13 +12,14 @@ import DayItem from "../components/DayItem"
 import useCurrencyStore from "../stores/currencyStore"
 import { colorParser, lchToHex, randomLCH } from "../utils/tag-util"
 import AutomaticEconomyForm from "../components/AutomaticEconomyForm"
+import TotalWasteDisplay from "../components/TotalWasteDisplay"
 
 
 
 function EconomyView() {
     const { traceData, currentTrace, loadData, addTrace, closeTrace, normalizeTrace, overwriteTrace } = useTraceStore()
-    const { providerData, paymentWaste, loadData: loadProviderData } = useProviderStore()
-    const { staffData, salaryWaste, loadData: loadStaffData } = useStaffStore()
+    const { providerData, loadData: loadProviderData } = useProviderStore()
+    const { staffData, loadData: loadStaffData } = useStaffStore()
     const { currencyList, loadData: loadCurrency } = useCurrencyStore()
 
     /**
@@ -367,7 +367,11 @@ function EconomyView() {
                             onSelected={() => setCurrentChip(item)} />)}
                 </div>
 
-                <div className="flex flex-row w-full justify-between">
+                <div className="
+                flex flex-col 
+                w-full 
+                gap-3
+                ">
                     <ImportPanel
                         model={{
                             "date": "Fecha",
@@ -384,37 +388,16 @@ function EconomyView() {
                     />
 
                     {currentChip.route === 'staff' &&
-
-                        <div className="
-                        flex flex-row
-                        p-4! gap-3
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            <strong>
-                                Gasto total: {salaryWaste} CUP
-                            </strong>
-                        </div>
+                        <TotalWasteDisplay
+                            elements={staffData}
+                            wasteKey="salary"
+                        />
                     }
 
                     {currentChip.route === 'providers' &&
-
-                        <div className="
-                        flex flex-col
-                        p-2! gap-3
-                        bg-(--bg-alt)
-                        border border-(--border)
-                        rounded-md
-                        ">
-                            <strong>
-                                Gasto total: {paymentWaste.CUP} CUP
-                            </strong>
-
-                            <strong>
-                                Gasto total: {paymentWaste.USD} USD
-                            </strong>
-                        </div>
+                        <TotalWasteDisplay
+                            elements={providerData}
+                        />
                     }
                 </div>
 

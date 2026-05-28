@@ -38,8 +38,8 @@ function TagSelector({ onChange, useRoles = false }) {
     useEffect(() => {
         if (tagList.length === 0) return
 
-        onChange((useRoles ? roleList[0] : tagList[0]).name)
-        setSelected((useRoles ? roleList[0] : tagList[0]).name)
+        onChange((useRoles ? roleList[0] : tagList[0])?.name ?? 'N/A')
+        setSelected((useRoles ? roleList[0] : tagList[0])?.name ?? 'N/A')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagList, roleList])
 
