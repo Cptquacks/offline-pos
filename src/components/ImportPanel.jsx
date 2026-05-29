@@ -1,8 +1,7 @@
-import { faFileExcel } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import useDialogStore from "../stores/dialogStore"
 import XLSXImportDialog from "./XLSXImportDialog"
 import XLSXExportDialog from "./XLSXExportDialog"
+import DefaultButton from "./DefaultButton"
 
 function ImportPanel({ title, model, optionalFields, onImport, previewComponent, exportData = [] }) {
     const { openDialog } = useDialogStore()
@@ -46,33 +45,20 @@ function ImportPanel({ title, model, optionalFields, onImport, previewComponent,
             flex flex-row
             gap-2
             ">
-                <button className="
-                transition-normal cursor-pointer
-                flex flex-row
-                items-center
-                pl-0.5! px-2! py-1! gap-px
-                bg-(--accent-alt) hover:bg-white
-                text-white hover:text-(--bg)
-                text-sm font-bold
-                rounded-xs
-                " onClick={handleImport}>
-                    <FontAwesomeIcon icon={faFileExcel} size="lg" />
-                    Importar desde Excel
-                </button>
+                <DefaultButton
+                    label="Importar desde Excel"
+                    icon="file-excel"
+                    onClick={handleImport}
+                    iconSize="lg"
+                />
 
-                <button className="
-                transition-normal cursor-pointer
-                flex flex-row
-                items-center
-                pl-0.5! px-2! py-1! gap-px
-                bg-(--accent-alt) hover:bg-white
-                text-white hover:text-(--bg)
-                text-sm font-bold
-                rounded-xs
-                " onClick={handleExport}>
-                    <FontAwesomeIcon icon={faFileExcel} size="lg" />
-                    Exportar a Excel
-                </button>
+
+                <DefaultButton
+                    label="Exportar a Excel"
+                    icon="file-excel"
+                    onClick={handleExport}
+                    iconSize="lg"
+                />
             </div>
         </div>
     )

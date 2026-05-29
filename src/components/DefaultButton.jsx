@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function DefaultButton({ icon, label, onClick, type = "button", disabled = false, iconLeft = false }) {
+function DefaultButton({ icon, iconSize = "md", label, onClick, type = "button", disabled = false, iconLeft = false }) {
     return (
         <button
             className={`
@@ -17,7 +17,7 @@ function DefaultButton({ icon, label, onClick, type = "button", disabled = false
             onClick={onClick}
             type={type}
             disabled={disabled}>
-            <FontAwesomeIcon icon={`${icon}`} />
+            <FontAwesomeIcon icon={`${icon}`} size={iconSize} />
             <strong>
                 {label}
             </strong>
