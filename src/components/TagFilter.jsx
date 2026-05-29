@@ -14,19 +14,27 @@ function TagFilter({ filters = [], onSelect }) {
     return (
         <div className="
         flex flex-row
-        items-center
-        px-3! py-1! gap-px
+        items-center justify-between
+        pl-4.5! px-3! py-1! gap-px
         bg-(--bg-alt) text-white! 
         text-lg font-bold!
         border border-(--border)
         rounded-full">
             <FontAwesomeIcon icon={faFilter} />
+
             <select className="
+            cursor-pointer
             bg-(--bg-alt)
+            rounded-md
             " onChange={handleSelection} value={selection}>
+
                 <option value="All">Todos</option>
+
                 {filters.map((filter, index) =>
-                    <option key={index} value={filter}>
+                    <option
+                        key={index}
+                        value={filter}
+                    >
                         {filter}
                     </option>
                 )}
