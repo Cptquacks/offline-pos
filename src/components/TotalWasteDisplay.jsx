@@ -46,7 +46,7 @@ function TotalWasteDisplay({ elements, wasteKey = 'waste' }) {
                 />
             </div>
 
-            {!expanded && grouped.map((entry, index) =>
+            {expanded && grouped.map((entry, index) =>
                 <strong key={index}>{entry.waste} {entry.currency}</strong>
             )}
         </div>
