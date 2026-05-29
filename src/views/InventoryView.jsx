@@ -12,6 +12,7 @@ import useTagStore from "../stores/tagStore"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import { randomLCH } from "../utils/tag-util"
 import useDialogStore from "../stores/dialogStore"
+import DropdownMenu from "../components/DropdownMenu"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile } = useProductStore()
@@ -22,8 +23,11 @@ function InventoryView() {
     const [query, setQuery] = useState('')
     const [filter, setFilter] = useState('All')
 
-    const tagNames = useMemo(() => {
-        return tagList.map(tag => `${tag.name}`)
+    const tags = useMemo(() => {
+        let result = [{ label: 'Todos', icon: 'filter', value: 'All' }]
+        const mappedArray = tagList.map(tag => ({ label: tag.name, icon: 'tag' }))
+        result = result.concat(mappedArray)
+        return result
     }, [tagList])
 
     const filteredList = useMemo(() => {
@@ -145,7 +149,10 @@ function InventoryView() {
                 justify-between
                 ">
                     <SearchBar onSearch={query => handleSearch(query)} />
-                    <TagFilter filters={tagNames} onSelect={filter => handleFilter(filter)} />
+                    <DropdownMenu
+                        elements={tags}
+                        onSelected={filter => handleFilter(filter)}
+                    />
                 </div>
 
                 <div className="
@@ -191,6 +198,7 @@ function InventoryView() {
 
             <div className="
             flex flex-col 
+            w-fit h-full
             bg-(--bg-soft)!
             rounded-md
             p-4! overflow-y-auto

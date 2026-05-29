@@ -13,15 +13,18 @@ import { randomLCH } from "../utils/tag-util"
 import TotalWasteDisplay from "../components/TotalWasteDisplay"
 import useDialogStore from "../stores/dialogStore"
 import LoadingDialog from "../components/LoadingDialog"
+import DropdownMenu from "../components/DropdownMenu"
 
 function StaffView() {
     const { staffData, loadData, addStaff, overwriteFile } = useStaffStore()
     const { roleList, addRole, loadRoles } = useRoleStore()
     const { openDialog, closeDialog } = useDialogStore()
 
-    const roleNames = useMemo(() => {
-        let result = roleList
-        return result.map(role => role.name)
+    const roles = useMemo(() => {
+        let result = [{ label: 'Todos', icon: 'filter', value: 'All' }]
+        const mappedRoles = roleList.map(role => ({ label: role.name, icon: 'user-tag' }))
+        result = result.concat(mappedRoles)
+        return result
     }, [roleList])
 
     const [filter, setFilter] = useState('All')
@@ -129,7 +132,10 @@ function StaffView() {
                 justify-between
                 ">
                     <SearchBar onSearch={query => setQuery(query)} />
-                    <TagFilter filters={roleNames} onSelect={filter => setFilter(filter)} />
+                    <DropdownMenu
+                        elements={roles}
+                        onSelected={filter => setFilter(filter)}
+                    />
                 </div>
 
                 <div className="

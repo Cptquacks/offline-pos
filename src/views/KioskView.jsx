@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import useTicketStore from "../stores/ticketStore"
 import useProductStore from "../stores/productStore"
 import ItemsList from "../components/ItemsList"
@@ -11,13 +11,43 @@ import { faBrush, faCheck, faShoppingCart, faTicket } from "@fortawesome/free-so
 import CartItem from "../components/CartItem"
 import { registerRefund, registerSell } from "../utils/ticket-util"
 import useTraceStore from "../stores/traceStore"
+import DropdownMenu from "../components/DropdownMenu"
+import useTagStore from "../stores/tagStore"
+import { stringSimilarity } from "../utils/string-util"
 
 function KioskView() {
     const { productData, loadData, modifyProduct } = useProductStore()
     const { ticketData, loadData: loadTickets, addTicket, cleanTickets } = useTicketStore()
+    const { tagList, loadTags } = useTagStore()
     const { addSell, addRefund } = useTraceStore()
 
+    const tags = useMemo(() => {
+        let result = [{ label: 'Todos', icon: 'filter', value: 'All' }]
+        const mappedArray = tagList.map(tag => ({ label: tag.name, icon: 'tag' }))
+        result = result.concat(mappedArray)
+        return result
+    }, [tagList])
+
     const [cartItems, setCartItems] = useState([])
+    const [filter, setFilter] = useState('All')
+    const [query, setQuery] = useState('')
+
+    const filteredList = useMemo(() => {
+        let result = productData
+
+        if (filter !== 'All') {
+            result = result.filter(product => product.tag === filter)
+        }
+
+        if (query.trim().length > 0) {
+            result = result.filter(product => stringSimilarity(product.name, query) >= 0.3)
+            result = result.map(product => ({ ...product, similarity: stringSimilarity(product.name, query) }))
+            result = result.sort((a, b) => b.similarity - a.similarity)
+
+        }
+
+        return result
+    }, [query, filter, productData])
 
     const handleSell = async () => {
         addTicket(registerSell(cartItems))
@@ -58,6 +88,7 @@ function KioskView() {
     useEffect(() => {
         loadData()
         loadTickets()
+        loadTags()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -80,8 +111,13 @@ function KioskView() {
                 justify-between
                 py-2! px-4! gap-3
                 ">
-                    <SearchBar />
-                    <TagFilter />
+                    <SearchBar
+                        onSearch={data => setQuery(data)}
+                    />
+                    <DropdownMenu
+                        elements={tags}
+                        onSelected={data => setFilter(data)}
+                    />
                 </div>
 
                 <div className="
@@ -89,7 +125,7 @@ function KioskView() {
                 overflow-y-auto
                 ">
                     <ItemsList>
-                        {productData.map((item, index) =>
+                        {filteredList.map((item, index) =>
                             <KioskProductItem
                                 key={index}
                                 data={{ index: index, ...item }}
