@@ -1,12 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useState } from "react"
 
-function DefaultButtonSM({ iconOne = 'check', iconTwo = 'times', onChange, disabled }) {
-    const [currentStatus, setCurrentStatus] = useState(true)
+function DefaultButtonSM({ iconOne = 'check', iconTwo = 'times', defaultValue, onClick, onChange, canChange = true, disabled }) {
+    const [currentStatus, setCurrentStatus] = useState(defaultValue ?? false)
 
     useEffect(() => {
+        if (!canChange) return
         onChange(currentStatus)
-    }, [currentStatus, onChange])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentStatus])
 
     return (
         <button className="
@@ -22,8 +24,9 @@ function DefaultButtonSM({ iconOne = 'check', iconTwo = 'times', onChange, disab
             disabled:opacity-50
             "
             disabled={disabled}
-            onClick={() => setCurrentStatus(!currentStatus)}>
-            <FontAwesomeIcon icon={currentStatus ? `${iconOne}` : `${iconTwo}`} />
+            onClick={() => canChange ? setCurrentStatus(!currentStatus) : onClick()}>
+            {canChange && <FontAwesomeIcon icon={currentStatus ? `${iconTwo}` : `${iconOne}`} />}
+            {!canChange && <FontAwesomeIcon icon={iconOne} />}
         </button>
     )
 }

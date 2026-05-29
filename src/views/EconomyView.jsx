@@ -14,6 +14,8 @@ import { colorParser, lchToHex, randomLCH } from "../utils/tag-util"
 import AutomaticEconomyForm from "../components/AutomaticEconomyForm"
 import TotalWasteDisplay from "../components/TotalWasteDisplay"
 import useDialogStore from "../stores/dialogStore"
+import EmptyList from "../components/EmptyList"
+import PreferenceSwitch from "../components/PreferenceSwitch"
 
 
 
@@ -173,28 +175,39 @@ function EconomyView() {
     const staffTrace = useMemo(() => {
         let grouped = {}
 
-        staffData.forEach(staff => {
-            if (!grouped[staff.salary])
-                grouped[staff.salary] = {
-                    salary: staff.salary,
-                    staff: []
+        let staff = staffData.map(staff => staff)
+        staff = staff.filter(staff => staff.endDate > staff.startDate)
+
+        currencyList.forEach(entry => {
+            if (grouped[entry]) return
+            grouped[entry] = []
+
+            staff.forEach(staff => {
+                if ((staff.currency ?? 'CUP') !== entry) return
+
+                if (!grouped[entry][staff.salary]) {
+                    grouped[entry][staff.salary] = {
+                        waste: staff.salary,
+                        currency: staff.currency ?? 'CUP',
+                        staff: []
+                    }
                 }
 
-            grouped[staff.salary].staff.push(staff.name)
+                grouped[entry][staff.salary].staff.push(staff.name)
+            })
         })
 
         let result = Object.values(grouped)
+        result = result.map(entry =>
+            Object.values(entry).map(entry => ({ ...entry, staff: entry.staff.join(' ') }))
+        )
 
-        result = result.map(fragment => ({
-            name: fragment.staff.join('\n'),
-            waste: parseInt(fragment.salary),
-        }))
-
-        console.log(result)
-        result = result.sort((a, b) => b.waste - a.waste)
+        result = result.filter(entry => entry.length > 0)
+        result.forEach(entry => entry.sort((a, b) => b.waste - a.waste))
 
         return result
-    }, [staffData])
+
+    }, [staffData, currencyList])
 
     const roleTrace = useMemo(() => {
         const grouped = {}
@@ -216,35 +229,9 @@ function EconomyView() {
         let result = Object.values(grouped)
 
         result = result.sort((a, b) => b.waste - a.waste)
-
+        console.log(result)
         return result
     }, [staffData])
-
-    const providerTraceCUP = useMemo(() => {
-        let result = providerData
-        result = result.filter(provider => provider.active && provider.currency == 'CUP')
-        result = result.map(provider => ({
-            name: provider.name,
-            waste: provider.waste,
-        }))
-
-        result = result.sort((a, b) => b.waste - a.waste)
-
-        return result
-    }, [providerData])
-
-    const providerTraceUSD = useMemo(() => {
-        let result = providerData
-        result = result.filter(provider => provider.active && provider.currency == 'USD')
-        result = result.map(provider => ({
-            name: provider.name,
-            waste: provider.waste,
-        }))
-
-        result = result.sort((a, b) => b.waste - a.waste)
-
-        return result
-    }, [providerData])
 
     const providerTrace = useMemo(() => {
         let result = providerData
@@ -441,8 +428,7 @@ function EconomyView() {
 
                     {currentChip.route === 'staff' &&
                         <TotalWasteDisplay
-                            elements={staffData}
-                            wasteKey="salary"
+                            elements={staffTrace}
                         />
                     }
 
@@ -583,58 +569,89 @@ function EconomyView() {
                     flex flex-col 
                     self-stretch items-center
                     w-full
-                    gap-3 
+                    gap-6
                     overflow-y-auto
                     ">
-                        <BarChart className="
-                            flex flex-col
-                            gap-3
-                            w-full
-                            bg-(--bg-alt)
-                            p-4!
-                            border border-(--border)
-                            rounded-md
-                            "
-                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
-                            data={staffTrace}>
+                        {staffTrace.length === 0 && <EmptyList />}
+                        {staffTrace.map((entry, index) =>
+                            <div
+                                key={index}
+                                className="
+                                flex flex-col 
+                                items-center justify-center
+                                w-full
+                                gap-3
+                                "
+                            >
+                                <div
+                                    className="
+                                    flex flex-row 
+                                    items-center justify-center
+                                    w-full
+                                    gap-3
+                                    "
+                                >
+                                    <BarChart
+                                        key={index}
+                                        className="
+                                        flex flex-col
+                                        gap-3
+                                        w-full
+                                        bg-(--bg-alt)
+                                        p-4!
+                                        border border-(--border)
+                                        rounded-md
+                                        "
+                                        style={{ width: '100%', aspectRatio: 1, maxWidth: 600 }}
+                                        data={entry}
+                                    >
 
-                            <Bar
-                                name="Gasto"
-                                dataKey="waste"
 
-                                fill="#0081A3" />
+                                        <Bar
+                                            name={`Gasto en ${currencyList[index]}`}
+                                            dataKey="waste"
 
-                            <XAxis dataKey="name" />
-                            <YAxis dataKey="waste" />
+                                            fill={lchToHex(colorParser(randomLCH()))} />
 
-                            <Legend />
-                            <Tooltip />
-                        </BarChart>
+                                        <XAxis dataKey="staff" />
+                                        <YAxis dataKey="waste" />
 
-                        <BarChart className="
-                            flex flex-col
-                            gap-3
-                            w-full
-                            bg-(--bg-alt)
-                            p-4!
-                            border border-(--border)
-                            rounded-md
-                            "
-                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
-                            data={roleTrace}
-                        >
-                            <Bar
-                                name="Gasto"
-                                dataKey="waste"
+                                        <Legend />
+                                        <Tooltip />
 
-                                fill="#0081A3" />
+                                    </BarChart>
 
-                            <XAxis dataKey="role" />
-                            <YAxis dataKey="waste" />
+                                    <BarChart className="
+                                        flex flex-col
+                                        gap-3
+                                        w-full
+                                        bg-(--bg-alt)
+                                        p-4!
+                                        border border-(--border)
+                                        rounded-md
+                                        "
+                                        style={{ width: '100%', aspectRatio: 1, maxWidth: 600 }}
+                                        data={roleTrace.filter(trace => trace.currency === currencyList[index])}
+                                    >
+                                        <Bar
+                                            name={`Gasto de roles en ${currencyList[index]}`}
+                                            dataKey="waste"
 
-                            <Legend />
-                            <Tooltip />
-                        </BarChart>
+                                            fill={lchToHex(colorParser(randomLCH()))} />
+
+                                        <XAxis dataKey="role" />
+                                        <YAxis dataKey="waste" />
+
+                                        <Legend />
+                                        <Tooltip />
+                                    </BarChart>
+                                </div>
+
+                                {(staffTrace.length - 1) !== index &&
+                                    <hr className="w-full my-3! border-white/20" />
+                                }
+                            </div>
+                        )}
                     </div>
                 }
 
@@ -646,56 +663,38 @@ function EconomyView() {
                     gap-3 
                     overflow-y-auto
                     ">
-                        <BarChart className="
-                            flex flex-col
-                            gap-3
-                            w-full
-                            bg-(--bg-alt)
-                            p-4!
-                            border border-(--border)
-                            rounded-md
-                            "
-                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
-                            data={providerTraceCUP}>
+                        {currencyList.length === 0 &&
+                            <EmptyList />
+                        }
+                        {currencyList.map((entry, index) =>
+                            providerTrace.filter(provider => provider.currency === entry).length !== 0 &&
+                            <BarChart
+                                key={index}
+                                className="
+                                flex flex-col
+                                gap-3
+                                w-full
+                                bg-(--bg-alt)
+                                p-4!
+                                border border-(--border)
+                                rounded-md
+                                "
+                                style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                                data={providerTrace.filter(provider => provider.currency === entry)}
+                            >
 
-                            <Bar
-                                name="Gasto en CUP"
-                                dataKey="waste"
-                                fill="#0081A3" />
+                                <Bar
+                                    name={`Gasto en ${entry}`}
+                                    dataKey="waste"
+                                    fill={lchToHex(colorParser(randomLCH()))} />
 
-                            <XAxis dataKey="name" />
-                            <YAxis dataKey="waste" />
+                                <XAxis dataKey="name" />
+                                <YAxis dataKey="waste" />
 
-                            <Tooltip />
-                            <Legend />
-
-                        </BarChart>
-
-                        <BarChart className="
-                            flex flex-col
-                            gap-3
-                            w-full
-                            bg-(--bg-alt)
-                            p-4!
-                            border border-(--border)
-                            rounded-md
-                            "
-                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
-                            data={providerTraceUSD}>
-
-                            <Bar
-                                name="Gasto en USD"
-                                dataKey="waste"
-                                fill="#0081A3" />
-
-                            <XAxis dataKey="name" />
-                            <YAxis dataKey="waste" />
-
-                            <Tooltip />
-                            <Legend />
-
-                        </BarChart>
-
+                                <Tooltip />
+                                <Legend />
+                            </BarChart>
+                        )}
                     </div>
                 }
 
@@ -715,24 +714,11 @@ function EconomyView() {
             bg-(--bg-soft)
             rounded-md
             ">
-                <div className="
-                flex flex-row
-                item-center
-                p-4! py-2! gap-1
-                bg-(--bg-alt)
-                border border-(--border)
-                rounded-md
-                ">
-                    <input
-                        id="auto-close"
-                        type="checkbox"
-                        checked={manualClosing}
-                        onChange={event => setManualClosing(event.target.checked)} />
-
-                    <label htmlFor="auto-close">
-                        Cerrado manual
-                    </label>
-                </div>
+                <PreferenceSwitch
+                    name="Cierre manual?"
+                    onChange={data => setManualClosing(data)}
+                    value={manualClosing}
+                />
 
                 {closesCount > 1 &&
                     <div className="

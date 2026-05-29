@@ -287,8 +287,7 @@ function EmployeItem({ data, isOnPreview = false }) {
                 ">
                     {!isOnPreview && <NotesControlPanel
                         data={data}
-                        notesOpen={notesOpen}
-                        handleOpen={value => setNotesOpen(value)}
+                        handleOpen={data => setNotesOpen(data)}
                         addNote={note => handleNoteAddition(note)}
                     />}
 

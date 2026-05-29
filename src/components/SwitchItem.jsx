@@ -6,13 +6,15 @@ function SwitchItem({ value, onChange }) {
     return (
 
         <div className={`
+        transition
+        cursor-pointer
         group
         relative
         flex flex-row
         w-12 h-6.5
         items-center
         border border-white/20
-        ${currentValue ? 'bg-(--accent-alt)' : ''}
+        ${currentValue ? 'bg-(--accent-alt)' : 'bg-(--bg)'}
         rounded-full
         `} onClick={() => {
                 setCurrentValue(!currentValue)
@@ -20,12 +22,12 @@ function SwitchItem({ value, onChange }) {
             }}>
 
             <span className={`
-            absolute
-            transition
+            absolute transition
             w-5 h-5
             p-4
             bg-(--bg-alt)
-            border border-white/20
+            border 
+            ${!currentValue ? 'border-white/20' : 'border-(--accent)/70'}
             group-hover:bg-black/50
             ${!currentValue ? 'left-0.5' : 'right-0.5'}
             rounded-full
