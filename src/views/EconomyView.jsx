@@ -13,6 +13,7 @@ import useCurrencyStore from "../stores/currencyStore"
 import { colorParser, lchToHex, randomLCH } from "../utils/tag-util"
 import AutomaticEconomyForm from "../components/AutomaticEconomyForm"
 import TotalWasteDisplay from "../components/TotalWasteDisplay"
+import useDialogStore from "../stores/dialogStore"
 
 
 
@@ -21,6 +22,12 @@ function EconomyView() {
     const { providerData, loadData: loadProviderData } = useProviderStore()
     const { staffData, loadData: loadStaffData } = useStaffStore()
     const { currencyList, loadData: loadCurrency } = useCurrencyStore()
+    const { openDialog, closeDialog } = useDialogStore()
+
+    // loading dialog data
+    const [isLoading, setLoading] = useState(false)
+    const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
+
 
     /**
      * Misc
@@ -316,9 +323,12 @@ function EconomyView() {
      * @param {Array} importedData
      */
     const handleImportation = (importedData) => {
+        setLoading(true)
+        setLoadValue({ current: 0, total: importedData.length })
+
         let transformedData = []
 
-        importedData.forEach(fragment =>
+        importedData.forEach(fragment => {
             transformedData.push({
                 date: fragment.date,
                 sells: parseInt(fragment.sells),
@@ -328,10 +338,15 @@ function EconomyView() {
                     USD: parseInt(fragment.USD),
                 }
             })
-        )
+
+            setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
+        })
+
 
         const result = [...traceData, ...transformedData]
         overwriteTrace(result)
+
+        setLoading(false)
     }
 
     /**
@@ -345,6 +360,21 @@ function EconomyView() {
         loadProviderData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (!isLoading) {
+            closeDialog()
+            return
+        }
+
+        openDialog(
+            <LoadingDialog
+                current={loadValue.current}
+                total={loadValue.total}
+            />
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading, loadValue])
 
 
     /**

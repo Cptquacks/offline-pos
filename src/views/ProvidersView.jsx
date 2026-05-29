@@ -9,9 +9,11 @@ import { stringSimilarity } from "../utils/string-util"
 import { addDays, daysFromToday } from "../utils/date-util"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import TotalWasteDisplay from "../components/TotalWasteDisplay"
+import useDialogStore from "../stores/dialogStore"
 
 function ProvidersView() {
     const { providerData, loadData, addProvider, overwriteData } = useProviderStore()
+    const { openDialog, closeDialog } = useDialogStore()
 
     const [query, setQuery] = useState('')
     const filteredList = useMemo(() => {
@@ -40,11 +42,17 @@ function ProvidersView() {
         return result
     }, [providerData]);
 
+    const [isLoading, setLoading] = useState(false)
+    const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
+
     /**
      * 
      * @param {Array} importedData 
      */
     const handleImportation = (importedData) => {
+        setLoading(true)
+        setLoadValue({ current: 0, total: importedData.length })
+
         const today = new Date().toLocaleDateString('sv-SE')
 
         importedData.forEach(fragment => {
@@ -59,16 +67,35 @@ function ProvidersView() {
 
             fragment.contactData ? fragment.contactData = [{ value: `${fragment.contactData}` }] : fragment.contactData = []
             fragment.notes ? fragment.notes : fragment.notes = []
+
+            setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
         });
 
         const result = [...providerData, ...importedData]
         overwriteData(result)
+
+        setLoading(false)
     }
 
     useEffect(() => {
         loadData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (!isLoading) {
+            closeDialog()
+            return
+        }
+
+        openDialog(
+            <LoadingDialog
+                current={loadValue.current}
+                total={loadValue.total}
+            />
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading, loadValue])
 
     return (
         <section className="

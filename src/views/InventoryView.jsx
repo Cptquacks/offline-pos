@@ -11,10 +11,13 @@ import { daysFromToday } from "../utils/date-util"
 import useTagStore from "../stores/tagStore"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import { randomLCH } from "../utils/tag-util"
+import useDialogStore from "../stores/dialogStore"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile } = useProductStore()
     const { tagList, loadTags, addTag } = useTagStore()
+    const { openDialog, closeDialog } = useDialogStore()
+
 
     const [query, setQuery] = useState('')
     const [filter, setFilter] = useState('All')
@@ -45,6 +48,9 @@ function InventoryView() {
         return filterObjectKeysFromStructure(productData, ['index', 'span'])
     }, [productData]);
 
+    const [isLoading, setLoading] = useState(false)
+    const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
+
 
     /**
      * 
@@ -63,6 +69,9 @@ function InventoryView() {
      * @param {Array} importedData 
      */
     const handleImportation = async (importedData) => {
+        setLoading(true)
+        setLoadValue({ current: 0, total: importedData.length })
+
         const newTags = []
         importedData.forEach(fragment => {
 
@@ -79,6 +88,8 @@ function InventoryView() {
             fragment.amount = parseInt(fragment.amount)
             fragment.price = parseInt(fragment.price)
             fragment.expiresAt ? fragment.span = daysFromToday(fragment.expiresAt) : fragment
+
+            setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
         })
 
         for (let index = 0; index < newTags.length; index++) {
@@ -88,6 +99,8 @@ function InventoryView() {
         let result = [...productData, ...importedData]
         overwriteFile(result)
         loadTags()
+
+        setLoading(false)
     }
 
     useEffect(() => {
@@ -95,6 +108,21 @@ function InventoryView() {
         loadTags()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (!isLoading) {
+            closeDialog()
+            return
+        }
+
+        openDialog(
+            <LoadingDialog
+                current={loadValue.current}
+                total={loadValue.total}
+            />
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading, loadValue])
 
     return (
         <section className="

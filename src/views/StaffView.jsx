@@ -11,10 +11,13 @@ import useRoleStore from "../stores/roleStore"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import { randomLCH } from "../utils/tag-util"
 import TotalWasteDisplay from "../components/TotalWasteDisplay"
+import useDialogStore from "../stores/dialogStore"
+import LoadingDialog from "../components/LoadingDialog"
 
 function StaffView() {
     const { staffData, loadData, addStaff, overwriteFile } = useStaffStore()
     const { roleList, addRole, loadRoles } = useRoleStore()
+    const { openDialog, closeDialog } = useDialogStore()
 
     const roleNames = useMemo(() => {
         let result = roleList
@@ -45,11 +48,17 @@ function StaffView() {
         return filterObjectKeysFromStructure(staffData, ['index', 'notes'])
     }, [staffData]);
 
+    const [isLoading, setLoading] = useState(false)
+    const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
+
     /**
      * 
      * @param {Array} importedData 
      */
     const handleImportation = async (importedData) => {
+        setLoading(true)
+        setLoadValue({ current: 0, total: importedData.length })
+
         const newRoles = []
         importedData.forEach(fragment => {
             if (
@@ -63,6 +72,8 @@ function StaffView() {
 
             fragment.salary = parseInt(fragment.salary)
             fragment['notes'] = []
+
+            setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
         })
 
         for (let index = 0; index < newRoles.length; index++) {
@@ -71,7 +82,9 @@ function StaffView() {
 
         const result = [...staffData, ...importedData]
         overwriteFile(result)
+
         loadRoles()
+        setLoading(false)
     }
 
     useEffect(() => {
@@ -79,6 +92,21 @@ function StaffView() {
         loadRoles()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (!isLoading) {
+            closeDialog()
+            return
+        }
+
+        openDialog(
+            <LoadingDialog
+                current={loadValue.current}
+                total={loadValue.total}
+            />
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading, loadValue])
 
     return (
         <section className="
