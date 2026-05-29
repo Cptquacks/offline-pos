@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import TagItem from "./TagItem"
 import { stringSimilarity } from "../utils/string-util"
 
 function ColumnSelector({ label, columns, onSelected, optional = false }) {
     const [currentColumn, setCurrentColumn] = useState("null")
+    const onSelectedRef = useRef(onSelected);
+    useEffect(() => {
+        onSelectedRef.current = onSelected
+    }, [onSelected])
 
     const handleSelection = (selection) => {
         onSelected(selection)
@@ -14,8 +18,10 @@ function ColumnSelector({ label, columns, onSelected, optional = false }) {
         if (columns.length === 0) return
         let filteredColumns = columns.filter(entry => stringSimilarity(entry, label) >= 0.75)
         filteredColumns = filteredColumns.sort((a, b) => stringSimilarity(a, label) - stringSimilarity(b, label))
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+
         setCurrentColumn(filteredColumns[0])
+        onSelectedRef.current(filteredColumns[0])
+
     }, [columns, label])
 
     return (

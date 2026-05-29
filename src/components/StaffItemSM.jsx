@@ -42,7 +42,7 @@ function StaffItemSM({ data }) {
                 </div>
             </div>
 
-            <EmployeContractIndicator days={daysUntilEOC} />
+            <EmployeContractIndicator days={daysUntilEOC} showButton={false} />
         </div>
     )
 }

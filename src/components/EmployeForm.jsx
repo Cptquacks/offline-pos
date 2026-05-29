@@ -7,6 +7,7 @@ import ErrorToast from "./ErrorToast"
 import DefaultButton from "./DefaultButton"
 import PreferenceSwitch from "./PreferenceSwitch"
 import TagSelector from "./TagSelector"
+import CurrencySelector from "./CurrencySelector"
 
 function EmployeForm({ onSubmit }) {
     const { staffData } = useStaffStore()
@@ -18,6 +19,7 @@ function EmployeForm({ onSubmit }) {
         "name": "",
         "ID": "",
         "salary": 0,
+        "currency": "CUP",
         "charge": "",
         "contact": "",
         "startDate": new Date().toLocaleDateString('sv-SE'),
@@ -79,8 +81,13 @@ function EmployeForm({ onSubmit }) {
                     data => setFormData(prev => ({ ...prev, charge: data }))
                 } />
 
-            <FormInput label="Salario base (CUP)" placeholder="Salario del empleado..." type="number"
+            <FormInput label="Salario base" placeholder="Salario del empleado..." type="number"
                 onChange={data => setFormData(prev => ({ ...prev, salary: data }))} />
+
+            <CurrencySelector
+                current={formData.currency}
+                onChange={data => setFormData(prev => ({ ...prev, currency: data }))}
+            />
 
             <p>{formData.endDate}</p>
             <PreferenceSwitch name="Contrato permanente" value={isPermantent} onChange={data => setNullable(data)} />

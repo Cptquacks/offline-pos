@@ -23,6 +23,18 @@ function EconomyView() {
     const { currencyList, loadData: loadCurrency } = useCurrencyStore()
 
     /**
+     * Misc
+     */
+    const currencies = useMemo(() => {
+        const grouped = {}
+        currencyList.forEach(item => {
+            if (grouped[item]) return
+            grouped[item] = `Ganancia en (${item})`
+        })
+        return grouped
+    }, [currencyList])
+
+    /**
      * Days
      */
     const closesCount = useMemo(() => {
@@ -125,7 +137,6 @@ function EconomyView() {
                     ...currencies
                 }
             }
-            console.table({ ...trace.total })
 
             Object.keys(grouped[trace.date]).forEach(key => {
                 if (key === 'date') return
@@ -134,7 +145,6 @@ function EconomyView() {
         })
 
         result = Object.values(grouped)
-        console.table(result)
 
         return result.slice(-7)
     }, [traceData])
@@ -154,13 +164,26 @@ function EconomyView() {
      * Waste
      */
     const staffTrace = useMemo(() => {
-        let result = staffData
+        let grouped = {}
 
-        result = result.map(staff => ({
-            name: staff.name,
-            waste: parseInt(staff.salary),
+        staffData.forEach(staff => {
+            if (!grouped[staff.salary])
+                grouped[staff.salary] = {
+                    salary: staff.salary,
+                    staff: []
+                }
+
+            grouped[staff.salary].staff.push(staff.name)
+        })
+
+        let result = Object.values(grouped)
+
+        result = result.map(fragment => ({
+            name: fragment.staff.join('\n'),
+            waste: parseInt(fragment.salary),
         }))
 
+        console.log(result)
         result = result.sort((a, b) => b.waste - a.waste)
 
         return result
@@ -222,7 +245,7 @@ function EconomyView() {
         result = result.filter(provider => provider.active)
         result = result.map(provider => ({
             name: provider.name,
-            waste: provider.waste,
+            waste: provider.waste ?? 0,
             currency: provider.currency,
         }))
 
@@ -377,10 +400,9 @@ function EconomyView() {
                             "date": "Fecha",
                             "sells": "Ventas",
                             "refunds": "Reembolos",
-                            "CUP": "Ganancia (CUP)",
-                            "USD": "Ganancia (USD)",
+                            ...currencies
                         }}
-                        optionalFields={["refunds", "USD"]}
+                        optionalFields={["refunds", ...currencyList.slice(1)]}
                         title={"Importar"}
                         previewComponent={({ data }) => <DayItem data={data} isOnPreview={true} />}
                         onImport={data => handleImportation(data)}

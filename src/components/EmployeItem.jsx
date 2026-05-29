@@ -14,7 +14,6 @@ import DefaultButton from "./DefaultButton"
 import FormInput from "./FormInput"
 import TagSelectorSM from "./TagSelectorSM"
 import useRoleStore from "../stores/roleStore"
-import ContactDisplay from "./ContactDisplay"
 import DatePicker from "./DatePicker"
 import PreferenceSwitch from "./PreferenceSwitch"
 
@@ -166,7 +165,7 @@ function EmployeItem({ data, isOnPreview = false }) {
 
                             {!editMode &&
                                 <p className="font-bold! text-sm">
-                                    Salarío: {data.salary}
+                                    Salarío: {data.salary} {data.currency ?? 'CUP'}
                                 </p>
                             }
 
@@ -216,6 +215,7 @@ function EmployeItem({ data, isOnPreview = false }) {
                                 </div>
                             }
                         </div>
+
                         {(!editMode && data.contact) &&
                             <strong className="
                             flex flex-row
@@ -320,6 +320,7 @@ function EmployeItem({ data, isOnPreview = false }) {
                                 </div>
                             }
                         </div>
+
                         {!isOnPreview &&
                             <div className="
                             flex flex-col

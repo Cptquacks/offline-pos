@@ -1,8 +1,7 @@
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useMemo } from "react"
+import DefaultButton from "./DefaultButton"
 
-function EmployeContractIndicator({ days, onRenew }) {
+function EmployeContractIndicator({ days, onRenew, showButton = true }) {
     const status = useMemo(() => {
         if (days > 15) return 3
         else if (days > 7) return 2
@@ -66,20 +65,13 @@ function EmployeContractIndicator({ days, onRenew }) {
                 text-red-600
                 rounded-full
                 ">
-                    <button className="
-                    transition cursor-pointer
-                    flex flex-row
-                    items-center
-                    px-3! py-1! gap-1
-                    text-white! bg-(--accent-alt)
-                    hover:text-(--bg-alt)! hover:bg-white
-                    rounded-xs
-                    " onClick={onRenew}>
-                        <FontAwesomeIcon icon={faRotateLeft} />
-                        <strong>
-                            Renovar
-                        </strong>
-                    </button>
+                    {showButton &&
+                        <DefaultButton
+                            label="Renovar"
+                            icon="rotate-left"
+                            onClick={onRenew}
+                        />
+                    }
 
                     <strong>
                         Expirado!

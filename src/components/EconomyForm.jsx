@@ -1,23 +1,41 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import DefaultButton from "./DefaultButton"
 import FormInput from "./FormInput"
 import DatePicker from "./DatePicker"
+import useCurrencyStore from "../stores/currencyStore"
 
 function EconomyForm({ onSubmit }) {
+    const { currencyList } = useCurrencyStore()
+    const currencies = useMemo(() => {
+        let currencies = {}
+        currencyList.forEach(item => {
+            if (currencies[item]) return
+            currencies[item] = 0
+        })
+        return currencies
+    }, [currencyList])
+
     const [formData, setFormData] = useState({
         "date": new Date().toLocaleDateString('sv-SE'),
         "refunds": 0,
         "sells": 0,
-        "total": {
-            "CUP": 0,
-            "USD": 0
-        }
+        "total": { ...currencies }
     })
+
+    const handleCurrencyValue = (currency, value) => {
+        const result = { ...formData.total }
+        result[currency] = parseInt(value)
+
+        setFormData(prev => ({ ...prev, total: result }))
+    }
+
+    console.table(formData)
     return (
         <form
             className="
             flex flex-col
             gap-3
+            overflow-y-auto
             "
             onSubmit={() => onSubmit(formData)}>
 
@@ -56,19 +74,17 @@ function EconomyForm({ onSubmit }) {
                 min={0}
                 onChange={data => setFormData(prev => ({ ...prev, refunds: parseInt(data) }))} />
 
-            <FormInput
-                label="Ganancias (CUP)"
-                placeholder="Ganancias del día..."
-                type="number"
-                min={-999999999}
-                onChange={data => setFormData(prev => ({ ...prev, total: { ...prev.total, CUP: parseInt(data) } }))} />
-
-            <FormInput
-                label="Ganancias (USD)"
-                placeholder="Ganancias del día..."
-                type="number"
-                min={-999999999}
-                onChange={data => setFormData(prev => ({ ...prev, total: { ...prev.total, USD: parseInt(data) } }))} />
+            {Object.keys(formData.total ?? {}).map((entry, index) =>
+                <FormInput
+                    key={index}
+                    label={`Ganancias (${entry})`}
+                    placeholder="Ganancias del día"
+                    type="number"
+                    min={-999999999}
+                    required={false}
+                    onChange={data => handleCurrencyValue(entry, data)}
+                />
+            )}
 
         </form>
     )

@@ -58,7 +58,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
 
     const readyToImport = useMemo(() => {
         const requiredFields = programFields.filter(f => !optionalFields.includes(f.key));
-        return requiredFields.every(f => f.value);
+        return requiredFields.every(f => f.value !== null && f.value !== 'null');
     }, [programFields, optionalFields]);
 
     const handleImport = async () => {
@@ -191,6 +191,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                     <strong className="text-lg">
                         Haga coincidir los campos
                     </strong>
+
                     <div className="
                     grid grid-cols-4 gap-2
                     ">
@@ -203,10 +204,9 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                                 optional={optionalFields.includes(programFields[index]?.key)}
 
                                 onSelected={data => {
-                                    const fieldsCopy = programFields.map((f, i) =>
-                                        i === index ? { ...f, value: data } : f
-                                    )
-                                    setProgramFields(fieldsCopy)
+                                    setProgramFields(prev => prev.map((f, i) =>
+                                        i === index ? { ...f, value: `${data}` } : f
+                                    ))
                                 }}
                             />
                         )}
