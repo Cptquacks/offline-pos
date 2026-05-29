@@ -267,7 +267,7 @@ function ProductItem({ data, isOnPreview = false }) {
                                 label="Rellenar"
                                 icon="rotate-left"
                                 onClick={handleRestock}
-                                disabled={data.amount === currentData.current}
+                                disabled={currentData.amount === data.current}
                                 iconLeft />
                         }
                         {!isOnPreview &&
