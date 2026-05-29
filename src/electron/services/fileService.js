@@ -29,7 +29,25 @@ class fileService {
             'tags.json': [],
             'roles.json': [],
             'tickets.json': [],
-            'licenses.json': []
+            'licenses.json': [],
+            'currencies.json': ['CUP, USD'],
+            'preferences.json': [
+                {
+                    "key": "sideBarExpanded",
+                    "name": "Barra lateral expandida",
+                    "value": true
+                },
+                {
+                    "key": "coloredTags",
+                    "name": "Categorías coloreadas",
+                    "value": false
+                },
+                {
+                    "key": "hasKiosk",
+                    "name": "Kiosko",
+                    "value": true
+                }
+            ],
         };
 
         for (const [fileName, defaultContent] of Object.entries(defaultFiles)) {
