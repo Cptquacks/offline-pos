@@ -4,7 +4,7 @@ import useDialogStore from "../stores/dialogStore"
 import AddNoteDialog from "./AddNoteDialog"
 import DefaultButtonSM from "./DefaultButtonSM"
 
-function NotesControlPanel({ data, notesOpen, handleOpen, addNote }) {
+function NotesControlPanel({ data, handleOpen, addNote }) {
     const { openDialog } = useDialogStore()
 
     const handleAdd = () => {
