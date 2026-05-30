@@ -1,6 +1,7 @@
 /**
  * 
  * @param {Array} data 
+ * @property {Object} newTicket
  * @returns {Object}
  */
 export function registerSell(data) {
@@ -11,8 +12,6 @@ export function registerSell(data) {
         "productsAmount": 0,
 
         "total": {
-            "CUP": 0,
-            "USD": 0
         },
 
         "date": new Date().toDateString(),
@@ -26,7 +25,10 @@ export function registerSell(data) {
             "amount": item.cart
         })
 
-        newTicket.total[item.currency] += item.price * item.cart
+        if (!newTicket.total[item.currency])
+            newTicket.total[item.currency] = 0
+
+        newTicket.total[item.currency] += parseInt(item.price) * parseInt(item.cart)
     });
 
     return newTicket
@@ -36,16 +38,14 @@ export function registerSell(data) {
  * 
  * @param {Object} product 
  * @param {Number} amount 
+ * @property {Object} newTicket
  * @returns {Object}
  */
 export function registerRefund(product, amount) {
     const newTicket = {
         "type": 'Devolución',
         "product": product.name,
-        "total": {
-            "CUP": 0,
-            "USD": 0
-        },
+        "total": {},
         "date": new Date().toDateString(),
     }
 

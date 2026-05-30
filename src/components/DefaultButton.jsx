@@ -1,6 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function DefaultButton({ icon, iconSize = "md", label, onClick, type = "button", disabled = false, iconLeft = false }) {
+function DefaultButton(
+    {
+        icon, iconSize = "md", iconLeft = false,
+        label, type = "button",
+        onClick, disabled = false,
+        customColor = null, inversedIcon = false
+    }
+) {
     return (
         <button
             className={`
@@ -8,7 +15,8 @@ function DefaultButton({ icon, iconSize = "md", label, onClick, type = "button",
             flex ${iconLeft ? 'flex-row-reverse' : 'flex-row'} 
             items-center
             px-3! py-1! gap-1
-            bg-(--accent-alt) text-white!
+            ${customColor ? `${customColor} border border-white/40` : 'bg-(--accent-alt)'} 
+            text-white!
             rounded-xs
 
             hover:not-disabled:bg-white! hover:not-disabled:text-(--bg-alt)!
@@ -17,7 +25,7 @@ function DefaultButton({ icon, iconSize = "md", label, onClick, type = "button",
             onClick={onClick}
             type={type}
             disabled={disabled}>
-            <FontAwesomeIcon icon={`${icon}`} size={iconSize} />
+            <FontAwesomeIcon className={`${inversedIcon ? 'fa-rotate-180' : ''}`} icon={`${icon}`} size={iconSize} />
             <strong>
                 {label}
             </strong>

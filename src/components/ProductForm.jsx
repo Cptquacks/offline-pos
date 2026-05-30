@@ -69,8 +69,11 @@ function ProductForm({ onSubmit }) {
                 onChange={data => setFormData(prev => ({ ...prev, amount: parseInt(data), current: parseInt(data) }))} />
 
 
-
-            <PriceSelector onChange={data => setAutomaticPrice(data === 'automatic')} />
+            <PreferenceSwitch
+                name="Precio automatico"
+                value={automaticPrice}
+                onChange={data => setAutomaticPrice(data)}
+            />
 
             {!automaticPrice &&
                 <FormInput label="Precio de producto" type="number" placeholder="Precio de producto..."

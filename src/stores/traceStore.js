@@ -193,6 +193,10 @@ const useTraceStore = create((set, get) => ({
         const updatedTrace = currentTrace;
         cartItems.forEach(item => {
             updatedTrace.sells += parseInt(item.cart)
+
+            if (!updatedTrace.total[item.currency])
+                updatedTrace.total[item.currency] = 0
+
             updatedTrace.total[item.currency] += parseInt(item.price) * parseInt(item.cart)
         })
 
@@ -205,7 +209,6 @@ const useTraceStore = create((set, get) => ({
 
         updatedTrace.sells -= parseInt(amount)
         updatedTrace.refunds += parseInt(amount)
-        updatedTrace.total[product.currency] -= parseInt(product.price) * parseInt(amount)
 
         set({ currentTrace: updatedTrace });
     }

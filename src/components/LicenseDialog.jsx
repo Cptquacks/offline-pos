@@ -3,8 +3,7 @@ import useDialogStore from "../stores/dialogStore"
 import useLicenseStore from "../stores/licenseStore"
 import { checkLicense, checkValidity } from "../utils/license-util"
 import DefaultButton from "./DefaultButton"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faSpinner } from "@fortawesome/free-solid-svg-icons"
+import LoadingDialog from "./LoadingDialog"
 
 function LicenseDialog() {
     const { closeDialog } = useDialogStore()
@@ -42,23 +41,15 @@ function LicenseDialog() {
         if (licenseList.length === 0) { setLoading(false); return }
 
         if (!checkValidity(licenseList.toReversed()[0])) { setLoading(false); return }
+
         closeDialog()
     }, [licenseList, closeDialog])
 
     if (loading)
         return (
-            <div className="
-            flex flex-row
-            p-4!
-            border border-(--border)
-            justify-center items-center
-            bg-(--bg)
-            rounded-lg
-            text-3xl
-            ">
-                <FontAwesomeIcon icon={faSpinner} spinPulse size="lg" />
-
-            </div>
+            <LoadingDialog
+                label="Comprobando licencia..."
+            />
         )
 
     return (
@@ -95,12 +86,14 @@ function LicenseDialog() {
                     type="text"
                     placeholder="Codigo de licencia"
                     value={licenseCode}
-                    onChange={event => setLicenseCode(event.target.value)} />
+                    onChange={event => setLicenseCode(event.target.value)}
+                />
                 <DefaultButton
                     label="Activar"
                     icon="none"
                     disabled={validLicenseLength}
-                    onClick={handleRegistration} />
+                    onClick={handleRegistration}
+                />
             </div>
         </div>
     )

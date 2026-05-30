@@ -69,7 +69,7 @@ function EmployeContractIndicator({ days, onRenew, showButton = true }) {
                         <DefaultButton
                             label="Renovar"
                             icon="rotate-left"
-                            onClick={onRenew}
+                            onClick={() => onRenew()}
                         />
                     }
 

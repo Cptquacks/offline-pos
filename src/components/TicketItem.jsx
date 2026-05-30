@@ -1,4 +1,4 @@
-import { faTicketSimple } from "@fortawesome/free-solid-svg-icons/faTicketSimple"
+import { faReceipt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function TicketItem({ data }) {
@@ -21,7 +21,7 @@ function TicketItem({ data }) {
             border-b border-dashed border-white/30
             rounded-t-sm
             ">
-                <FontAwesomeIcon icon={faTicketSimple} size="md" />
+                <FontAwesomeIcon icon={faReceipt} size="lg" />
                 <strong>
                     {data.type}
                 </strong>
@@ -29,8 +29,11 @@ function TicketItem({ data }) {
 
             {data.product &&
                 <p className="
-                text-lg
-                px-2! py-2!
+                text-md
+                bg-(--bg-alt)
+                px-2! py-2! m-2!
+                border border-white/20
+                rounded-md
                 ">
                     Producto: <strong>{data.product}</strong>
                 </p>
@@ -43,62 +46,69 @@ function TicketItem({ data }) {
             ">
 
                 <div className="
-                flex flex-row
-                items-center 
-                px-2! py-1! gap-4
+                flex flex-col
+                px-2! py-1! gap-1
                 ">
-                    {data.products && <ol className="
-                    flex flex-col
-                    gap-1
-                    ">
-                        {data.products.map((product, index) =>
-                            <li className="
-                                flex flex-row
-                                items-center
-                                w-fit
-                                gap-2
-                                " key={index}>
-
-                                <strong className="
-                                    bg-(--bg-alt)
-                                    px-2.5! py-0.75!
-                                    rounded-full
-                                    border border-(--border)
-                                    ">
-                                    {index + 1}
-                                </strong>
-
-                                <div className="
+                    <strong>
+                        Productos:
+                    </strong>
+                    {data.products &&
+                        <ol
+                            className="
+                            flex flex-col
+                            w-full
+                            gap-1
+                            "
+                        >
+                            {data.products.map((product, index) =>
+                                <li
+                                    key={index}
+                                    className="
                                     flex flex-row
-                                    gap-4
+                                    items-center
+                                    px-4! py-1 gap-4
                                     bg-(--bg-alt)
-                                    px-4! py-0.75!
-                                    rounded-full
-                                    border border-(--border)
-                                    ">
+                                    rounded-md
+                                    border border-white/20
+                                    "
+                                >
 
-                                    <p>
-                                        {product.name}
-                                    </p>
-
-                                    <strong className="
-                                        flex flex-row
-                                        gap-1
-                                        ">
-                                        <p>
-                                            {product.price}
-                                        </p>
-                                        x
-                                        <p>
-                                            {product.amount}
-                                        </p>
+                                    <strong>
+                                        {index + 1}
                                     </strong>
 
-                                </div>
+                                    <div className="
+                                        flex flex-row
+                                        gap-4
+                                        bg-(--bg-alt)
+                                        py-0.75!
+                                        "
+                                    >
 
-                            </li>
-                        )}
-                    </ol>}
+                                        <p>
+                                            {product.name}
+                                        </p>
+
+                                        <strong className="
+                                            flex flex-row
+                                            items-center
+                                            gap-1
+                                            ">
+                                            <p>
+                                                {product.price}
+                                            </p>
+                                            x
+                                            <p>
+                                                {product.amount}
+                                            </p>
+                                        </strong>
+
+                                    </div>
+
+                                </li>
+                            )}
+                        </ol>
+                    }
                 </div>
 
                 <div className="
@@ -112,13 +122,13 @@ function TicketItem({ data }) {
                         Importe:
                     </strong>
 
-                    <p className="
+                    <div className="
                     text-sm
                     px-1.25!">
-                        CUP: {data.total.CUP}
-                        <br />
-                        USD: {data.total.USD}
-                    </p>
+                        {Object.keys(data.total).map((entry, index) =>
+                            <p key={index}>{data.total[entry]} {entry}</p>
+                        )}
+                    </div>
                 </div>
             </div>
 

@@ -5,15 +5,15 @@ import ItemsList from "../components/ItemsList"
 import KioskProductItem from "../components/KioskProductItem"
 import TicketItem from "../components/TicketItem"
 import SearchBar from "../components/SearchBar"
-import TagFilter from "../components/TagFilter"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBrush, faCheck, faShoppingCart, faTicket } from "@fortawesome/free-solid-svg-icons"
+import { faReceipt, faShoppingCart } from "@fortawesome/free-solid-svg-icons"
 import CartItem from "../components/CartItem"
 import { registerRefund, registerSell } from "../utils/ticket-util"
 import useTraceStore from "../stores/traceStore"
 import DropdownMenu from "../components/DropdownMenu"
 import useTagStore from "../stores/tagStore"
 import { stringSimilarity } from "../utils/string-util"
+import DefaultButton from "../components/DefaultButton"
 
 function KioskView() {
     const { productData, loadData, modifyProduct } = useProductStore()
@@ -95,13 +95,13 @@ function KioskView() {
     return (
         <section className="
         grid 
-        grid-cols-2 grid-rows-2
+        grid-cols-3 grid-rows-2
         h-full
         p-4! gap-3">
 
             <div className="
             flex flex-col
-            row-span-2
+            col-span-2 row-span-2
             gap-3
             bg-(--bg-soft)
             rounded-md
@@ -148,66 +148,39 @@ function KioskView() {
             rounded-md
             overflow-y-auto
             ">
-                <div className="flex flex-row justify-between items-end">
-                    <div className="flex flex-row items-center gap-1">
-                        <FontAwesomeIcon icon={faShoppingCart} size="xl" />
-                        <p className="font-bold! text-2xl">
-                            Carrito de compra
-                        </p>
-                    </div>
+                <div
+                    className="
+                    flex flex-row 
+                    justify-between items-center
+                    "
+                >
+                    <FontAwesomeIcon icon={faShoppingCart} size="xl" />
+
+
 
                     <div className="
-                    font-bold text-xl
-                    px-4! py-0.5!
+                    flex flex-row
+                    self-end
+                    p-1.5! gap-2
                     bg-(--bg-alt)
                     border border-(--border)
-                    rounded-full
+                    rounded-sm
                     ">
-                        Productos: {cartItems.length}
+                        <DefaultButton
+                            label="Vender"
+                            icon="check"
+                            onClick={handleSell}
+                            customColor="bg-green-600"
+                        />
+
+                        <DefaultButton
+                            label="Limpiar"
+                            icon="brush"
+                            onClick={handleSell}
+                            customColor="bg-red-600"
+                            inversedIcon
+                        />
                     </div>
-                </div>
-
-                <div className="
-                flex flex-row
-                self-end
-                p-2! gap-3
-                bg-(--bg-alt)
-                border border-(--border)
-                rounded-md
-                ">
-                    <button className="
-                    flex flex-row
-                    items-center
-                    px-3! py-1! gap-1
-                    font-bold!
-                    text-white! 
-                    bg-green-600
-                    border border-white/40
-                    rounded-sm
-
-                    transition cursor-pointer
-                    hover:bg-white hover:text-(--bg-alt)!
-                    " onClick={handleSell}>
-                        <FontAwesomeIcon icon={faCheck} />
-                        Vender
-                    </button>
-
-                    <button className="
-                    flex flex-row
-                    items-center
-                    px-3! py-1! gap-1
-                    font-bold!
-                    text-white! 
-                    bg-red-600
-                    border border-white/40
-                    rounded-sm
-
-                    transition cursor-pointer
-                    hover:bg-white hover:text-(--bg-alt)!
-                    " onClick={() => setCartItems([])}>
-                        <FontAwesomeIcon className="fa-rotate-180" icon={faBrush} />
-                        Limpiar
-                    </button>
                 </div>
 
                 <ItemsList>
@@ -226,43 +199,35 @@ function KioskView() {
             p-4! gap-3
             bg-(--bg-soft)
             rounded-md
-            overflow-y-auto
             ">
                 <div className="flex flex-row justify-between items-end">
 
                     <div className="flex flex-row gap-3 items-center">
-                        <FontAwesomeIcon icon={faTicket} size="xl" />
+                        <FontAwesomeIcon icon={faReceipt} size="xl" />
                         <p className="font-bold! text-2xl">
                             Recibos de compra
                         </p>
                     </div>
 
-                    <button className="
-                    flex flex-row
-                    items-center
-                    px-3! py-1! gap-1
-                    font-bold!
-                    text-white! 
-                    bg-(--accent-alt)
-                    rounded-xs
-
-                    transition cursor-pointer
-                    hover:bg-white hover:text-(--bg-alt)!
-                    " onClick={() => {
+                    <DefaultButton
+                        label="Limpiar"
+                        icon="brush"
+                        inversedIcon
+                        onClick={() => {
                             loadTickets()
                             cleanTickets()
-                        }}>
-                        <FontAwesomeIcon className="fa-rotate-180" icon={faBrush} />
-                        Limpiar
-                    </button>
+                        }}
+                    />
                 </div>
 
-                <ItemsList>
-                    {ticketData.map((ticket, index) =>
-                        <TicketItem key={index}
-                            data={ticket} />
-                    )}
-                </ItemsList>
+                <div className="overflow-y-auto">
+                    <ItemsList>
+                        {ticketData.map((ticket, index) =>
+                            <TicketItem key={index}
+                                data={ticket} />
+                        )}
+                    </ItemsList>
+                </div>
             </div>
 
         </section>

@@ -1,8 +1,9 @@
-import { faBox, faShoppingCart, faTimes } from "@fortawesome/free-solid-svg-icons"
+import { faBox } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useMemo, useState } from "react"
 import TagItem from "./TagItem"
 import useTagStore from "../stores/tagStore"
+import DefaultButton from "./DefaultButton"
 
 function KioskProductItem({ data, onAdd, onRefund }) {
 
@@ -75,13 +76,17 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                 gap-2
                 items-end self-stretch justify-between
                 ">
-                    <TagItem label={currentTag.name} color={currentTag.color} icon="tag" />
+                    <TagItem
+                        label={currentTag.name}
+                        color={currentTag.color}
+                        icon="tag"
+                    />
                 </div>
 
             </div>
 
             <div className="
-            grid grid-rows-2
+            flex flex-col
             self-start items-start
             p-3! py-1.5! gap-2
             rounded-md
@@ -92,46 +97,28 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                 border border-white/20
                 px-2! py-0.5!
                 rounded-sm
-                " type="number" min={1} value={currentAmount}
+                " type="number" min={1} max={data.amount} value={currentAmount}
                     onChange={event => setAmount(event.target.value)} required />
 
                 <div className="
-                flex flex-row 
-                w-full justify-end
-                gap-4 
+                flex flex-row
+                justify-between
+                w-full
+                gap-3
                 ">
-                    <button className="
-                    transition cursor-pointer
-                    flex flex-row
-                    items-center
-                    px-2! py-1.5! gap-1
-                    font-bold
-                    bg-green-600 hover:not-disabled:bg-white
-                    disabled:bg-green-600/50
-                    text-white! hover:not-disabled:text-(--bg-alt)!
-
-                    disabled:text-white/50!
-                    border border-white/40 disabled:border-(--border)
-                    rounded-sm
-                    " onClick={handleAdd} disabled={currentAmount > data.amount || outOfStock}>
-                        <FontAwesomeIcon icon={faShoppingCart} />
-                        Añadir al carrito
-                    </button>
-
-                    <button className="
-                    transition-normal cursor-pointer
-                    flex flex-row
-                    items-center
-                    px-2! py-1.5! gap-1
-                    font-bold
-                    bg-red-600 hover:bg-white
-                    text-white! hover:text-(--bg-alt)!
-                    border border-white/40
-                    rounded-sm
-                    " onClick={handleRefund}>
-                        Devolución
-                        <FontAwesomeIcon icon={faTimes} />
-                    </button>
+                    <DefaultButton
+                        label="Añadir al carrito"
+                        icon="shopping-cart"
+                        onClick={handleAdd}
+                        disabled={(currentAmount > data.amount) || outOfStock}
+                        customColor="bg-green-600"
+                    />
+                    <DefaultButton
+                        label="Devolución"
+                        icon="times"
+                        onClick={handleRefund}
+                        customColor="bg-red-600"
+                    />
                 </div>
             </div>
         </div>

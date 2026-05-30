@@ -77,27 +77,26 @@ function AutomaticEconomyForm({ currentTrace, closingDay, onClose }) {
                     <strong>Ganancias</strong>
                 </div>
 
-                <div className="
-                                flex flex-row
-                                gap-3
-                                ">
-                    <div className="
-                                    flex flex-row
-                                    items-center
-                                    gap-1
-                                    ">
-                        <p>CUP:</p>
-                        <strong>{currentTrace.total?.CUP ?? 'ERR'}</strong>
-                    </div>
+                <div
+                    className="
+                    flex flex-row
+                    gap-3
+                    "
+                >
+                    {Object.keys(currentTrace.total ?? {}).map((entry, index) =>
+                        <div
+                            key={index}
+                            className="
+                            flex flex-row
+                            items-center
+                            gap-1
+                            "
+                        >
+                            <p>{entry}:</p>
+                            <strong>{currentTrace.total[entry] || 0}</strong>
+                        </div>
+                    )}
 
-                    <div className="
-                                    flex flex-row
-                                    items-center
-                                    gap-1
-                                    ">
-                        <p>USD:</p>
-                        <strong>{currentTrace.total?.USD ?? 'ERR'}</strong>
-                    </div>
                 </div>
             </div>
 
