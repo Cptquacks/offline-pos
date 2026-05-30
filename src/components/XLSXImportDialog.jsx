@@ -147,8 +147,8 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                                 </tr>
                             </thead>
                             <tbody>
-                                {fileData.data.slice(0, 3).map((row, towIndex) =>
-                                    <tr key={towIndex}>
+                                {fileData.data.slice(0, 5).map((row, rowIndex) =>
+                                    <tr key={rowIndex}>
                                         {fileData.columns.map((col, colIndex) =>
                                             <td
                                                 className="
@@ -222,6 +222,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                             isOnPreview={true}
                             data={resultantData[0]} />
                     }
+                    {Object.values(resultantData[0] ?? {})}
                 </div>
             </div>
 

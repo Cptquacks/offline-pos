@@ -40,6 +40,7 @@ function EconomyView() {
             if (grouped[item]) return
             grouped[item] = `Ganancia en (${item})`
         })
+        console.log(grouped)
         return grouped
     }, [currencyList])
 
@@ -305,8 +306,7 @@ function EconomyView() {
 
         result = result.map((trace, index) => ({
             ...trace,
-            CUP: traceData[index].total.CUP,
-            USD: traceData[index].total.USD,
+            ...traceData[index].total
         }))
 
         return result
@@ -323,15 +323,19 @@ function EconomyView() {
         let transformedData = []
 
         importedData.forEach(fragment => {
-            transformedData.push({
+            const parsedFragment = {
                 date: fragment.date,
                 sells: parseInt(fragment.sells),
                 refunds: parseInt(fragment.refunds),
-                total: {
-                    CUP: parseInt(fragment.CUP),
-                    USD: parseInt(fragment.USD),
-                }
+                total: {}
+            }
+
+            Object.keys(fragment).forEach(entry => {
+                if (!/^[A-Z]{3}$/gm.test(entry)) return
+                parsedFragment.total[entry] = parseInt(fragment[entry])
             })
+
+            transformedData.push(parsedFragment)
 
             setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
         })

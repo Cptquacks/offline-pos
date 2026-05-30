@@ -21,6 +21,13 @@ function XLSXExportDialog({ model, data }) {
         return data.map(item => {
             const newItem = {};
             Object.keys(model).forEach(key => {
+
+                if (typeof item[key] === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item[key])) {
+                    const [year, month, day] = item[key].split('-').map(Number)
+                    newItem[model[key]] = new Date(year, month - 1, day)
+                    return
+                }
+
                 newItem[model[key]] = item[key];
             });
             return newItem;
@@ -39,14 +46,12 @@ function XLSXExportDialog({ model, data }) {
         rounded-md
         ">
             <DialogTopBar label="Exportar" />
-            <div>
-
-            </div>
 
             <div className="
             flex-1
             flex flex-col
             p-4! gap-3
+            overflow-y-auto
             ">
 
                 <table className="
@@ -67,14 +72,20 @@ function XLSXExportDialog({ model, data }) {
                         </tr>
                     </thead>
                     <tbody>
+                        {typeof transformedData[0].Fecha}
                         {previewData.slice(1).map((y, yIndex) =>
                             <tr key={yIndex}>
                                 {y.map((x, xIndex) =>
                                     <td
                                         key={xIndex}
                                         className="border border-(--border)"
-                                        scope="col">
-                                        {x}
+                                        scope="col"
+                                    >
+                                        {x ||
+                                            <cite className="opacity-50">
+                                                Vacío
+                                            </cite>
+                                        }
                                     </td>
                                 )}
                             </tr>
