@@ -156,13 +156,15 @@ function EconomyView() {
             }
 
             Object.keys(grouped[trace.date]).forEach(key => {
-                if (key === 'date') return
-                grouped[trace.date][key] += trace.total[key] || 0
+                if (!/^[A-Z]{3}$/gm.test(key)) return
+                if (!grouped[trace.date][key]) grouped[trace.date][key] = 0
+                grouped[trace.date][key] += isNaN(trace.total[key]) ? 0 : trace.total[key]
+                console.log(grouped[trace.date][key] += trace.total[key])
             })
         })
 
         result = Object.values(grouped)
-
+        console.log(grouped)
         return result.slice(-7)
     }, [traceData])
 

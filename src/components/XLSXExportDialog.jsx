@@ -24,7 +24,7 @@ function XLSXExportDialog({ model, data }) {
 
                 if (typeof item[key] === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item[key])) {
                     const [year, month, day] = item[key].split('-').map(Number)
-                    newItem[model[key]] = new Date(year, month - 1, day)
+                    newItem[model[key]] = new Date(year, month, day)
                     return
                 }
 
@@ -72,7 +72,6 @@ function XLSXExportDialog({ model, data }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {typeof transformedData[0].Fecha}
                         {previewData.slice(1).map((y, yIndex) =>
                             <tr key={yIndex}>
                                 {y.map((x, xIndex) =>

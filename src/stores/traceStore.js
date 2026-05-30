@@ -27,11 +27,12 @@ const useTraceStore = create((set, get) => ({
 
     loadData: async () => {
         let data = await loadData('traces')
+        data.sort((a, b) => b.date.localeCompare(a.date))
 
         const { traceLoaded, currentTrace } = get()
         const currentDate = new Date().toLocaleDateString('sv-SE') // Obtener fecha local de hoy
 
-        const lastDay = (data ?? []).toReversed()[0] // Obtener ultimo dia -> fecha
+        const lastDay = (data ?? []).toSorted((a, b) => a.date.localeCompare(b.date))[0] // Obtener ultimo dia -> fecha
         const currentTraceValid = Object.values(currentTrace).length > 0
 
         if (data.length === 0 || (!traceLoaded && currentDate > lastDay.date)) {
@@ -47,28 +48,38 @@ const useTraceStore = create((set, get) => ({
                 "refunds": 0,
                 "sells": 0,
                 "total": {
-                    "CUP": 0,
-                    "USD": 0
                 }
             })
 
-            data = await updateData('traces', data.toReversed()[0])
+            data = await updateData('traces', data[data.length - 1])
+            data.sort((a, b) => b.date.localeCompare(a.date))
 
-            set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0], traceLoaded: true })
+            set({
+                traceData: data,
+                currentTrace: data[data.length - 1],
+                traceLoaded: true
+            })
             return
         }
 
         if (!currentTraceValid) {
-            set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0], traceLoaded: true })
+            set({
+                traceData: data,
+                currentTrace: data[data.length - 1],
+                traceLoaded: true
+            })
             return
         }
 
-        set({ traceData: data.toReversed(), traceLoaded: true })
+        set({
+            traceData: data,
+            traceLoaded: true
+        })
     },
 
     addTrace: async (trace) => {
         const { traceData, traceLoaded } = get()
-        let updatedData = traceData.toReversed()
+        let updatedData = traceData.map(trace => trace)
         updatedData = updatedData.filter(trace => trace.sells !== 0 || trace.refunds !== 0)
 
         if (!traceLoaded) return
@@ -79,14 +90,12 @@ const useTraceStore = create((set, get) => ({
             "refunds": 0,
             "sells": 0,
             "total": {
-                "CUP": 0,
-                "USD": 0
             }
         })
+        updatedData.sort((a, b) => b.date.localeCompare(a.date))
 
         const data = await writeData('traces', updatedData)
-
-        set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
+        set({ traceData: data, currentTrace: data[data.length - 1] })
     },
 
     closeTrace: async () => {
@@ -109,23 +118,27 @@ const useTraceStore = create((set, get) => ({
         })
 
 
-        const data = await writeData('traces', updatedData)
+        let data = await writeData('traces', updatedData)
+        data.sort((a, b) => b.date.localeCompare(a.date))
 
         set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
     },
 
     updateTrace: async (trace) => {
         const { currentTrace } = get()
-        const currentData = await loadData('traces')
+        let currentData = await loadData('traces')
+        currentData.sort((a, b) => b.date.localeCompare(a.date))
 
-        if (currentTrace.date > currentData.toReversed()[0].date)
+        if (currentTrace.date.localeCompare(currentData[currentData.length - 1].date))
             currentData.push(currentTrace)
 
-        currentData.toReversed()[0] = { ...currentTrace, ...trace }
+        currentData.sort((a, b) => b.date.localeCompare(a.date))
+        currentData[currentData.length - 1] = { ...currentTrace, ...trace }
 
-        const data = writeData('traces', currentData)
+        let data = writeData('traces', currentData)
+        data.sort((a, b) => b.date.localeCompare(a.date))
 
-        set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
+        set({ traceData: data, currentTrace: data[data.length - 1] })
     },
 
     normalizeTrace: async () => {
@@ -133,45 +146,49 @@ const useTraceStore = create((set, get) => ({
 
         if (!traceLoaded) return
 
-        const today = new Date().toLocaleDateString('sv-SE')
-        let updatedTrace = traceData.toReversed()
+        let updatedTrace = traceData
+            .map(trace => trace)
+            .sort((a, b) => b.date.localeCompare(a.date))
+
         let groupedTrace = {}
-        let todayTrace = traceData.toReversed().filter(trace => trace.date === today)
 
-        updatedTrace.forEach(trace => {
-            if (trace.date === today) return
+        const today = new Date().toLocaleDateString('sv-SE')
+        const todayTraces = updatedTrace.filter(trace => trace.date === today)
 
-            if (!groupedTrace[trace.date]) {
-                groupedTrace[trace.date] = {
-                    date: trace.date,
-                    refunds: 0,
-                    sells: 0,
-                    total: {}
-                }
-            }
-
-            groupedTrace[trace.date].refunds += parseInt(trace.refunds)
-            groupedTrace[trace.date].sells += parseInt(trace.sells)
-
-            Object.keys(trace.total).forEach(entry => {
-                if (!groupedTrace[trace.date].total[entry]) {
-                    groupedTrace[trace.date].total[entry] = 0
+        updatedTrace
+            .filter(trace => trace.date !== today)
+            .forEach(trace => {
+                if (!groupedTrace[trace.date]) {
+                    groupedTrace[trace.date] = {
+                        date: trace.date,
+                        refunds: 0,
+                        sells: 0,
+                        total: {}
+                    }
                 }
 
-                groupedTrace[trace.date].total[entry] += parseInt(trace.total[entry])
+                groupedTrace[trace.date].refunds += parseInt(trace.refunds)
+                groupedTrace[trace.date].sells += parseInt(trace.sells)
+
+                Object.keys(trace.total).forEach(entry => {
+                    if (!groupedTrace[trace.date].total[entry]) {
+                        groupedTrace[trace.date].total[entry] = 0
+                    }
+
+                    groupedTrace[trace.date].total[entry] += parseInt(trace.total[entry])
+                })
+
             })
-
-        })
-
-
         updatedTrace = Object.values(groupedTrace)
-        const data = await writeData('traces', [...updatedTrace, ...todayTrace])
 
-        set({ traceData: data.toReversed() })
+        let data = await writeData('traces', [...updatedTrace, ...todayTraces])
+        data.sort((a, b) => b.date.localeCompare(a.date))
+
+        set({ traceData: data, currentTrace: data[data.length - 1] })
     },
 
     overwriteTrace: async (chunk) => {
-        const data = await writeData('traces', chunk)
+        let data = await writeData('traces', chunk)
         data.push({
             "date": new Date().toLocaleDateString('sv-SE'),
             "refunds": 0,
@@ -181,8 +198,9 @@ const useTraceStore = create((set, get) => ({
                 "USD": 0
             }
         })
+        data.sort((a, b) => b.date.localeCompare(a.date))
 
-        set({ traceData: data.toReversed(), currentTrace: data.toReversed()[0] })
+        set({ traceData: data, currentTrace: data[data.length - 1] })
     },
 
     /**
@@ -191,6 +209,7 @@ const useTraceStore = create((set, get) => ({
     addSell: async (cartItems) => {
         const { currentTrace } = get();
         const updatedTrace = currentTrace;
+
         cartItems.forEach(item => {
             updatedTrace.sells += parseInt(item.cart)
 
