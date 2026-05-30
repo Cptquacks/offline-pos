@@ -42,7 +42,6 @@ const useStaffStore = create((set, get) => ({
     modifyStaff: async (staff, index) => {
         const { staffData } = get()
         const updatedData = staffData
-            (staff)
 
         const cleanStaff = Object.fromEntries(
             Object.entries(staff).filter(([key]) => !['index'].includes(key))

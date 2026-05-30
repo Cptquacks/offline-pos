@@ -65,16 +65,17 @@ function DropdownMenu({ elements, onSelected }) {
                 absolute
                 top-full left-0 right-0 origin-top
                 flex flex-col
-                w-full scale-y-0
+                w-full max-h-128
+                scale-y-0
                 p-1! mt-1! gap-1
                 opacity-0
                 bg-(--bg-alt)
                 border border-(--border)
                 rounded-md
-                overflow-hidden
 
                 data-open:scale-y-100
                 data-open:opacity-100
+                overflow-y-auto
                 "
             >
                 {elements.map((element, index) =>

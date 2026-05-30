@@ -33,9 +33,8 @@ function ResumeView() {
         })
 
         result = Object.values(grouped)
-            (result)
 
-        return result.slice(-5)
+        return result.slice(-7)
     }, [traceData])
 
     const salesTrace = useMemo(() => {
@@ -57,7 +56,7 @@ function ResumeView() {
 
         result = Object.values(grouped)
 
-        return result.slice(-5)
+        return result.slice(-7)
     }, [traceData])
 
     const employeList = useMemo(() => {
