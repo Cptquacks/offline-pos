@@ -4,7 +4,7 @@ function DropdownMenuButton({ data, onSelected }) {
     return (
         <button
             className="
-            transition
+            transition cursor-pointer
             flex flex-row
             items-center
             p-1! gap-1
