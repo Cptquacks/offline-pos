@@ -58,7 +58,7 @@ function DayItem({ data, isOnPreview = false }) {
                 ">
                     <strong className="col-span-2 justify-self-center">Ganancias</strong>
                     <div className="flex flex-col">
-                        {Object.keys(data.total).map((entry, index) =>
+                        {data.total && Object.keys(data.total).map((entry, index) =>
                             <p key={index}>
                                 {entry}: <strong>{data.total[entry] || 0}</strong>
                             </p>

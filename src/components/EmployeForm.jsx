@@ -10,6 +10,10 @@ import TagSelector from "./TagSelector"
 import CurrencySelector from "./CurrencySelector"
 
 function EmployeForm({ onSubmit }) {
+    let oneMonthSpan = new Date()
+    oneMonthSpan.setMonth(oneMonthSpan.getMonth() + 1)
+    oneMonthSpan = oneMonthSpan.toLocaleDateString('sv-SE')
+
     const { staffData } = useStaffStore()
     const { addAlert } = useAlertStore()
 
@@ -89,15 +93,19 @@ function EmployeForm({ onSubmit }) {
                 onChange={data => setFormData(prev => ({ ...prev, currency: data }))}
             />
 
-            <p>{formData.endDate}</p>
             <PreferenceSwitch name="Contrato permanente" value={isPermantent} onChange={data => setNullable(data)} />
 
             <DatePicker label="Inicio de contrato"
                 onChange={data => setFormData(prev => ({ ...prev, startDate: data }))} />
 
             {!isPermantent &&
-                <DatePicker label="Fin de contrato"
-                    onChange={data => setFormData(prev => ({ ...prev, endDate: data }))} required={false} />}
+                <DatePicker
+                    label="Fin de contrato"
+                    value={oneMonthSpan}
+                    onChange={data => setFormData(prev => ({ ...prev, endDate: data }))}
+                    required={false}
+                />
+            }
         </form>
     )
 }

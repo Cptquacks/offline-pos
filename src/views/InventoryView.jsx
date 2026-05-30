@@ -131,7 +131,7 @@ function InventoryView() {
     return (
         <section className="
         grid grid-cols-3 grid-rows-1 
-        h-full
+        h-full w-full
         p-4! gap-3
         ">
 
@@ -198,7 +198,7 @@ function InventoryView() {
 
             <div className="
             flex flex-col 
-            w-fit h-full
+            h-full
             bg-(--bg-soft)!
             rounded-md
             p-4! overflow-y-auto

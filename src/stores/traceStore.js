@@ -160,7 +160,7 @@ const useTraceStore = create((set, get) => ({
 
                 groupedTrace[trace.date].total[entry] += parseInt(trace.total[entry])
             })
-            console.log(groupedTrace[trace.date])
+
         })
 
 

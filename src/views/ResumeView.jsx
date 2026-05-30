@@ -6,9 +6,12 @@ import { daysFromToday } from "../utils/date-util"
 import StaffItemSM from "../components/StaffItemSM"
 import useProductStore from "../stores/productStore"
 import ProductItemSM from "../components/ProductItemSM"
+import useCurrencyStore from "../stores/currencyStore"
+import { colorParser, lchToHex, randomLCH } from "../utils/tag-util"
 
 function ResumeView() {
     const { traceData, loadData } = useTraceStore()
+    const { currencyList, loadData: loadCurrencies } = useCurrencyStore()
     const { staffData, loadData: loadStaffData } = useStaffStore()
     const { productData, loadData: loadProductsData } = useProductStore()
 
@@ -19,17 +22,18 @@ function ResumeView() {
         result.forEach(item => {
             if (!grouped[item.date]) {
                 grouped[item.date] = {
-                    date: `Día ${item.date.split('-')[2]}`,
-                    CUP: 0,
-                    USD: 0,
+                    date: `Día ${item.date.split('-')[2]}`
                 }
             }
 
-            grouped[item.date].CUP += parseInt(item.total.CUP)
-            grouped[item.date].USD += parseInt(item.total.USD)
+            Object.keys(item.total).forEach(element => {
+                if (!grouped[item.date][element]) grouped[item.date][element] = 0
+                grouped[item.date][element] += parseInt(item.total[element]) || 0
+            });
         })
 
         result = Object.values(grouped)
+            (result)
 
         return result.slice(-5)
     }, [traceData])
@@ -80,6 +84,7 @@ function ResumeView() {
 
     useEffect(() => {
         loadData()
+        loadCurrencies()
         loadStaffData()
         loadProductsData()
 
@@ -111,12 +116,14 @@ function ResumeView() {
                     style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
                     data={currencyTrace}>
 
-                    <Bar
-                        dataKey="CUP"
-                        fill="#0081A3" />
-                    <Bar
-                        dataKey="USD"
-                        fill="var(--accent)" />
+                    {currencyList.map((entry, index) =>
+                        <Bar
+                            key={index}
+                            name={`Ganancias en ${entry}`}
+                            dataKey={entry}
+                            fill={lchToHex(colorParser(randomLCH()))}
+                        />
+                    )}
 
                     <XAxis dataKey="date" />
 

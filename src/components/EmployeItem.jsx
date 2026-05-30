@@ -72,14 +72,13 @@ function EmployeItem({ data, isOnPreview = false }) {
     }
 
     const handleRenew = () => {
-        const days = daysBetween(data.endDate, data.startDate)
+        const days = data.span ?? daysBetween(data.endDate, data.startDate)
         const today = new Date().toLocaleDateString('sv-SE')
         let result = {
             ...data,
             startDate: today,
             endDate: addDays(today, days)
         }
-        console.log(days)
         modifyStaff(result, data.index)
     }
 
