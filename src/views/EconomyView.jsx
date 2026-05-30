@@ -72,8 +72,15 @@ function EconomyView() {
             // Grouped trace
             grouped[trace.date].refunds += trace.refunds
             grouped[trace.date].sells += trace.sells
-            grouped[trace.date].total.CUP += trace.total.CUP
-            grouped[trace.date].total.USD += trace.total.USD
+
+            Object.keys(trace.total).forEach(entry => {
+
+                if (!grouped[trace.date].total[entry]) {
+                    grouped[trace.date].total[entry] = 0
+                }
+
+                grouped[trace.date].total[entry] += parseInt(trace.total[entry])
+            })
         })
 
         result = Object.values(grouped)
@@ -229,7 +236,7 @@ function EconomyView() {
         let result = Object.values(grouped)
 
         result = result.sort((a, b) => b.waste - a.waste)
-        console.log(result)
+
         return result
     }, [staffData])
 

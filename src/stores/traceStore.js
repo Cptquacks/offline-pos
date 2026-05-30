@@ -31,7 +31,7 @@ const useTraceStore = create((set, get) => ({
         const { traceLoaded, currentTrace } = get()
         const currentDate = new Date().toLocaleDateString('sv-SE') // Obtener fecha local de hoy
 
-        const lastDay = data.toReversed()[0] // Obtener ultimo dia -> fecha
+        const lastDay = (data ?? []).toReversed()[0] // Obtener ultimo dia -> fecha
         const currentTraceValid = Object.values(currentTrace).length > 0
 
         if (data.length === 0 || (!traceLoaded && currentDate > lastDay.date)) {
@@ -146,18 +146,21 @@ const useTraceStore = create((set, get) => ({
                     date: trace.date,
                     refunds: 0,
                     sells: 0,
-                    total: {
-                        CUP: 0,
-                        USD: 0
-                    }
+                    total: {}
                 }
             }
 
             groupedTrace[trace.date].refunds += parseInt(trace.refunds)
             groupedTrace[trace.date].sells += parseInt(trace.sells)
 
-            groupedTrace[trace.date].total.CUP += parseInt(trace.total.CUP)
-            groupedTrace[trace.date].total.USD += parseInt(trace.total.USD)
+            Object.keys(trace.total).forEach(entry => {
+                if (!groupedTrace[trace.date].total[entry]) {
+                    groupedTrace[trace.date].total[entry] = 0
+                }
+
+                groupedTrace[trace.date].total[entry] += parseInt(trace.total[entry])
+            })
+            console.log(groupedTrace[trace.date])
         })
 
 

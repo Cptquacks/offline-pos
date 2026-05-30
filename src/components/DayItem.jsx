@@ -6,8 +6,10 @@ import DeleteButton from "./DeleteButton"
 function DayItem({ data, isOnPreview = false }) {
     return (
         <div className="
+        flex flex-col
         bg-(--bg-soft)
-        w-full min-w-1/2!
+        w-full h-full 
+        min-w-1/2!
         rounded-lg
         ">
             <div className="
@@ -24,9 +26,9 @@ function DayItem({ data, isOnPreview = false }) {
 
             <div className="
             flex-1
-            border-x border-(--border)
             flex flex-col
             p-2! gap-1
+            border-x border-(--border)
             ">
                 <strong className="
                 flex flex-row 
@@ -36,6 +38,7 @@ function DayItem({ data, isOnPreview = false }) {
                     <FontAwesomeIcon icon={faHandHoldingDollar} />
                     Ventas: {data.sells}
                 </strong>
+
                 <strong className="
                 flex flex-row 
                 items-center
@@ -46,7 +49,8 @@ function DayItem({ data, isOnPreview = false }) {
                 </strong>
 
                 <div className="
-                flex-1 flex flex-col
+                flex-1 
+                flex flex-col
                 p-2! gap-1
                 bg-(--bg-alt)
                 border border-(--border)
@@ -54,12 +58,11 @@ function DayItem({ data, isOnPreview = false }) {
                 ">
                     <strong className="col-span-2 justify-self-center">Ganancias</strong>
                     <div className="flex flex-col">
-                        <p>
-                            CUP: <strong>{data.total?.CUP ?? data.CUP}</strong>
-                        </p>
-                        <p>
-                            USD: <strong>{data.total?.USD ?? data.USD}</strong>
-                        </p>
+                        {Object.keys(data.total).map((entry, index) =>
+                            <p key={index}>
+                                {entry}: <strong>{data.total[entry] || 0}</strong>
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
