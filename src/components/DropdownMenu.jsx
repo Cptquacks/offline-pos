@@ -56,38 +56,40 @@ function DropdownMenu({ elements, onSelected }) {
                     <FontAwesomeIcon icon={faCaretDown} />
                 </button>
             }
+            <div
+                ref={containerRef}
+                data-open={isOpen ? '' : undefined}
 
-            {isOpen &&
-                <div
-                    ref={containerRef}
-                    className="
-                    absolute
-                    top-0
+                className="
+                transition 
+                absolute
+                top-full left-0 right-0 origin-top
+                flex flex-col
+                w-full scale-y-0
+                p-1! mt-1! gap-1
+                opacity-0
+                bg-(--bg-alt)
+                border border-(--border)
+                rounded-md
+                overflow-hidden
 
-                    flex flex-col
-                    w-full
-                    p-1! gap-1
-
-                    bg-(--bg-alt)
-                    border border-(--border)
-
-                    rounded-md
-                    overflow-hidden
-                    "
-                >
-                    {elements.map((element, index) =>
-                        <DropdownMenuButton
-                            key={index}
-                            data={element}
-                            onSelected={data => {
-                                setOpen(false)
-                                setSelection(data)
-                                onSelected(data.value ?? data.label)
-                            }}
-                        />
-                    )}
-                </div>}
-        </div>
+                data-open:scale-y-100
+                data-open:opacity-100
+                "
+            >
+                {elements.map((element, index) =>
+                    <DropdownMenuButton
+                        key={index}
+                        data={element}
+                        onSelected={data => {
+                            setOpen(false)
+                            setSelection(data)
+                            onSelected(data.value ?? data.label)
+                        }}
+                    />
+                )}
+            </div>
+        </div >
     )
 }
 export default DropdownMenu
