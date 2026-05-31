@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import EmployeForm from "../components/EmployeForm"
 import SearchBar from "../components/SearchBar"
-import TagFilter from "../components/TagFilter"
 import ImportPanel from "../components/ImportPanel"
 import ItemsList from "../components/ItemsList"
 import useStaffStore from "../stores/staffStore"
@@ -31,7 +30,7 @@ function StaffView() {
     const [query, setQuery] = useState('')
 
     const filteredList = useMemo(() => {
-        let result = staffData
+        let result = staffData.map(entry => entry)
 
         if (filter !== 'All') {
             result = result.filter(product => product.charge === filter)

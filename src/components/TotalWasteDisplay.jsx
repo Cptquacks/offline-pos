@@ -12,10 +12,10 @@ function TotalWasteDisplay({ elements, wasteKey = 'waste' }) {
                     waste: 0
                 }
             }
-
-            grouped[element.currency ?? 'CUP'].waste += element[wasteKey]
+            console.log(element[wasteKey])
+            grouped[element.currency ?? 'CUP'].waste += parseInt(element[wasteKey])
         });
-
+        console.log(grouped)
         const result = Object.values(grouped)
         return result
     }, [elements, wasteKey])
@@ -23,6 +23,7 @@ function TotalWasteDisplay({ elements, wasteKey = 'waste' }) {
     const [expanded, setExpanded] = useState(false)
     return (
         <div className="
+        relative
         flex flex-col
         w-fit
         p-2! gap-3
@@ -46,9 +47,27 @@ function TotalWasteDisplay({ elements, wasteKey = 'waste' }) {
                 />
             </div>
 
-            {expanded && grouped.map((entry, index) =>
-                <strong key={index}>{entry.waste} {entry.currency}</strong>
-            )}
+            <div
+                data-open={expanded ? '' : null}
+                className="
+                absolute transition
+                top-9 -left-px -right-px origin-top
+                z-100 
+                flex flex-col
+                p-2! gap-3
+                scale-y-0 opacity-0
+                bg-(--bg-alt)
+                border border-(--border) border-t-0
+                rounded-b-md
+                
+                data-open:scale-y-100
+                data-open:opacity-100
+                "
+            >
+                {grouped.map((entry, index) =>
+                    <strong key={index}>{entry.waste} {entry.currency}</strong>
+                )}
+            </div>
         </div>
     )
 }

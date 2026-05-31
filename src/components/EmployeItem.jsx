@@ -16,6 +16,7 @@ import TagSelectorSM from "./TagSelectorSM"
 import useRoleStore from "../stores/roleStore"
 import DatePicker from "./DatePicker"
 import PreferenceSwitch from "./PreferenceSwitch"
+import CurrencySelector from "./CurrencySelector"
 
 function EmployeItem({ data, isOnPreview = false }) {
     let oneMonthSpan = new Date()
@@ -171,11 +172,12 @@ function EmployeItem({ data, isOnPreview = false }) {
                             {editMode &&
                                 <div className="
                                 flex-1
-                                flex flex-col
+                                flex flex-row
+                                flex-wrap
                                 w-fit
                                 gap-3
 
-                                *:bg-(--bg-alt)
+                                *:bg-(--bg-alt)!
                                 *:border-white/20
                                 ">
                                     <FormInput
@@ -184,6 +186,10 @@ function EmployeItem({ data, isOnPreview = false }) {
                                         type="number"
                                         onChange={data => setCurrentData(prev => ({ ...prev, salary: parseInt(data) }))}
                                         defaultValue={currentData.salary}
+                                    />
+                                    <CurrencySelector
+                                        current={currentData.currency ?? 'CUP'}
+                                        onChange={data => setCurrentData(prev => ({ ...prev, currency: data }))}
                                     />
                                     {(!data.startDate && editMode) &&
                                         <DatePicker

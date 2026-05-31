@@ -29,7 +29,7 @@ const useTraceStore = create((set, get) => ({
         const { currentTrace } = get()
         const today = new Date().toLocaleDateString('sv-SE')
 
-        let data = await loadData('traces')
+        let data = await loadData('traces') ?? []
         data.sort((a, b) => b.date.localeCompare(a.date))
 
         set({
