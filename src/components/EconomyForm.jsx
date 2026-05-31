@@ -6,6 +6,7 @@ import useCurrencyStore from "../stores/currencyStore"
 
 function EconomyForm({ onSubmit }) {
     const { currencyList } = useCurrencyStore()
+
     const currencies = useMemo(() => {
         let currencies = {}
         currencyList.forEach(item => {
@@ -80,6 +81,7 @@ function EconomyForm({ onSubmit }) {
                     label={`Ganancias (${entry})`}
                     placeholder="Ganancias del día"
                     type="number"
+                    defaultValue={formData.total[entry]}
                     min={-999999999}
                     required={false}
                     onChange={data => handleCurrencyValue(entry, data)}

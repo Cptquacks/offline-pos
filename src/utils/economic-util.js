@@ -52,7 +52,7 @@ export function findPromedium(valueArray) {
  * @param {Array} dataArray - Array de objetos diarios con date, sells, etc.
  * @returns {Array} Array de objetos { date, real, predicted } (7 elementos si hay >=5 días, o 5 si hay 3-4)
  */
-export function predictNextTwoDays(dataArray, predicted = 2) {
+export function predictNextTwoDays(dataArray, predicted = 2, taken = 5) {
     if (!dataArray || dataArray.length === 0) return [];
 
     // 1. Ordenar por fecha
@@ -69,7 +69,7 @@ export function predictNextTwoDays(dataArray, predicted = 2) {
     const uniqueDays = Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date));
 
     // 3. Tomar los últimos 5 días únicos
-    const lastDays = uniqueDays.slice(-5);
+    const lastDays = uniqueDays.slice(-taken);
     const n = lastDays.length;
 
     // 4. Si no hay al menos 3 días, devolver datos sin predicción

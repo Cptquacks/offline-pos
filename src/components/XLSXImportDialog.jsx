@@ -222,7 +222,6 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                             isOnPreview={true}
                             data={resultantData[0]} />
                     }
-                    {Object.values(resultantData[0] ?? {})}
                 </div>
             </div>
 

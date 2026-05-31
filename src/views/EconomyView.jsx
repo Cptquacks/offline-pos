@@ -40,7 +40,7 @@ function EconomyView() {
             if (grouped[item]) return
             grouped[item] = `Ganancia en (${item})`
         })
-        console.log(grouped)
+
         return grouped
     }, [currencyList])
 
@@ -91,23 +91,12 @@ function EconomyView() {
     const [manualClosing, setManualClosing] = useState(false)
     const [isClosgingDay, setClosingDay] = useState(false)
 
-    const handleDayClosing = async () => {
-        setClosingDay(true)
-        await closeTrace()
-            .then(() => {
-                setClosingDay(false)
-                loadData()
-            })
-            .catch(err => console.error(err))
-
-    }
-
     /**
      * Sells
      */
     const predictedTrace = useMemo(() => {
         let result = traceData
-        result = predictNextTwoDays(result)
+        result = predictNextTwoDays(result, 2, 5)
         return result
     }, [traceData])
 
@@ -118,7 +107,7 @@ function EconomyView() {
         result.forEach(trace => {
             if (!grouped[trace.date]) {
                 grouped[trace.date] = {
-                    date: `Día ${trace.date.split('-')[2]}`,
+                    date: `Día ${trace.date.split('-')[2]} - ${trace.date.split('-')[1]}`,
                     sells: 0,
                     refunds: 0
                 }
@@ -150,21 +139,22 @@ function EconomyView() {
         result.forEach(trace => {
             if (!grouped[trace.date]) {
                 grouped[trace.date] = {
-                    date: `Día ${trace.date.split('-')[2]}`,
+                    date: `Día ${trace.date.split('-')[2]} - ${trace.date.split('-')[1]}`,
                     ...currencies
                 }
             }
 
             Object.keys(grouped[trace.date]).forEach(key => {
                 if (!/^[A-Z]{3}$/gm.test(key)) return
+
                 if (!grouped[trace.date][key]) grouped[trace.date][key] = 0
+
                 grouped[trace.date][key] += isNaN(trace.total[key]) ? 0 : trace.total[key]
-                console.log(grouped[trace.date][key] += trace.total[key])
+
             })
         })
 
         result = Object.values(grouped)
-        console.log(grouped)
         return result.slice(-7)
     }, [traceData])
 
@@ -259,8 +249,9 @@ function EconomyView() {
     }, [providerData])
 
     /**
-     * Net trace
+     * net sales trace
      */
+
     const netSalesTrace = useMemo(() => {
         let totalWaste = currencyList.map(waste => ({ currency: waste, waste: 0 })) ?? []
 
@@ -294,25 +285,38 @@ function EconomyView() {
     }, [currencyList, salesTrace, roleTrace, providerTrace])
 
 
-
-
     const exportedData = useMemo(() => {
 
         const excludedKeys = ['index', 'notes', 'total'];
 
-        let result = traceData.map(staff =>
-            Object.fromEntries(
-                Object.entries(staff).filter(([key]) => !excludedKeys.includes(key))
-            )
-        );
+        let result = traceData
+            .map(staff =>
+                Object.fromEntries(
+                    Object.entries(staff).filter(([key]) => !excludedKeys.includes(key))
+                )
+            );
 
-        result = result.map((trace, index) => ({
-            ...trace,
-            ...traceData[index].total
-        }))
+        result = result
+            .map((trace, index) => ({
+                ...trace,
+                ...traceData[index].total
+            }))
+            .filter(entry => entry.sells !== 0 || entry.refunds !== 0)
 
         return result
     }, [traceData]);
+
+
+    const handleDayClosing = async () => {
+        setClosingDay(true)
+        await closeTrace()
+            .then(() => {
+                setClosingDay(false)
+                loadData()
+            })
+            .catch(err => console.error(err))
+
+    }
 
     /**
      * Importation
@@ -355,6 +359,7 @@ function EconomyView() {
     useEffect(() => {
         loadData()
         normalizeTrace()
+
         loadCurrency()
         loadStaffData()
         loadProviderData()
@@ -750,7 +755,7 @@ function EconomyView() {
                 {!manualClosing &&
                     <AutomaticEconomyForm
                         closingDay={isClosgingDay}
-                        currentTrace={currentTrace}
+                        currentTrace={currentTrace ?? {}}
                         onClose={handleDayClosing}
                     />
                 }
