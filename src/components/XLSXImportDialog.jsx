@@ -4,11 +4,9 @@ import { importFile } from "../utils/xlsx-util"
 import useAlertStore from "../stores/alertStore"
 import ErrorToast from "./ErrorToast"
 import ColumnSelector from "./ColumnSelector"
-import ProductItem from "./ProductItem"
 import { normalizeExcelDate } from "../utils/date-util"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFileImport } from "@fortawesome/free-solid-svg-icons"
 import useDialogStore from "../stores/dialogStore"
+import DefaultButton from "./DefaultButton"
 
 function XLSXImportDialog({ title, model, optionalFields, onImport, previewComponent: Preview }) {
 
@@ -231,19 +229,9 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
             items-center justify-end
             bg-(--bg-soft)
             ">
-                <button className="
-                transition cursor-pointer
-                disabled:cursor-not-allowed
-                flex flex-row
-                items-center
-                px-3! py-1! gap-1
-                bg-(--accent-alt) text-white!
-                hover:not-disabled:bg-white hover:not-disabled:text-(--bg-alt)!
-                text-xl!
-                rounded-xs
-                disabled:opacity-50
-                "
-                    disabled={!readyToImport}
+                <DefaultButton
+                    label="Importar"
+                    icon="file-import"
                     onClick={() => {
                         let result = resultantData
                         result.forEach(item => {
@@ -255,12 +243,9 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
 
                         onImport(result)
                         closeDialog()
-                    }}>
-                    <FontAwesomeIcon icon={faFileImport} />
-                    <strong>
-                        Importar
-                    </strong>
-                </button>
+                    }}
+                    disabled={!readyToImport}
+                />
             </div>
         </div>
     )
