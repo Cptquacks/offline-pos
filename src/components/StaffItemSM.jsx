@@ -36,7 +36,7 @@ function StaffItemSM({ data }) {
                             {data.name}
                         </strong>
                         <strong className="opacity-50">
-                            {data.ID}
+                            CI: {data.ID}
                         </strong>
                     </div>
                 </div>
