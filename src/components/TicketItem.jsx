@@ -22,7 +22,7 @@ function TicketItem({ data }) {
             rounded-t-sm
             ">
                 <FontAwesomeIcon icon={faReceipt} size="lg" />
-                <strong>
+                <strong className="text-lg">
                     {data.type}
                 </strong>
             </div>

@@ -33,11 +33,12 @@ function CurrencySelector({ onChange, current }) {
                 <TagItem label={currency} icon='dollar-sign' />
             </div>
 
-            <div className="
-            flex flex-row
-            ">
+            <div className="flex flex-row">
                 <fieldset className="
-                grid grid-cols-3
+                grid 
+                xl:grid-cols-4
+                lg:grid-cols-2
+                
                 gap-1 w-full
                 ">
                     {(!currencyList || currencyList.length === 0) &&

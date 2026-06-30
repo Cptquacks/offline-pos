@@ -10,6 +10,7 @@ import useCurrencyStore from "../stores/currencyStore"
 import { colorParser, lchToHex, randomLCH } from "../utils/tag-util"
 import useDialogStore from "../stores/dialogStore"
 import LoadingDialog from "../components/LoadingDialog"
+import LoadingWidget from "../components/LoadingWidget"
 
 function ResumeView() {
     const { traceData, loadData } = useTraceStore()
@@ -131,59 +132,62 @@ function ResumeView() {
                 overflow-y-auto
                 "
             >
-                <BarChart
-                    className="
-                    p-4!
-                    bg-(--bg-soft)
-                    border border-(--border)
-                    rounded-md
-                    "
-                    style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
-                    data={currencyTrace}>
+                {isLoading && <LoadingWidget />}
+                {!isLoading &&
+                    <BarChart
+                        className="
+                        p-4!
+                        bg-(--bg-soft)
+                        border border-(--border)
+                        rounded-md
+                        "
+                        style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                        data={currencyTrace}>
 
-                    {currencyList.map((entry, index) =>
+                        {currencyList.map((entry, index) =>
+                            <Bar
+                                key={index}
+                                name={`Ganancias en ${entry}`}
+                                dataKey={entry}
+                                fill={lchToHex(colorParser(randomLCH()))}
+                            />
+                        )}
+
+                        <XAxis dataKey="date" />
+
+                        <Tooltip />
+                        <Legend />
+
+                    </BarChart>
+                }
+                {!isLoading &&
+                    <BarChart
+                        className="
+                            p-4!
+                            bg-(--bg-soft)
+                            border border-(--border)
+                            rounded-md
+                            "
+                        style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                        data={salesTrace}>
+
                         <Bar
-                            key={index}
-                            name={`Ganancias en ${entry}`}
-                            dataKey={entry}
-                            fill={lchToHex(colorParser(randomLCH()))}
-                        />
-                    )}
+                            name="Ventas"
+                            dataKey="sales"
+                            fill="#0081A3" />
 
-                    <XAxis dataKey="date" />
+                        <Bar
+                            name="Devoluciones"
+                            dataKey="refunds"
+                            fill="var(--accent)" />
 
-                    <Tooltip />
-                    <Legend />
+                        <XAxis dataKey="date" />
 
-                </BarChart>
+                        <Tooltip />
+                        <Legend />
 
-                <BarChart
-                    className="
-                    p-4!
-                    bg-(--bg-soft)
-                    border border-(--border)
-                    rounded-md
-                    "
-                    style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
-                    data={salesTrace}>
-
-                    <Bar
-                        name="Ventas"
-                        dataKey="sales"
-                        fill="#0081A3" />
-
-                    <Bar
-                        name="Devoluciones"
-                        dataKey="refunds"
-                        fill="var(--accent)" />
-
-                    <XAxis dataKey="date" />
-
-                    <Tooltip />
-                    <Legend />
-
-                </BarChart>
-
+                    </BarChart>
+                }
             </div>
 
             <div className="

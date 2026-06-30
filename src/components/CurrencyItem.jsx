@@ -8,7 +8,8 @@ function CurrencyItem({ currency, group, checked = false, onChange }) {
         <div className={`
         relative
         transition cursor-pointer
-        **:w-full!
+        w-fit
+        **:w-fit!
         flex flex-row
         items-center
         ${checked ? 'bg-white/30' : ''}

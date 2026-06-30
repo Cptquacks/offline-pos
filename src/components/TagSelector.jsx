@@ -44,34 +44,40 @@ function TagSelector({ onChange, useRoles = false }) {
     }, [tagList, roleList])
 
     return (
-        <div className="
-        flex flex-col
-        bg-(--bg-soft)!
-        px-4! py-3! gap-3
-        border border-(--border)
-        rounded-md
-        ">
-            <div className="
-            flex-1
-            flex flex-row
-            w-full
-            justify-between items-center
-            ">
-                <p className="
-                font-bold!
-                ">
+        <div
+            className="
+            flex flex-col
+            bg-(--bg-soft)!
+            px-4! py-3! gap-3
+            border border-(--border)
+            rounded-md
+            "
+        >
+            <div
+                className="
+                flex-1
+                flex flex-row
+                w-full
+                justify-between items-center
+                "
+            >
+                <strong>
                     Categoría
-                </p>
+                </strong>
 
                 <TagItem label={current.name} color={current.name !== 'N/A' ? current.color : null} icon="tag" />
             </div>
 
-            <select value={selected} onChange={handleChange} className="
-            border border-white/20
-            bg-(--bg)
-            px-2! py-1!
-            rounded-sm
-            ">
+            <select
+                value={selected}
+                onChange={handleChange}
+                className="
+                px-2! py-1!
+                bg-(--bg)
+                border border-white/20
+                rounded-sm
+                "
+            >
                 <option value="N/A">Ninguno</option>
                 {(useRoles ? roleList : tagList).map((tag, index) => <option key={index} value={tag.name}>{tag.name}</option>
                 )}
