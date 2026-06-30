@@ -16,6 +16,7 @@ import TotalWasteDisplay from "../components/TotalWasteDisplay"
 import useDialogStore from "../stores/dialogStore"
 import EmptyList from "../components/EmptyList"
 import PreferenceSwitch from "../components/PreferenceSwitch"
+import LoadingDialog from "../components/LoadingDialog"
 
 
 
@@ -357,12 +358,17 @@ function EconomyView() {
      * Autoload
      */
     useEffect(() => {
-        loadData()
-        normalizeTrace()
-
-        loadCurrency()
-        loadStaffData()
-        loadProviderData()
+        (
+            async () => {
+                setLoading(true)
+                await loadData()
+                await normalizeTrace()
+                await loadCurrency()
+                await loadStaffData()
+                await loadProviderData()
+            }
+        )()
+            .then(() => setLoading(false))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

@@ -13,6 +13,7 @@ import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import { randomLCH } from "../utils/tag-util"
 import useDialogStore from "../stores/dialogStore"
 import DropdownMenu from "../components/DropdownMenu"
+import LoadingDialog from "../components/LoadingDialog"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile } = useProductStore()
@@ -108,8 +109,14 @@ function InventoryView() {
     }
 
     useEffect(() => {
-        loadData()
-        loadTags()
+        (
+            async () => {
+                setLoading(true)
+                await loadData()
+                await loadTags()
+            }
+        )()
+            .then(() => setLoading(false))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

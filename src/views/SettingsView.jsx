@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import useRoleStore from "../stores/roleStore"
 import useTagStore from "../stores/tagStore"
 import TagItem from "../components/TagItem"
@@ -7,6 +7,8 @@ import usePreferenceStore from "../stores/preferenceStore"
 import PreferenceSwitch from "../components/PreferenceSwitch"
 import { randomLCH } from "../utils/tag-util"
 import useCurrencyStore from "../stores/currencyStore"
+import useDialogStore from "../stores/dialogStore"
+import LoadingDialog from "../components/LoadingDialog"
 
 function SettingsView() {
 
@@ -14,12 +16,33 @@ function SettingsView() {
     const { roleList, loadRoles, deleteRoles, addRole, modifyRole } = useRoleStore()
     const { tagList, loadTags, deleteTags, addTag, modifyTag } = useTagStore()
     const { currencyList, loadData: loadCurrencies, addCurrency, deleteCurrency } = useCurrencyStore()
+    const { openDialog, closeDialog } = useDialogStore()
+
+    const [isLoading, setLoading] = useState(false)
 
     useEffect(() => {
-        loadData()
-        loadRoles()
-        loadTags()
-        loadCurrencies()
+        if (!isLoading) {
+            closeDialog()
+            return
+        }
+
+        openDialog(
+            <LoadingDialog />
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading])
+
+    useEffect(() => {
+        (
+            async () => {
+                setLoading(true)
+                await loadData()
+                await loadRoles()
+                await loadTags()
+                await loadCurrencies()
+            }
+        )()
+            .then(() => setLoading(false))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -101,6 +124,9 @@ function SettingsView() {
                         onDelete={data => deleteCurrency(data)} />
 
                     <span className="mb-4! col-span-full opacity-0">
+                        {/**
+                         * Sta mmada que mijo
+                         */}
                         Si estas leyendo esto vamos a tener problemas tu y yo
                     </span>
                 </div>

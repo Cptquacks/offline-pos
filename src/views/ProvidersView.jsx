@@ -10,6 +10,7 @@ import { addDays, daysFromToday } from "../utils/date-util"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import TotalWasteDisplay from "../components/TotalWasteDisplay"
 import useDialogStore from "../stores/dialogStore"
+import LoadingDialog from "../components/LoadingDialog"
 
 function ProvidersView() {
     const { providerData, loadData, addProvider, overwriteData } = useProviderStore()
@@ -78,7 +79,8 @@ function ProvidersView() {
     }
 
     useEffect(() => {
-        loadData()
+        setLoading(true)
+        loadData().then(() => setLoading(false))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

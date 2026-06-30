@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts"
 import useTraceStore from "../stores/traceStore"
 import useStaffStore from "../stores/staffStore"
@@ -8,12 +8,17 @@ import useProductStore from "../stores/productStore"
 import ProductItemSM from "../components/ProductItemSM"
 import useCurrencyStore from "../stores/currencyStore"
 import { colorParser, lchToHex, randomLCH } from "../utils/tag-util"
+import useDialogStore from "../stores/dialogStore"
+import LoadingDialog from "../components/LoadingDialog"
 
 function ResumeView() {
     const { traceData, loadData } = useTraceStore()
     const { currencyList, loadData: loadCurrencies } = useCurrencyStore()
     const { staffData, loadData: loadStaffData } = useStaffStore()
     const { productData, loadData: loadProductsData } = useProductStore()
+    const { openDialog, closeDialog } = useDialogStore()
+
+    const [isLoading, setLoading] = useState(false)
 
     const currencyTrace = useMemo(() => {
         let result = traceData.toReversed()
@@ -82,10 +87,29 @@ function ResumeView() {
     }, [productData])
 
     useEffect(() => {
-        loadData()
-        loadCurrencies()
-        loadStaffData()
-        loadProductsData()
+        if (!isLoading) {
+            closeDialog()
+            return
+        }
+
+        openDialog(
+            <LoadingDialog />
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading])
+
+    useEffect(() => {
+        (
+            async () => {
+                setLoading(true)
+                await loadData()
+                await loadCurrencies()
+                await loadStaffData()
+                await loadProductsData()
+            }
+        )()
+            .then(() => setLoading(false))
+
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

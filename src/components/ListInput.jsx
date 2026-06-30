@@ -2,7 +2,7 @@ import { faAdd, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useState } from "react"
 
-function ListInput({ label, onChange, placeHolder = '', type = 'text', required = true }) {
+function ListInput({ label, placeHolder = '', type = 'text', onChange, required = true }) {
     const [data, setData] = useState([
         { value: '' }
     ])
@@ -35,6 +35,7 @@ function ListInput({ label, onChange, placeHolder = '', type = 'text', required 
 
     useEffect(() => {
         onChange(data)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data])
 
     return (
@@ -107,21 +108,24 @@ function ListInput({ label, onChange, placeHolder = '', type = 'text', required 
                                 type={type}
                                 value={item.value}
                                 onChange={event => handleChange(index, event.target.value)}
-                                required={required} />
+                                required={required}
+                            />
                         </div>
 
-                        <button className="
-                        transition-normal cursor-pointer
-                        p-1!
-                        text-white
-                        bg-red-500/50
-                        border-2 border-(--border)
-                        rounded-lg
+                        <button
+                            className="
+                            transition-normal cursor-pointer
+                            p-1!
+                            text-white
+                            bg-red-500/50
+                            border-2 border-(--border)
+                            rounded-lg
 
-                        hover:shadow-(--shadow)
-                        "
+                            hover:shadow-(--shadow)
+                            "
                             type="button"
-                            onClick={() => handleDeletion(index)}>
+                            onClick={() => handleDeletion(index)}
+                        >
                             <FontAwesomeIcon icon={faTrashAlt} size="lg" />
                         </button>
                     </div>

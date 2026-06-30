@@ -90,8 +90,14 @@ function StaffView() {
     }
 
     useEffect(() => {
-        loadData()
-        loadRoles()
+        (
+            async () => {
+                setLoading(true)
+                await loadData()
+                await loadRoles()
+            }
+        )()
+            .then(() => setLoading(false))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
