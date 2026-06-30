@@ -53,20 +53,24 @@ function SettingsView() {
         p-4!
         ">
 
-            <div className="
-            flex-1
-            flex flex-col
-            w-full self-stretch
-            bg-(--bg-soft)
-            rounded-md
-            p-4! gap-4
-            overflow-y-auto
-            ">
-                <div className="
-                grid grid-cols-2 grid-rows-3
-                w-fit
-                gap-3
-                ">
+            <div
+                className="
+                flex-1
+                flex flex-col
+                w-full self-stretch
+                bg-(--bg-soft)
+                rounded-md
+                p-4! gap-4
+                overflow-y-auto
+                "
+            >
+                <div
+                    className="
+                    grid grid-cols-2 grid-rows-2
+                    w-fit
+                    gap-3
+                    "
+                >
 
                     <TagList
                         label="Categorías"

@@ -14,16 +14,19 @@ function TagListWrapper({ children, color, onSelected, isSelected, onColorSelect
     if (!children) return false
 
     return (
-        <div className={`
-        transition cursor-pointer
-        flex flex-row
-        items-center
-        p-2! px-4! gap-3
-        bg-(--bg-alt) hover:bg-white/20
-        border border-white/20
-        rounded-md
-        ${isSelected ? 'bg-(--accent-alt)/30!' : ''}
-        `}>
+        <div
+            className={`
+            transition cursor-pointer
+            flex flex-row
+            items-center
+            p-2! px-4! gap-3
+            bg-(--bg-alt) 
+            hover:bg-white/20
+            border border-white/20
+            rounded-md
+            ${isSelected ? 'bg-(--accent-alt)/30!' : ''}
+        `}
+        >
             <div className="
             flex-1
             "
@@ -32,10 +35,12 @@ function TagListWrapper({ children, color, onSelected, isSelected, onColorSelect
             </div>
 
             {color &&
-                <div className="
-                relative
-                w-6 h-6
-                ">
+                <div
+                    className="
+                    relative
+                    w-6 h-6
+                    "
+                >
                     <div
                         className="
                         inset-0
@@ -44,7 +49,8 @@ function TagListWrapper({ children, color, onSelected, isSelected, onColorSelect
                         border-2 border-white/30
                         "
                         style={{ background: currentColor }}
-                        onClick={() => colorPicker.current?.click()} />
+                        onClick={() => colorPicker.current?.click()}
+                    />
 
                     <input
                         ref={colorPicker}
@@ -55,7 +61,8 @@ function TagListWrapper({ children, color, onSelected, isSelected, onColorSelect
                         style={{ background: currentColor }}
                         type="color"
                         value={currentColor}
-                        onChange={event => handleColorChange(event.target.value)} />
+                        onChange={event => handleColorChange(event.target.value)}
+                    />
                 </div>
             }
         </div>

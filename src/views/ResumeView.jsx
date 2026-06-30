@@ -120,15 +120,17 @@ function ResumeView() {
         h-full 
         gap-3 p-4!
         ">
-            <div className="
-            flex flex-col 
-            items-center justify-between
-            col-span-2 row-span-3
-            p-4! py-2! gap-2
-            bg-(--bg-soft)!
-            rounded-md
-            overflow-y-auto
-            ">
+            <div
+                className="
+                flex flex-col 
+                items-center justify-center
+                col-span-2 row-span-3
+                p-4! py-2! gap-2
+                bg-(--bg-soft)!
+                rounded-md
+                overflow-y-auto
+                "
+            >
                 <BarChart
                     className="
                     p-4!
