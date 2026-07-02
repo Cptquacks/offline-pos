@@ -21,26 +21,39 @@ function CurrencySelector({ onChange, current }) {
     return (
         <div className="
         flex flex-col
+        items-center
         gap-3 px-4! py-3!
         bg-(--bg-soft)!
         border border-(--border)
         rounded-md
         ">
-            <div className="flex flex-row items-center justify-between gap-3 ">
+            <div
+                className="
+                flex-1 w-full
+                flex flex-row 
+                items-center justify-between 
+                gap-3 
+                "
+            >
                 <p className="font-bold!">
                     Tipo de pago
                 </p>
                 <TagItem label={currency} icon='dollar-sign' />
             </div>
 
-            <div className="flex flex-row">
-                <fieldset className="
-                grid 
-                xl:grid-cols-4
-                lg:grid-cols-2
-                
-                gap-1 w-full
-                ">
+            <div className="
+            flex flex-row
+            items-center justify-center
+            ">
+                <fieldset
+                    className="
+                    grid 
+                    xl:grid-cols-4
+                    lg:grid-cols-3
+                    md:grid-cols-2
+                    gap-1
+                    "
+                >
                     {(!currencyList || currencyList.length === 0) &&
                         <EmptyList />
                     }

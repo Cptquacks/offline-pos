@@ -8,12 +8,12 @@ function CurrencyItem({ currency, group, checked = false, onChange }) {
         <div className={`
         relative
         transition cursor-pointer
-        w-fit
-        **:w-fit!
+        w-full
+        **:w-full!
         flex flex-row
         items-center
-        ${checked ? 'bg-white/30' : ''}
         rounded-full
+        ${checked ? 'bg-white/30' : 'hover:bg-white/10'}
         `} onClick={() => radio.current?.click()}>
             <input
                 className="hidden absolute"

@@ -1,7 +1,7 @@
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-function LoadingDialog({ label = 'Loading...', current = 0, total = 0 }) {
+function LoadingDialog({ label = 'Cargando...', current = 0, total = 0 }) {
     return (
         <div className="
         flex flex-col

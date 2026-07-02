@@ -7,9 +7,9 @@ function AlertRoot() {
     useEffect(() => {
         setTimeout(() => {
             removeAlert()
-            return
         }, 1500);
-    }, [alertTrail, removeAlert])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [alertTrail])
 
     if (alertTrail.length === 0) return null
     return (

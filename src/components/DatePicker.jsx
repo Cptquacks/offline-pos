@@ -22,10 +22,14 @@ function DatePicker({ label, onChange, value = null, required = true }) {
             </p>
 
             <input className="
+            transition
             bg-(--bg)
             border border-white/20
             rounded-sm
             px-2! py-0.5!
+            focus:text-white
+            focus:bg-(--accent-alt)/30
+            focus:border-(--accent)/50
             "
                 type='date' value={date}
                 onChange={handleChange} required={required} />

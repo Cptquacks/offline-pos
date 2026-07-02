@@ -14,11 +14,15 @@ import { randomLCH } from "../utils/tag-util"
 import useDialogStore from "../stores/dialogStore"
 import DropdownMenu from "../components/DropdownMenu"
 import LoadingDialog from "../components/LoadingDialog"
+import useAlertStore from "../stores/alertStore"
+import SuccessToast from "../components/SuccessToast"
+import ErrorToast from "../components/ErrorToast"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile } = useProductStore()
     const { tagList, loadTags, addTag } = useTagStore()
     const { openDialog, closeDialog } = useDialogStore()
+    const { addAlert } = useAlertStore()
 
 
     const [query, setQuery] = useState('')
@@ -210,7 +214,28 @@ function InventoryView() {
             rounded-md
             p-4! overflow-y-auto
             ">
-                <ProductForm onSubmit={data => addProduct(data)} />
+                <ProductForm onSubmit={async (data) => {
+                    setLoading(true)
+                    addProduct(data)
+                        .then(() => {
+                            setLoading(false)
+                            addAlert(
+                                <SuccessToast
+                                    label='Nuevo producto añadido'
+                                />
+                            )
+                        })
+                        .catch(
+                            err => {
+                                setLoading(false)
+                                addAlert(
+                                    <ErrorToast
+                                        label={`Producto no añadido: ${err}`}
+                                    />
+                                )
+                            }
+                        )
+                }} />
             </div>
 
         </section>

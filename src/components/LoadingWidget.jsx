@@ -1,7 +1,7 @@
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-function LoadingWidget({ message = 'cargando sección' }) {
+function LoadingWidget({ message = 'Cargando...' }) {
 
     return (
         <div
