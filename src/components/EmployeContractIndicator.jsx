@@ -1,13 +1,15 @@
 import { useMemo } from "react"
 import DefaultButton from "./DefaultButton"
 
-function EmployeContractIndicator({ days, onRenew, showButton = true }) {
+function EmployeContractIndicator({ days, onRenew, showButton = true, isLoading = false }) {
     const status = useMemo(() => {
         if (days > 15) return 3
         else if (days > 7) return 2
         else if (days > 3) return 1
         return 0
     }, [days])
+
+
     return (
         <>
             {status === 3 &&
@@ -70,6 +72,7 @@ function EmployeContractIndicator({ days, onRenew, showButton = true }) {
                             label="Renovar"
                             icon="rotate-left"
                             onClick={() => onRenew()}
+                            loading={isLoading}
                         />
                     }
 

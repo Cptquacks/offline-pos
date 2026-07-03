@@ -47,7 +47,8 @@ function StaffView() {
     }, [query, filter, staffData])
 
     const exportedData = useMemo(() => {
-        return filterObjectKeysFromStructure(staffData, ['index', 'notes'])
+        let result = filterObjectKeysFromStructure(staffData, ['index', 'notes', 'span'])
+        return result.sort((a, b) => a.name - b.name)
     }, [staffData]);
 
     const [isLoading, setLoading] = useState(false)
@@ -62,7 +63,7 @@ function StaffView() {
         setLoadValue({ current: 0, total: importedData.length })
 
         const newRoles = []
-        importedData.forEach(fragment => {
+        importedData.forEach((fragment, index) => {
             if (
                 fragment.charge &&
                 fragment.charge.trim().length > 0 &&
@@ -70,6 +71,10 @@ function StaffView() {
                 !newRoles.includes(fragment.charge)
             ) {
                 newRoles.push(fragment.charge)
+            }
+
+            if (!fragment['currency']) {
+                importedData[index]['currency'] = 'CUP'
             }
 
             fragment.salary = parseInt(fragment.salary)
@@ -159,12 +164,13 @@ function StaffView() {
                                     "name": "Nombre",
                                     "ID": "Carnet de identidad",
                                     "salary": "Salario",
+                                    "currency": "Moneda de pago",
                                     "charge": "Cargo",
                                     "contact": "Numero telefoníco",
                                     "startDate": "Inicio decontrato",
                                     "endDate": "Fin de contrato"
                                 }}
-                                optionalFields={["charge", "contact", "ID", "startDate", "endDate"]}
+                                optionalFields={["currency", "charge", "contact", "ID", "startDate", "endDate"]}
                                 title="Importar"
                                 onImport={data => handleImportation(data)}
                                 previewComponent={({ data }) => <EmployeItem data={data} isOnPreview={true} />}

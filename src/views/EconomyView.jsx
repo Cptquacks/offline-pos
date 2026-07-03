@@ -452,6 +452,7 @@ function EconomyView() {
 
                     {currentChip.route === 'staff' &&
                         <TotalWasteDisplay
+                            wasteKey="salary"
                             elements={staffTrace}
                         />
                     }

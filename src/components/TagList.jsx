@@ -29,11 +29,24 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
         ">
             <div className="
             flex flex-col
-            gap-1
+            gap-3
             ">
-                <strong>
-                    {label}
-                </strong>
+                <div
+                    className="
+                    flex flex-row
+                    items-center justify-between
+                    "
+                >
+                    <strong>
+                        {label}
+                    </strong>
+
+                    {elements &&
+                        <strong>
+                            Elementos: {elements.length}
+                        </strong>
+                    }
+                </div>
 
                 <form className="
                 flex flex-row
@@ -53,7 +66,8 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
                         placeholder="Nueva entrada"
                         value={newItem}
                         onChange={event => setNewItem(event.target.value)}
-                        required />
+                        required
+                    />
 
                     <DefaultButton
                         icon="plus"

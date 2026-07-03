@@ -12,10 +12,10 @@ function TotalWasteDisplay({ elements, wasteKey = 'waste' }) {
                     waste: 0
                 }
             }
-            console.log(element[wasteKey])
+
             grouped[element.currency ?? 'CUP'].waste += parseInt(element[wasteKey])
         });
-        console.log(grouped)
+
         const result = Object.values(grouped)
         return result
     }, [elements, wasteKey])

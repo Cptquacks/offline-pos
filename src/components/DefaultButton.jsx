@@ -4,7 +4,7 @@ function DefaultButton(
     {
         icon, iconSize = "md", iconLeft = false,
         label, customColor = null, inversedIcon = false, type = "button",
-        disabled = false, onClick
+        disabled = false, loading = false, onClick
     }
 ) {
     return (
@@ -25,10 +25,10 @@ function DefaultButton(
             disabled:opacity-50
 
             ${iconLeft ? 'flex-row-reverse' : 'flex-row'}
-            ${customColor ? `${customColor} border border-white/40` : 'bg-(--accent-alt)'} 
+            ${customColor ? `${customColor} border border-white/40` : 'bg-(--accent-alt)'}
             `}
             type={type}
-            disabled={disabled}
+            disabled={disabled || loading}
 
             onClick={onClick}
         >
@@ -36,8 +36,9 @@ function DefaultButton(
                 className={`
                 ${inversedIcon ? 'fa-rotate-180' : ''}
                 `}
-                icon={`${icon}`}
+                icon={!loading ? `${icon}` : 'spinner'}
                 size={iconSize}
+                spinPulse={loading}
             />
             <strong>
                 {label}

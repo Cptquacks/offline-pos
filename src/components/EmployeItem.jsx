@@ -34,6 +34,7 @@ function EmployeItem({ data, isOnPreview = false }) {
 
     const [currentData, setCurrentData] = useState(data)
     const [editMode, setEditMode] = useState(false)
+    const [isLoading, setLoading] = useState(false)
 
     const currentTag = useMemo(() => {
         let tag = { name: data.charge, color: '0%,0,0' }
@@ -73,14 +74,19 @@ function EmployeItem({ data, isOnPreview = false }) {
     }
 
     const handleRenew = () => {
+        setLoading(true)
+
         const days = daysBetween(data.endDate, data.startDate)
         const today = new Date().toLocaleDateString('sv-SE')
+
         let result = {
             ...data,
             startDate: today,
             endDate: addDays(today, days)
         }
+
         modifyStaff(result, data.index)
+            .then(() => setLoading(false))
     }
 
     const handleNoteAddition = (note) => {
@@ -306,7 +312,9 @@ function EmployeItem({ data, isOnPreview = false }) {
                             {(daysUntilEOC !== null && !isOnPreview) &&
                                 <EmployeContractIndicator
                                     days={daysUntilEOC}
-                                    onRenew={() => handleRenew()} />}
+                                    onRenew={() => handleRenew()}
+                                    isLoading={isLoading}
+                                />}
 
                             {((daysUntilEOC === null || isOnPreview) && data.startDate) &&
                                 <div className="
