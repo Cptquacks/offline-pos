@@ -6,15 +6,19 @@ import ProviderForm from "../components/ProviderForm"
 import SearchBar from "../components/SearchBar"
 import ImportPanel from "../components/ImportPanel"
 import { stringSimilarity } from "../utils/string-util"
-import { addDays, daysFromToday } from "../utils/date-util"
+import { addDays, daysBetween, daysFromToday } from "../utils/date-util"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import TotalWasteDisplay from "../components/TotalWasteDisplay"
 import useDialogStore from "../stores/dialogStore"
 import LoadingDialog from "../components/LoadingDialog"
+import DefaultButton from "../components/DefaultButton"
+import ConfirmDialog from "../components/ConfirmDialog"
 
 function ProvidersView() {
-    const { providerData, loadData, addProvider, overwriteData } = useProviderStore()
+    const { providerData, loadData, addProvider, modifyProvider, overwriteData } = useProviderStore()
     const { openDialog, closeDialog } = useDialogStore()
+
+    const today = new Date().toLocaleDateString('sv-SE')
 
     const [query, setQuery] = useState('')
     const filteredList = useMemo(() => {
@@ -30,6 +34,10 @@ function ProvidersView() {
         }
         return result
     }, [query, providerData])
+
+    const totalRebuys = useMemo(() => {
+        return providerData.filter(provider => !provider.active).length
+    }, [providerData])
 
     const exportedData = useMemo(() => {
 
@@ -78,6 +86,22 @@ function ProvidersView() {
         setLoading(false)
     }
 
+    const handleRebuyAll = () => {
+        openDialog(<ConfirmDialog callback={rebuyAll} />)
+    }
+
+    const rebuyAll = () => {
+        providerData.forEach((provider, index) => {
+            if (provider.active) return
+
+            const restockDate = addDays(provider.startedAt, provider.span)
+            const newSpan = daysBetween(today, restockDate)
+
+            const finalDate = addDays(provider.startedAt, provider.span - newSpan)
+            modifyProvider({ ...provider, startedAt: finalDate }, index)
+        })
+    }
+
     useEffect(() => {
         setLoading(true)
         loadData().then(() => setLoading(false))
@@ -122,7 +146,8 @@ function ProvidersView() {
                 overflow-y-auto
                 ">
                     <div className="
-                    flex flex-col
+                    flex flex-row
+                    justify-between
                     px-4! py-2! gap-4
                     ">
                         <ImportPanel
@@ -141,6 +166,26 @@ function ProvidersView() {
                             previewComponent={({ data }) => <ProviderItem data={data} isOnPreview={true} />}
                             exportData={exportedData}
                         />
+
+                        <div
+                            className="
+                            flex flex-row
+                            items-center justify-center
+                            px-4! py-2!
+                            bg-(--bg-alt)
+                            border border-white/10
+                            rounded-md
+                            "
+                        >
+
+                            <DefaultButton
+                                label={`Recomprar todo (${totalRebuys})`}
+                                icon={'hand-holding-usd'}
+                                disabled={!totalRebuys}
+
+                                onClick={handleRebuyAll}
+                            />
+                        </div>
                     </div>
 
                     <div className="
