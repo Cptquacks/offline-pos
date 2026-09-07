@@ -3,7 +3,7 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
 
 
 /**
- * @typedef {Object} productStore
+ * @typedef {Object} productStore Store for products
  * @property {Array} productData
  * @property {() => Promise<void>} loadData
  * @property {(product: Object) => Promise<void>} addProduct
@@ -20,10 +20,12 @@ const useProductStore = create((set, get) => ({
         const data = await loadData('products')
         set({ productData: data })
     },
+
     addProduct: async (product) => {
         const data = await updateData('products', product)
         set({ productData: data })
     },
+
     modifyProduct: async (product, index) => {
         const { productData } = get()
         const updatedData = productData
@@ -33,6 +35,7 @@ const useProductStore = create((set, get) => ({
 
         set({ productData: data })
     },
+
     deleteProduct: async (target) => {
         const { productData } = get()
         let updatedData = productData
@@ -42,6 +45,7 @@ const useProductStore = create((set, get) => ({
 
         set({ productData: data })
     },
+
     overwriteFile: async (chunk) => {
         const data = await writeData('products', chunk)
         set({ productData: data })

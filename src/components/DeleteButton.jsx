@@ -17,15 +17,20 @@ function DeleteButton({ onDelete }) {
     }
 
     return (
+
         <div
             className="
+            flex flex-row
             transition cursor-pointer
+            items-center
             bg-red-500/60 text-white!
             w-fit h-fit
-            p-1!
-            border-2 border-(--border)
-            hover:shadow-(--shadow)
-            rounded-lg
+            p-1.25!
+            border-2 border-white/15
+            rounded-xs
+
+            hover:bg-white
+            hover:*:text-(--bg)
             "
             onClick={handleOnClick}
         >

@@ -17,9 +17,13 @@ import LoadingDialog from "../components/LoadingDialog"
 import useAlertStore from "../stores/alertStore"
 import SuccessToast from "../components/SuccessToast"
 import ErrorToast from "../components/ErrorToast"
+import StandardItemCard from "../components/StandardItemCard"
+import TagItem from "../components/TagItem"
+import StockDisplay from "../components/StockDisplay"
+import ExpirationDisplay from "../components/ExpirationDisplay"
 
 function InventoryView() {
-    const { productData, loadData, addProduct, overwriteFile } = useProductStore()
+    const { productData, loadData, addProduct, overwriteFile, deleteProduct } = useProductStore()
     const { tagList, loadTags, addTag } = useTagStore()
     const { openDialog, closeDialog } = useDialogStore()
     const { addAlert } = useAlertStore()
@@ -198,10 +202,36 @@ function InventoryView() {
                     </div>
 
                     <ItemsList>
+                        {/*
+                            NOTE Inventory items
+                        */}
                         {filteredList.map((product, index) =>
-                            <ProductItem
+                            <StandardItemCard
                                 key={index}
-                                data={{ index: index, ...product }} />
+                                icon="box"
+                                title={product.name}
+                                tagItem={
+                                    <TagItem
+                                        icon={'user'}
+                                        label={product.tag}
+                                        color={tagList.find(tag => tag.name === product.tag).color}
+                                    />
+                                }
+                                stockDisplay={
+                                    <StockDisplay
+                                        total={product.amount}
+                                        amount={product.current}
+                                    />
+                                }
+                                expirationDisplay={
+                                    product.expiresAt ?
+                                        <ExpirationDisplay
+                                            days={daysFromToday(product.expiresAt)}
+                                        /> : <p></p>
+                                }
+                                endDate={product.expiresAt}
+                                onDelete={() => deleteProduct(index)}
+                            />
                         )}
                     </ItemsList>
                 </div>
