@@ -212,7 +212,7 @@ function InventoryView() {
                                 title={product.name}
                                 tagItem={
                                     <TagItem
-                                        icon={'user'}
+                                        icon={'tag'}
                                         label={product.tag}
                                         color={tagList.find(tag => tag.name === product.tag).color}
                                     />
