@@ -21,6 +21,9 @@ import StandardItemCard from "../components/StandardItemCard"
 import TagItem from "../components/TagItem"
 import StockDisplay from "../components/StockDisplay"
 import ExpirationDisplay from "../components/ExpirationDisplay"
+import StandardItemCardWrapper from "../components/StandardItemCardWrapper"
+import DefaultButton from "../components/DefaultButton"
+import DeleteButton from "../components/DeleteButton"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile, deleteProduct } = useProductStore()
@@ -63,6 +66,9 @@ function InventoryView() {
 
     const [isLoading, setLoading] = useState(false)
     const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
+
+    const [isSelecting, setSelecting] = useState(false)
+    const [selectedIndexes, setIndexes] = useState([])
 
 
     /**
@@ -116,6 +122,11 @@ function InventoryView() {
         setLoading(false)
     }
 
+    const deleteItems = async () => {
+        await overwriteFile(productData.filter((_, index) => !selectedIndexes.includes(index)))
+        setIndexes([])
+    }
+
     useEffect(() => {
         (
             async () => {
@@ -128,6 +139,9 @@ function InventoryView() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    /**
+     * Loading dialog functionallity
+     */
     useEffect(() => {
         if (!isLoading) {
             closeDialog()
@@ -142,6 +156,11 @@ function InventoryView() {
         )
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, loadValue])
+
+    useEffect(() => {
+        if (isSelecting) return
+        setIndexes([])
+    }, [isSelecting])
 
     return (
         <section className="
@@ -174,11 +193,10 @@ function InventoryView() {
                 flex flex-col
                 overflow-y-auto
                 ">
-                    <div className="grid">
+                    <div className="flex flex-col w-full gap-3 px-4! py-2!">
 
                         <div className="
-                        flex flex-row
-                        px-4! py-2! gap-1
+                        flex flex-row gap-1
                         ">
                             <ImportPanel
                                 model={{
@@ -199,6 +217,41 @@ function InventoryView() {
                             />
                         </div>
 
+                        <div
+                            className="
+                            flex flex-row
+                            gap-1 p-2! 
+                            w-fit *:h-full
+                            bg-(--bg-alt)
+                            border border-white/10
+                            rounded-md
+                            items-center
+                            "
+                        >
+                            <DefaultButton
+                                label={isSelecting ? "Cancelar" : "Seleccionar"}
+                                icon={isSelecting ? "times" : "clipboard-list"}
+                                onClick={() => setSelecting(!isSelecting)}
+                            />
+
+                            {!isSelecting && <DefaultButton
+                                label={isSelecting ? "Cancelar" : "Seleccionar todos"}
+                                icon={isSelecting ? "times" : "clipboard-check"}
+                                onClick={() => {
+                                    setIndexes(productData.map((_, index) => index))
+                                    setSelecting(true)
+                                }}
+                            />}
+
+                            {selectedIndexes.length > 0 && <DeleteButton
+                                label={`Eliminar todos (${selectedIndexes.length})`}
+                                onDelete={async () => {
+                                    setLoading(true)
+                                    await deleteItems().then(() => setLoading(false))
+                                }}
+                            />}
+                        </div>
+
                     </div>
 
                     <ItemsList>
@@ -206,32 +259,45 @@ function InventoryView() {
                             NOTE Inventory items
                         */}
                         {filteredList.map((product, index) =>
-                            <StandardItemCard
-                                key={index}
-                                icon="box"
-                                title={product.name}
-                                tagItem={
-                                    <TagItem
-                                        icon={'tag'}
-                                        label={product.tag}
-                                        color={tagList.find(tag => tag.name === product.tag).color}
-                                    />
-                                }
-                                stockDisplay={
-                                    <StockDisplay
-                                        total={product.amount}
-                                        amount={product.current}
-                                    />
-                                }
-                                expirationDisplay={
-                                    product.expiresAt ?
-                                        <ExpirationDisplay
-                                            days={daysFromToday(product.expiresAt)}
-                                        /> : <p></p>
-                                }
-                                endDate={product.expiresAt}
-                                onDelete={() => deleteProduct(index)}
-                            />
+                            <StandardItemCardWrapper
+                                canSelect={isSelecting}
+                                isSelected={selectedIndexes.includes(index)}
+                                onSelect={() => {
+                                    if (selectedIndexes.includes(index)) {
+                                        setIndexes(prev => prev.filter(item => item !== index))
+                                        return
+                                    }
+                                    setIndexes(prev => [...prev, index].toSorted((a, b) => a - b))
+                                }}
+                            >
+                                <StandardItemCard
+                                    key={index}
+                                    icon="box"
+                                    title={product.name}
+                                    tagItem={
+                                        <TagItem
+                                            icon={'tag'}
+                                            label={product.tag}
+                                            color={tagList.find(tag => tag.name === product.tag)?.color ?? '#000'}
+                                        />
+                                    }
+                                    stockDisplay={
+                                        <StockDisplay
+                                            total={product.amount}
+                                            amount={product.current}
+                                        />
+                                    }
+                                    expirationDisplay={
+                                        product.expiresAt ?
+                                            <ExpirationDisplay
+                                                days={daysFromToday(product.expiresAt)}
+                                            /> : <p></p>
+                                    }
+                                    endDate={product.expiresAt}
+                                    onDelete={() => deleteProduct(index)}
+                                    isOnPreview={isSelecting}
+                                />
+                            </StandardItemCardWrapper>
                         )}
                     </ItemsList>
                 </div>

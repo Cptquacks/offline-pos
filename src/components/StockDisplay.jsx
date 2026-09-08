@@ -12,12 +12,12 @@ function StockDisplay({ total, amount }) {
             rounded-full
             "
         >
-            <div className="flex flex-row gap-1">
+            <div className="flex flex-row gap-1 items-center">
                 <FontAwesomeIcon icon={"clipboard-check"} size="lg" />
                 <strong>Total:</strong>
                 <p>{total}</p>
             </div>
-            <div className="flex flex-row gap-1">
+            <div className="flex flex-row gap-1 items-center">
                 <FontAwesomeIcon icon={"warehouse"} size="lg" />
                 <strong>Disponible:</strong>
                 <p>{amount}</p>

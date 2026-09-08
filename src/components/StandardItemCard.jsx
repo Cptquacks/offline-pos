@@ -16,6 +16,7 @@ function StandardItemCard({
     return (
         <section
             className="
+            flex-1
             flex flex-col
             p-4! gap-3
             bg-(--bg-soft)
