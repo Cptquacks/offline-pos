@@ -11,6 +11,7 @@ function PriceSelectionInput({ onChange }) {
         return cost + (cost * (profit / 100))
     }, [cost, profit])
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { onChange(cost) }, [])
 
     useEffect(() => {
