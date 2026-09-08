@@ -5,6 +5,7 @@ import DateDisplay from "./DateDisplay";
 
 function StandardItemCard({
     icon = 'times',
+    codeBar,
     title, tagItem,
     stockDisplay, salaryDisplay,
     expirationDisplay, notesDisplay,
@@ -41,7 +42,15 @@ function StandardItemCard({
                     items-start justify-between 
                     "
                 >
-                    <strong className="text-xl">{title}</strong>
+                    <div
+                        className="
+                        flex flex-col
+                        gap-1
+                        "
+                    >
+                        <strong className="text-xl">{title}</strong>
+                        {codeBar && <strong className="text-sm opacity-50">Codigo: {codeBar}</strong>}
+                    </div>
                     {tagItem}
                 </div>
             </div>

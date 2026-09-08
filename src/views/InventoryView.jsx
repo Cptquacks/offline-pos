@@ -274,6 +274,7 @@ function InventoryView() {
                                     key={index}
                                     icon="box"
                                     title={product.name}
+                                    codeBar={product.code ?? 'N/A'}
                                     tagItem={
                                         <TagItem
                                             icon={'tag'}
