@@ -4,3 +4,4 @@ TODO Refactorizar stores
 TODO Generizar y refactorizar componentes
 ### DONE 1. Inventarios
 1. Crear borrado multiple de elementos
+2. Crear nueo dialogo para nuevos productos

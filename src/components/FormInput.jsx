@@ -19,6 +19,7 @@ function FormInput({ label, placeholder, onChange, defaultValue = null, type = '
             font-bold!
             ">
                 {label}
+                {!required && <span className="text-red-400"> *</span>}
             </p>
 
             <input

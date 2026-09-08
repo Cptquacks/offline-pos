@@ -37,27 +37,21 @@ function ImportPanel({ title, model, optionalFields, onImport, previewComponent,
         border border-(--border)
         rounded-md
         ">
-            <p>
-                Importar datos
-            </p>
-
             <div className="
             flex flex-row
             gap-2
             ">
                 <DefaultButton
-                    label="Importar desde Excel"
+                    label="Importar datos desde Excel"
                     icon="file-excel"
                     onClick={handleImport}
-                    iconSize="lg"
                 />
 
 
                 <DefaultButton
-                    label="Exportar a Excel"
+                    label="Exportar datos a Excel"
                     icon="file-excel"
                     onClick={handleExport}
-                    iconSize="lg"
                 />
             </div>
         </div>

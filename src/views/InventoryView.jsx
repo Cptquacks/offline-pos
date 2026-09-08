@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import ProductForm from "../components/ProductForm"
 import SearchBar from "../components/SearchBar"
-import TagFilter from "../components/TagFilter"
 import ImportPanel from "../components/ImportPanel"
 import useProductStore from "../stores/productStore"
 import ItemsList from "../components/ItemsList"
@@ -15,7 +13,6 @@ import useDialogStore from "../stores/dialogStore"
 import DropdownMenu from "../components/DropdownMenu"
 import LoadingDialog from "../components/LoadingDialog"
 import useAlertStore from "../stores/alertStore"
-import SuccessToast from "../components/SuccessToast"
 import ErrorToast from "../components/ErrorToast"
 import StandardItemCard from "../components/StandardItemCard"
 import TagItem from "../components/TagItem"
@@ -24,6 +21,7 @@ import ExpirationDisplay from "../components/ExpirationDisplay"
 import StandardItemCardWrapper from "../components/StandardItemCardWrapper"
 import DefaultButton from "../components/DefaultButton"
 import DeleteButton from "../components/DeleteButton"
+import StandarNewItemDialog from "../components/StandardNewItemDialog"
 
 function InventoryView() {
     const { productData, loadData, addProduct, overwriteFile, deleteProduct } = useProductStore()
@@ -164,7 +162,7 @@ function InventoryView() {
 
     return (
         <section className="
-        grid grid-cols-3 grid-rows-1 
+        grid grid-cols-1 grid-rows-1 
         h-full w-full
         p-4! gap-3
         ">
@@ -193,10 +191,93 @@ function InventoryView() {
                 flex flex-col
                 overflow-y-auto
                 ">
-                    <div className="flex flex-col w-full gap-3 px-4! py-2!">
+                    <div className="flex flex-row w-full gap-3 px-4! py-2!">
+
+                        <div className="flex flex-row gap-3">
+                            <div
+                                className="
+                                    flex flex-row 
+                                    items-center
+                                    p-2!
+                                    bg-(--bg-alt)
+                                    border border-white/10
+                                    rounded-md
+                                    "
+                            >
+                                <DefaultButton
+                                    label={"Nuevo producto"}
+                                    icon={"pen-to-square"}
+                                    onClick={() => openDialog(
+                                        <StandarNewItemDialog
+                                            icon={'box'}
+                                            label={'producto'}
+                                            fileFields={[
+                                                { 'name': 'text' },
+                                                { 'tag': 'tag' },
+                                                { 'code': 'text' },
+                                                { 'amount': 'number' },
+                                                { 'price': 'price' },
+                                                { 'currency': 'currency' },
+                                                { 'expiresAt': 'expiration' }
+                                            ]}
+                                            uiFields={[
+                                                { 'name': 'Nombre' },
+                                                { 'tag': 'Tipo' },
+                                                { 'code': 'Numero de serie' },
+                                                { 'amount': 'Stock' },
+                                                { 'price': 'Precio' },
+                                                { 'currency': 'Moneda de pago' },
+                                                { 'expiresAt': 'Fecha de caducidad' }
+                                            ]}
+                                            optionalFields={['expiresAt']}
+                                            additionCallback={value => addProduct(value)}
+                                            alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
+                                        />
+                                    )}
+                                    iconLeft
+                                />
+                            </div>
+
+                            <div
+                                className="
+                                    flex flex-row
+                                    gap-2 p-2! 
+                                    w-fit *:h-full
+                                    bg-(--bg-alt)
+                                    border border-white/10
+                                    rounded-md
+                                    items-center
+                                    "
+                            >
+                                <DefaultButton
+                                    label={isSelecting ? "Cancelar" : "Seleccionar"}
+                                    icon={isSelecting ? "times" : "clipboard-list"}
+                                    onClick={() => setSelecting(!isSelecting)}
+                                />
+
+                                {!isSelecting && <DefaultButton
+                                    label={isSelecting ? "Cancelar" : "Seleccionar todos"}
+                                    icon={isSelecting ? "times" : "clipboard-check"}
+                                    onClick={() => {
+                                        setIndexes(productData.map((_, index) => index))
+                                        setSelecting(true)
+                                    }}
+                                />}
+
+                                {selectedIndexes.length > 0 && <DeleteButton
+                                    label={`Eliminar todos (${selectedIndexes.length})`}
+                                    onDelete={async () => {
+                                        setLoading(true)
+                                        await deleteItems().then(() => setLoading(false))
+                                    }}
+                                />}
+                            </div>
+                        </div>
 
                         <div className="
-                        flex flex-row gap-1
+                        flex flex-row 
+                        justify-between
+                        gap-1
                         ">
                             <ImportPanel
                                 model={{
@@ -215,41 +296,6 @@ function InventoryView() {
                                 previewComponent={({ data }) => <ProductItem data={data} isOnPreview={true} />}
                                 exportData={exportedData}
                             />
-                        </div>
-
-                        <div
-                            className="
-                            flex flex-row
-                            gap-1 p-2! 
-                            w-fit *:h-full
-                            bg-(--bg-alt)
-                            border border-white/10
-                            rounded-md
-                            items-center
-                            "
-                        >
-                            <DefaultButton
-                                label={isSelecting ? "Cancelar" : "Seleccionar"}
-                                icon={isSelecting ? "times" : "clipboard-list"}
-                                onClick={() => setSelecting(!isSelecting)}
-                            />
-
-                            {!isSelecting && <DefaultButton
-                                label={isSelecting ? "Cancelar" : "Seleccionar todos"}
-                                icon={isSelecting ? "times" : "clipboard-check"}
-                                onClick={() => {
-                                    setIndexes(productData.map((_, index) => index))
-                                    setSelecting(true)
-                                }}
-                            />}
-
-                            {selectedIndexes.length > 0 && <DeleteButton
-                                label={`Eliminar todos (${selectedIndexes.length})`}
-                                onDelete={async () => {
-                                    setLoading(true)
-                                    await deleteItems().then(() => setLoading(false))
-                                }}
-                            />}
                         </div>
 
                     </div>
@@ -285,7 +331,7 @@ function InventoryView() {
                                     stockDisplay={
                                         <StockDisplay
                                             total={product.amount}
-                                            amount={product.current}
+                                            amount={product.current ?? product.amount}
                                         />
                                     }
                                     expirationDisplay={
@@ -303,38 +349,6 @@ function InventoryView() {
                     </ItemsList>
                 </div>
             </div>
-
-            <div className="
-            flex flex-col 
-            h-full
-            bg-(--bg-soft)!
-            rounded-md
-            p-4! overflow-y-auto
-            ">
-                <ProductForm onSubmit={async (data) => {
-                    setLoading(true)
-                    addProduct(data)
-                        .then(() => {
-                            setLoading(false)
-                            addAlert(
-                                <SuccessToast
-                                    label='Nuevo producto añadido'
-                                />
-                            )
-                        })
-                        .catch(
-                            err => {
-                                setLoading(false)
-                                addAlert(
-                                    <ErrorToast
-                                        label={`Producto no añadido: ${err}`}
-                                    />
-                                )
-                            }
-                        )
-                }} />
-            </div>
-
         </section>
     )
 }
