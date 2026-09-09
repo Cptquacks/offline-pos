@@ -123,7 +123,7 @@ function ResumeView() {
         ">
             <div
                 className="
-                flex flex-col 
+                flex flex-row 
                 items-center justify-center
                 col-span-2 row-span-3
                 p-4! py-2! gap-2
@@ -141,7 +141,7 @@ function ResumeView() {
                         border border-(--border)
                         rounded-md
                         "
-                        style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                        style={{ width: '100%', aspectRatio: 0.9, maxWidth: 600 }}
                         data={currencyTrace}>
 
                         {currencyList.map((entry, index) =>
@@ -168,7 +168,7 @@ function ResumeView() {
                             border border-(--border)
                             rounded-md
                             "
-                        style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                        style={{ width: '100%', aspectRatio: 0.9, maxWidth: 600 }}
                         data={salesTrace}>
 
                         <Bar
