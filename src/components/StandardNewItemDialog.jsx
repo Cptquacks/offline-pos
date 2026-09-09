@@ -13,7 +13,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 function StandarNewItemDialog(
     {
         label, icon,
-        fileFields, uiFields, optionalFields,
+        fileFields, uiFields, optionalFields, currentFieldData,
+        // eslint-disable-next-line no-unused-vars
         additionCallback, alertCallback
     }
 ) {
@@ -29,12 +30,18 @@ function StandarNewItemDialog(
                 'type': Object.values(field)[0],
                 'uiName': Object.values(uiFields[index])[0]
             }
+
+            if (!currentFieldData) return
+            grouped[index] = {
+                ...grouped[index],
+                'value': Object.values(currentFieldData[index])[0]
+            }
         });
 
         result = Object.values(grouped)
 
         return result
-    }, [fileFields, uiFields])
+    }, [fileFields, uiFields, currentFieldData])
 
     const [formData, setFormData] = useState(() => {
         const grouped = {}
@@ -51,7 +58,6 @@ function StandarNewItemDialog(
 
     const canAddItem = useMemo(() => {
         const requiredFields = fileFields.filter(field => !optionalFields.includes(Object.keys(field)[0])).map(field => Object.keys(field)[0])
-        console.log(requiredFields)
         return requiredFields.every(field => formData[field] !== null)
     }, [formData, fileFields, optionalFields])
 
@@ -92,7 +98,6 @@ function StandarNewItemDialog(
                     (item, index) => {
                         switch (item.type) {
                             case "text":
-
                                 return <FormInput
                                     key={index}
                                     label={item.uiName}
@@ -113,7 +118,7 @@ function StandarNewItemDialog(
                                     key={index}
                                     type="number"
                                     label={item.uiName}
-                                    defaultValue={''}
+                                    defaultValue={0}
                                     placeholder={`${item.uiName} del ${label}`}
                                     onChange={value => editFormFields(item.name, parseInt(value))}
                                     required={optionalFields.includes(item.name)}
@@ -128,7 +133,7 @@ function StandarNewItemDialog(
                             case "currency":
                                 return <CurrencySelector
                                     key={index}
-                                    current={""}
+                                    current={''}
                                     onChange={value => editFormFields(item.name, value)}
                                 />
 
