@@ -51,7 +51,7 @@ function CurrencySelector({ onChange, current }) {
                     xl:grid-cols-4
                     lg:grid-cols-3
                     md:grid-cols-2
-                    gap-1
+                    gap-1.25
                     "
                 >
                     {(!currencyList || currencyList.length === 0) &&

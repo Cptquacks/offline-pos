@@ -17,7 +17,7 @@ function NotesControlPanel({ data, handleOpen, addNote }) {
         <div className="
         flex flex-row
         items-center justify-between
-        px-4! pr-1! py-0.75! gap-3
+        px-4! pr-1! py-1! gap-3
         bg-(--bg-alt)
         border border-(--border)
         rounded-full
@@ -43,7 +43,7 @@ function NotesControlPanel({ data, handleOpen, addNote }) {
                     iconTwo="ellipsis-h"
 
                     onChange={data => handleOpen(data)}
-                    disabled={data.notes.length === 0}
+                    disabled={data.notes?.length === 0}
                 />
 
                 <DefaultButtonSM

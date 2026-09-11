@@ -9,6 +9,7 @@ import DatePicker from "./DatePicker"
 import DefaultButton from "./DefaultButton"
 import useDialogStore from "../stores/dialogStore"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import PhoneList from "./PhoneList"
 
 function StandarNewItemDialog(
     {
@@ -122,6 +123,19 @@ function StandarNewItemDialog(
                                     placeholder={`${item.uiName} del ${label}`}
                                     onChange={value => editFormFields(item.name, parseInt(value))}
                                     required={optionalFields.includes(item.name)}
+                                />
+
+                            case "phone-list":
+                                return <PhoneList
+                                    key={index}
+                                    onChange={value => editFormFields(item.name, value)}
+                                />
+
+                            case "phone":
+                                return <PhoneList
+                                    key={index}
+                                    single
+                                    onChange={value => editFormFields(item.name, value)}
                                 />
 
                             case "price":

@@ -25,7 +25,7 @@ function DeleteButton({ onDelete, label }) {
             items-center
             bg-red-500/60 text-white!
             w-fit h-fit
-            p-1.25! px-1.75!
+            p-2.25! px-1.75!
             border-2 border-white/15
             rounded-xs
 

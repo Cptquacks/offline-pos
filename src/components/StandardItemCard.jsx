@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import EditButton from "./EditButton";
 import DeleteButton from "./DeleteButton";
 import DateDisplay from "./DateDisplay";
+import NoteItem from "./NoteItem";
 
 function StandardItemCard({
     icon = 'times',
@@ -11,6 +12,7 @@ function StandardItemCard({
     expirationDisplay, notesDisplay,
     startDate, endDate,
     onEdit, onDelete,
+    noteData = [],
     isOnPreview = false
 
 }) {
@@ -64,9 +66,23 @@ function StandardItemCard({
                 "
             >
                 <div className="flex flex-row gap-3">
-                    {stockDisplay || salaryDisplay}
-                    {expirationDisplay || notesDisplay}
+                    {stockDisplay ||
+                        <div
+                            className="
+                            flex flex-row
+                            items-center
+                            gap-1 p-1.75! px-6!
+                            bg-(--bg-alt)
+                            border border-white/10
+                            rounded-full
+                            "
+                        >
+                            <FontAwesomeIcon icon={'hand-holding-dollar'} />
+                            <strong>{salaryDisplay}</strong>
+                        </div>
+                    }
                     {(startDate || endDate) && <DateDisplay startsAt={startDate} endsAt={endDate} />}
+                    {expirationDisplay || notesDisplay}
                 </div>
 
                 {!isOnPreview && <div className="flex flex-row gap-1 *:h-full">
@@ -74,6 +90,18 @@ function StandardItemCard({
                     <DeleteButton onDelete={onDelete} />
                 </div>}
             </footer>
+
+            {notesDisplay &&
+                <div>
+                    {noteData.map((note, index) => {
+                        <NoteItem
+                            key={index}
+                            data={note}
+                            onDelete={() => { }}
+                        />
+                    })}
+                </div>
+            }
         </section>
     )
 }

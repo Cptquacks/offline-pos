@@ -13,9 +13,14 @@ import useDialogStore from "../stores/dialogStore"
 import LoadingDialog from "../components/LoadingDialog"
 import DefaultButton from "../components/DefaultButton"
 import ConfirmDialog from "../components/ConfirmDialog"
+import StandardItemCardWrapper from "../components/StandardItemCardWrapper"
+import StandardItemCard from "../components/StandardItemCard"
+import ActiveDisplay from "../components/ActiveDisplay"
+import NotesControlPanel from "../components/NotesControlPanel"
+import StandarNewItemDialog from "../components/StandardNewItemDialog"
 
 function ProvidersView() {
-    const { providerData, loadData, addProvider, modifyProvider, overwriteData } = useProviderStore()
+    const { providerData, loadData, addProvider, modifyProvider, deleteProvider, overwriteData } = useProviderStore()
     const { openDialog, closeDialog } = useDialogStore()
 
     const today = new Date().toLocaleDateString('sv-SE')
@@ -53,6 +58,9 @@ function ProvidersView() {
 
     const [isLoading, setLoading] = useState(false)
     const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
+
+    // use indexes
+    const [notesOpened, setOpened] = useState([])
 
     /**
      * 
@@ -125,7 +133,7 @@ function ProvidersView() {
 
     return (
         <section className="
-        grid grid-cols-3 grid-rows-1
+        grid grid-cols-1 grid-rows-1
         h-full
         p-4! gap-3
         ">
@@ -146,10 +154,94 @@ function ProvidersView() {
                 overflow-y-auto
                 ">
                     <div className="
-                    flex flex-row
-                    justify-between
-                    px-4! py-2! gap-4
+                    flex flex-wrap flex-row
+                    items-center
+                    px-4! py-2! gap-3
                     ">
+                        <div
+                            className="
+                            flex flex-row
+                            items-center
+                            p-2!
+                            bg-(--bg-alt)
+                            border border-white/10
+                            rounded-md
+                            "
+                        >
+                            <DefaultButton
+                                icon={'pen-to-square'}
+                                label={'Nuevo proveedor'}
+                                iconLeft
+                                onClick={
+                                    () => openDialog(
+                                        <StandarNewItemDialog
+                                            additionCallback={data => addProvider(data)}
+                                            fileFields={[
+                                                { 'name': 'text' },
+                                                { 'waste': 'number' },
+                                                { 'currency': 'currency' },
+                                                { 'startedAt': 'date' },
+                                                { 'span': 'number' },
+                                                { 'contactData': 'phone-list' },
+                                            ]}
+                                            uiFields={[
+                                                { 'name': 'Nombre' },
+                                                { 'waste': 'Gasto' },
+                                                { 'currency': 'Moneda de compra' },
+                                                { 'startedAt': 'Fecha de inicio de contrato' },
+                                                { 'span': 'Dias hasta la recompra' },
+                                                { 'contactData': 'Numeros de telefono' },
+                                            ]}
+                                            icon={'handshake-alt'}
+                                            label={'proveedor'}
+                                            optionalFields={[]}
+
+                                        />
+                                    )
+                                }
+                            />
+                        </div>
+
+                        <div
+                            className="
+                            flex flex-row
+                            items-center justify-center
+                            p-2!
+                            bg-(--bg-alt)
+                            border border-white/10
+                            rounded-md
+                            "
+                        >
+
+                            <DefaultButton
+                                label={`Recomprar todo (${totalRebuys})`}
+                                icon={'hand-holding-usd'}
+                                disabled={!totalRebuys}
+
+                                onClick={handleRebuyAll}
+                            />
+                        </div>
+
+                        <div
+                            className="
+                            flex flex-row
+                            items-center
+                            p-2! gap-2
+                            bg-(--bg-alt)
+                            border border-white/10
+                            rounded-md
+                            "
+                        >
+                            <DefaultButton
+                                icon={'clipboard-list'}
+                                label={'Seleccionar'}
+                            />
+                            <DefaultButton
+                                icon={'clipboard-check'}
+                                label={'Seleccionar todo'}
+                            />
+                        </div>
+
                         <ImportPanel
                             model={{
                                 "name": "Nombre",
@@ -166,26 +258,6 @@ function ProvidersView() {
                             previewComponent={({ data }) => <ProviderItem data={data} isOnPreview={true} />}
                             exportData={exportedData}
                         />
-
-                        <div
-                            className="
-                            flex flex-row
-                            items-center justify-center
-                            px-4! py-2!
-                            bg-(--bg-alt)
-                            border border-white/10
-                            rounded-md
-                            "
-                        >
-
-                            <DefaultButton
-                                label={`Recomprar todo (${totalRebuys})`}
-                                icon={'hand-holding-usd'}
-                                disabled={!totalRebuys}
-
-                                onClick={handleRebuyAll}
-                            />
-                        </div>
                     </div>
 
                     <div className="
@@ -200,21 +272,45 @@ function ProvidersView() {
 
                     <ItemsList>
                         {filteredList.map((provider, index) =>
-                            <ProviderItem key={index}
-                                data={{ index: index, ...provider }} />
+                            <StandardItemCardWrapper>
+                                <StandardItemCard
+                                    key={index}
+                                    icon="handshake-alt"
+                                    title={provider.name}
+                                    tagItem={
+                                        <ActiveDisplay
+                                            isActive={provider.active}
+                                        />
+                                    }
+                                    startDate={provider.startedAt}
+                                    endDate={addDays(provider.startedAt, provider.span)}
+                                    notesDisplay={
+                                        <NotesControlPanel
+                                            data={provider}
+                                            handleOpen={() => {
+                                                const result = [...notesOpened]
+                                                if (result.includes(index))
+                                                    result.filter(i => i !== index)
+
+                                                else
+                                                    result.push(index)
+
+                                                setOpened(result)
+                                            }}
+                                            addNote={value => modifyProvider(
+                                                { ...provider, notes: [...provider.notes, value] },
+                                                index
+                                            )}
+                                        />
+                                    }
+                                    noteData={provider.notes ?? []}
+                                    salaryDisplay={`${provider.waste} ${provider.currency}`}
+                                    onDelete={() => deleteProvider(index)}
+                                />
+                            </StandardItemCardWrapper>
                         )}
                     </ItemsList>
                 </div>
-            </div>
-
-            <div className="
-            flex flex-col
-            p-4! gap-3
-            bg-(--bg-soft)
-            rounded-md
-            overflow-y-auto
-            ">
-                <ProviderForm onSubmit={data => addProvider(data)} />
             </div>
 
         </section>
