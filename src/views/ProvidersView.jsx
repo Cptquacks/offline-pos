@@ -18,6 +18,7 @@ import StandardItemCard from "../components/StandardItemCard"
 import ActiveDisplay from "../components/ActiveDisplay"
 import NotesControlPanel from "../components/NotesControlPanel"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
+import AlertDialog from "../components/AlertDialog"
 
 function ProvidersView() {
     const { providerData, loadData, addProvider, modifyProvider, deleteProvider, overwriteData } = useProviderStore()
@@ -288,11 +289,12 @@ function ProvidersView() {
                                         <NotesControlPanel
                                             data={provider}
                                             handleOpen={() => {
-                                                const result = [...notesOpened]
-                                                if (result.includes(index))
-                                                    result.filter(i => i !== index)
+                                                let result = [...notesOpened]
 
-                                                else
+                                                if (result.includes(index))
+                                                    result = result.filter(i => i !== index)
+
+                                                else if (!result.includes(index))
                                                     result.push(index)
 
                                                 setOpened(result)
@@ -304,8 +306,19 @@ function ProvidersView() {
                                         />
                                     }
                                     noteData={provider.notes ?? []}
+                                    notesOpen={notesOpened.includes(index)}
+                                    onNoteDelete={async (note) => {
+                                        let notes = [...provider.notes]
+                                        notes = notes.filter((_, i) => i !== note)
+
+                                        setLoading(true)
+                                        await modifyProvider({ ...provider, notes: notes }, index)
+                                            .then(() => setLoading(false))
+                                    }}
+
                                     salaryDisplay={`${provider.waste} ${provider.currency}`}
                                     onDelete={() => deleteProvider(index)}
+                                    onEdit={() => openDialog(<AlertDialog label={'test'} />)}
                                 />
                             </StandardItemCardWrapper>
                         )}

@@ -10,9 +10,9 @@ function StandardItemCard({
     title, tagItem,
     stockDisplay, salaryDisplay,
     expirationDisplay, notesDisplay,
+    noteData = [], notesOpen = false,
     startDate, endDate,
-    onEdit, onDelete,
-    noteData = [],
+    onEdit, onDelete, onNoteDelete,
     isOnPreview = false
 
 }) {
@@ -91,15 +91,20 @@ function StandardItemCard({
                 </div>}
             </footer>
 
-            {notesDisplay &&
-                <div>
-                    {noteData.map((note, index) => {
+            {((noteData ?? []).length > 0 && notesOpen) &&
+                <div
+                    className="
+                    grid grid-cols-5
+                    gap-3
+                    "
+                >
+                    {noteData.map((note, index) =>
                         <NoteItem
                             key={index}
                             data={note}
-                            onDelete={() => { }}
+                            onDelete={() => onNoteDelete(index)}
                         />
-                    })}
+                    )}
                 </div>
             }
         </section>

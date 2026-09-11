@@ -1,5 +1,6 @@
-import { faNoteSticky, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
+import { faNoteSticky } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import DeleteButton from "./DeleteButton"
 
 function NoteItem({ data, onDelete }) {
 
@@ -11,16 +12,16 @@ function NoteItem({ data, onDelete }) {
         bg-(--bg-alt)
         rounded-md
         overflow-hidden
-        border border-(--border)
+        border border-white/15
         ">
             <div className="
             flex flex-row
             items-center justify-between
-            text-white bg-(--border)
-            p-2!
+            text-white bg-white/15
+            p-2! py-1! pr-1! pb-1.5!
             ">
                 <div className="
-                flex flex-row items-center gap-1
+                flex flex-row items-center gap-1.5
                 ">
                     <FontAwesomeIcon icon={faNoteSticky} size="xl" />
                     <strong className="text-2xl">
@@ -28,23 +29,17 @@ function NoteItem({ data, onDelete }) {
                     </strong>
                 </div>
 
-                <button className="
-                transition-normal cursor-pointer
-                bg-red-500/50
-                text-white!
-                p-1!
-                border-2 border-(--border)
-                rounded-lg
-                hover:shadow-(--shadow)"
-                    onClick={onDelete}                >
-                    <FontAwesomeIcon icon={faTrashAlt} size="lg" />
-                </button>
+                <DeleteButton
+                    onDelete={onDelete}
+                />
             </div>
 
             <p className="
+            min-h-42
             m-2!
-            p-4! py-0! pb-2!
+            p-4! py-2! pb-2!
             bg-(--bg-soft)
+            border border-white/5
             rounded-sm
             whitespace-pre-wrap
             wrap-break-word
