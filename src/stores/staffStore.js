@@ -19,29 +19,23 @@ const useStaffStore = create((set, get) => ({
 
     loadData: async () => {
         const data = await loadData('staff')
-        let total = 0
 
-        data.forEach(member => {
-            total += parseInt(member.salary)
-        });
+        let total = 0
+        data.forEach(member => total += parseFloat(member.salary));
 
         set({ staffData: data, salaryWaste: total })
     },
 
     addStaff: async (staff) => {
+        const { salaryWaste } = get()
         const data = await updateData('staff', staff)
-        let total = 0
 
-        data.forEach(member => {
-            total += parseInt(member.salary)
-        });
-
-        set({ staffData: data, salaryWaste: total })
+        set({ staffData: data, salaryWaste: salaryWaste + parseFloat(staff.salary) })
     },
 
     modifyStaff: async (staff, index) => {
         const { staffData } = get()
-        const updatedData = staffData
+        const updatedData = [...staffData]
 
         const cleanStaff = Object.fromEntries(
             Object.entries(staff).filter(([key]) => !['index'].includes(key))
@@ -49,8 +43,8 @@ const useStaffStore = create((set, get) => ({
         updatedData[index] = cleanStaff
 
         const data = await writeData('staff', updatedData)
-        let total = 0
 
+        let total = 0
         data.forEach(member => {
             total += parseInt(member.salary)
         });
@@ -59,20 +53,17 @@ const useStaffStore = create((set, get) => ({
     },
 
     deleteStaff: async (target) => {
-        const { staffData } = get()
-        let updatedData = staffData
+        const { staffData, salaryWaste } = get()
+        let updatedData = [...staffData]
 
+        const total = salaryWaste - parseFloat(updatedData[target].salary)
         updatedData = updatedData.filter((_, index) => index !== target)
 
         const data = await writeData('staff', updatedData)
-        let total = 0
-
-        data.forEach(member => {
-            total += parseInt(member.salary)
-        });
 
         set({ staffData: data, salaryWaste: total })
     },
+
     overwriteFile: async (chunk) => {
         const data = await writeData('staff', chunk)
         set({ staffData: data })

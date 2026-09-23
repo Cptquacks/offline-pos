@@ -20,28 +20,32 @@ const useProductStore = create((set, get) => ({
         const data = await loadData('products')
         set({ productData: data })
     },
+
     addProduct: async (product) => {
         const data = await updateData('products', product)
         set({ productData: data })
     },
+
     modifyProduct: async (product, index) => {
         const { productData } = get()
-        const updatedData = productData
+        const updatedData = [...productData]
 
         updatedData[index] = product
         const data = await writeData('products', updatedData)
 
         set({ productData: data })
     },
+
     deleteProduct: async (target) => {
         const { productData } = get()
-        let updatedData = productData
+        let updatedData = [...productData]
 
         updatedData = updatedData.filter((_, index) => index !== target)
         const data = await writeData('products', updatedData)
 
         set({ productData: data })
     },
+
     overwriteFile: async (chunk) => {
         const data = await writeData('products', chunk)
         set({ productData: data })
