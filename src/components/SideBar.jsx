@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react"
 import SideBarButton from "./SideBarButton"
 import usePreferenceStore from "../stores/preferenceStore"
+import useLicenseStore from "../stores/licenseStore"
 
 
 function SideBar() {
     const { preferenceData, loadData } = usePreferenceStore()
+    const { licenseList } = useLicenseStore()
     const appVersion = import.meta.env.VITE_PROGRAM_VERSION
     const codeName = import.meta.env.VITE_PROGRAM_CODE
 
@@ -64,20 +66,20 @@ function SideBar() {
                 <div className="
                 flex flex-col
                 ">
-                    <p className="
-                    font-bold!
-                    text-sm
-                    ">
+                    <strong className="text-sm">
                         Versión: {appVersion} {codeName}
-                    </p>
+                    </strong>
 
-                    <p className="
-                    font-bold
+                    <strong className="text-sm">
+                        Activado hasta: {licenseList[(licenseList ?? []).length - 1]?.date ?? 'No activado'}
+                    </strong>
+
+                    <strong className="
                     text-sm underline underline-offset-2
                     opacity-75 hover:opacity-100 cursor-pointer
                     ">
                         &copy; Shard Development Team
-                    </p>
+                    </strong>
                 </div>
             }
         </aside>

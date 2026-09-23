@@ -191,7 +191,7 @@ function InventoryView() {
                 flex flex-col
                 overflow-y-auto
                 ">
-                    <div className="flex flex-row w-full gap-3 px-4! py-2!">
+                    <div className="flex flex-row flex-wrap w-full gap-3 px-4! py-2!">
 
                         <div className="flex flex-row gap-3">
                             <div

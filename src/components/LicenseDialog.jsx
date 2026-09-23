@@ -22,18 +22,25 @@ function LicenseDialog() {
 
 
     const handleRegistration = async () => {
+        setLoading(true)
         if (licenseCodes.includes(licenseCode)) return
 
         const data = await checkLicense(licenseCode)
 
         if (!data.valid) return
 
-        addLicense(data)
+        await addLicense(data)
+            .then(() => setLoading(false))
         closeDialog()
     }
 
     useEffect(() => {
-        loadLicenses()
+        (async () => {
+            setLoading(true)
+            await loadLicenses
+        }
+        )()
+            .then(() => setLoading(false))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

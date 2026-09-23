@@ -32,7 +32,7 @@ function ProvidersView() {
 
         if (query.trim().length > 0) {
 
-            result = result.filter(product => stringSimilarity(product.name, query) >= 0.3)
+            result = result.filter(product => stringSimilarity(product.name, query) >= 0.4)
             result = result.map(product => ({ ...product, similarity: stringSimilarity(product.name, query) }))
             result = result.sort((a, b) => b.similarity - a.similarity)
 
