@@ -42,14 +42,14 @@ function ImportPanel({ title, model, optionalFields, onImport, previewComponent,
             gap-2
             ">
                 <DefaultButton
-                    label="Importar datos desde Excel"
+                    label="Importar datos"
                     icon="file-excel"
                     onClick={handleImport}
                 />
 
 
                 <DefaultButton
-                    label="Exportar datos a Excel"
+                    label="Exportar datos"
                     icon="file-excel"
                     onClick={handleExport}
                 />
