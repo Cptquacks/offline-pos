@@ -24,7 +24,7 @@ import DeleteButton from "../components/DeleteButton"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
 
 function InventoryView() {
-    const { productData, loadData, addProduct, overwriteFile, deleteProduct } = useProductStore()
+    const { productData, loadData, addProduct, modifyProduct, overwriteFile, deleteProduct } = useProductStore()
     const { tagList, loadTags, addTag } = useTagStore()
     const { openDialog, closeDialog } = useDialogStore()
     const { addAlert } = useAlertStore()
@@ -250,6 +250,29 @@ function InventoryView() {
                                     "
                             >
                                 <DefaultButton
+                                    icon={'sync'}
+                                    label={'Rellenar inventario'}
+                                    iconLeft
+                                    onClick={() => {
+                                        let newData = [...productData]
+                                        newData = newData.map(entry => ({ ...entry, current: entry.amount }))
+                                        overwriteFile(newData)
+                                    }}
+                                />
+                            </div>
+
+                            <div
+                                className="
+                                    flex flex-row
+                                    gap-2 p-2! 
+                                    w-fit *:h-full
+                                    bg-(--bg-alt)
+                                    border border-white/10
+                                    rounded-md
+                                    items-center
+                                    "
+                            >
+                                <DefaultButton
                                     label={isSelecting ? "Cancelar" : "Seleccionar"}
                                     icon={isSelecting ? "times" : "clipboard-list"}
                                     onClick={() => setSelecting(!isSelecting)}
@@ -339,6 +362,15 @@ function InventoryView() {
                                             <ExpirationDisplay
                                                 days={daysFromToday(product.expiresAt)}
                                             /> : <p></p>
+                                    }
+                                    restockButton={
+                                        <DefaultButton
+                                            icon={'sync'}
+                                            label={'Restock'}
+                                            onClick={() =>
+                                                modifyProduct({ ...product, current: product.amount }, index)
+                                            }
+                                        />
                                     }
                                     endDate={product.expiresAt}
                                     onDelete={() => deleteProduct(index)}

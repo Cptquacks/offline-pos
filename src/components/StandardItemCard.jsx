@@ -9,6 +9,7 @@ function StandardItemCard({
     codeBar,
     title, tagItem,
     stockDisplay, salaryDisplay,
+    restockButton,
     expirationDisplay, notesDisplay,
     noteData = [], notesOpen = false,
     startDate, endDate,
@@ -86,6 +87,7 @@ function StandardItemCard({
                 </div>
 
                 {!isOnPreview && <div className="flex flex-row gap-1 *:h-full">
+                    {restockButton}
                     <EditButton onClick={onEdit} />
                     <DeleteButton onDelete={onDelete} />
                 </div>}

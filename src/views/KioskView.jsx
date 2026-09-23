@@ -171,6 +171,7 @@ function KioskView() {
                             icon="check"
                             onClick={handleSell}
                             customColor="bg-green-600"
+                            disabled={cartItems.length === 0}
                         />
 
                         <DefaultButton

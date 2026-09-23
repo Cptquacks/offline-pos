@@ -421,7 +421,7 @@ function EconomyView() {
                 bg-(--bg-alt)
                 items-center
                 w-full
-                p-2! gap-1
+                p-2! gap-1.5
                 border border-(--border)
                 rounded-md
                 ">
