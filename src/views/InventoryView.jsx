@@ -306,6 +306,7 @@ function InventoryView() {
                                 model={{
                                     "name": "Nombre",
                                     "tag": "Categoría",
+                                    "code": "Codigo de barras",
                                     "description": "Descripción",
                                     "amount": "Cantidad",
                                     "price": "Precio",
@@ -314,7 +315,6 @@ function InventoryView() {
                                     "current": "Disponibilidad"
                                 }}
                                 optionalFields={['description', 'expiresAt', 'current']}
-                                title="Importar"
                                 onImport={data => handleImportation(data)}
                                 previewComponent={({ data }) => <ProductItem data={data} isOnPreview={true} />}
                                 exportData={exportedData}
@@ -364,14 +364,44 @@ function InventoryView() {
                                             /> : <p></p>
                                     }
                                     restockButton={
+                                        product.current !== product.amount &&
                                         <DefaultButton
                                             icon={'sync'}
                                             label={'Restock'}
                                             onClick={() =>
                                                 modifyProduct({ ...product, current: product.amount }, index)
                                             }
+
                                         />
                                     }
+                                    onEdit={() => openDialog(
+                                        <StandarNewItemDialog
+                                            icon={'box'}
+                                            label={'producto'}
+                                            fileFields={[
+                                                { 'name': 'text' },
+                                                { 'tag': 'tag' },
+                                                { 'code': 'text' },
+                                                { 'amount': 'number' },
+                                                { 'price': 'price' },
+                                                { 'currency': 'currency' },
+                                                { 'expiresAt': 'expiration' }
+                                            ]}
+                                            uiFields={[
+                                                { 'name': 'Nombre' },
+                                                { 'tag': 'Tipo' },
+                                                { 'code': 'Numero de serie' },
+                                                { 'amount': 'Stock' },
+                                                { 'price': 'Precio' },
+                                                { 'currency': 'Moneda de pago' },
+                                                { 'expiresAt': 'Fecha de caducidad' }
+                                            ]}
+                                            currentFieldData={product}
+                                            optionalFields={['expiresAt']}
+                                            additionCallback={value => modifyProduct({ ...product, ...value }, index)}
+                                            alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
+                                        />
+                                    )}
                                     endDate={product.expiresAt}
                                     onDelete={() => deleteProduct(index)}
                                     isOnPreview={isSelecting}

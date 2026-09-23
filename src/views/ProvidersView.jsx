@@ -273,9 +273,8 @@ function ProvidersView() {
 
                     <ItemsList>
                         {filteredList.map((provider, index) =>
-                            <StandardItemCardWrapper>
+                            <StandardItemCardWrapper key={index}>
                                 <StandardItemCard
-                                    key={index}
                                     icon="handshake-alt"
                                     title={provider.name}
                                     tagItem={
@@ -316,9 +315,60 @@ function ProvidersView() {
                                             .then(() => setLoading(false))
                                     }}
 
+                                    restockButton={
+                                        !provider.active &&
+                                        <DefaultButton
+                                            label={'Renovar'}
+                                            icon={'sync'}
+                                            onClick={() =>
+                                                modifyProvider(
+                                                    //NOTE provider modification
+                                                    {
+                                                        ...provider,
+
+                                                        //NOTE Inline function
+                                                        startedAt: (() => {
+                                                            const restockDate = addDays(provider.startedAt, provider.span)
+                                                            const newSpan = daysBetween(today, restockDate)
+
+                                                            const finalDate = addDays(provider.startedAt, provider.span - newSpan)
+                                                            return finalDate
+                                                        })()
+                                                    },
+                                                    index
+                                                )
+                                            }
+                                        />
+                                    }
+
                                     salaryDisplay={`${provider.waste} ${provider.currency}`}
                                     onDelete={() => deleteProvider(index)}
-                                    onEdit={() => openDialog(<AlertDialog label={'test'} />)}
+                                    onEdit={() => openDialog(
+                                        <StandarNewItemDialog
+                                            additionCallback={data => modifyProvider({ ...provider, ...data }, index)}
+                                            fileFields={[
+                                                { 'name': 'text' },
+                                                { 'waste': 'number' },
+                                                { 'currency': 'currency' },
+                                                { 'startedAt': 'date' },
+                                                { 'span': 'number' },
+                                                { 'contactData': 'phone-list' },
+                                            ]}
+                                            uiFields={[
+                                                { 'name': 'Nombre' },
+                                                { 'waste': 'Gasto' },
+                                                { 'currency': 'Moneda de compra' },
+                                                { 'startedAt': 'Fecha de inicio de contrato' },
+                                                { 'span': 'Dias hasta la recompra' },
+                                                { 'contactData': 'Numeros de telefono' },
+                                            ]}
+                                            currentFieldData={provider}
+                                            icon={'handshake-alt'}
+                                            label={'proveedor'}
+                                            optionalFields={[]}
+
+                                        />
+                                    )}
                                 />
                             </StandardItemCardWrapper>
                         )}

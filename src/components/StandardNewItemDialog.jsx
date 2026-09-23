@@ -29,25 +29,22 @@ function StandarNewItemDialog(
             grouped[index] = {
                 'name': Object.keys(field)[0],
                 'type': Object.values(field)[0],
-                'uiName': Object.values(uiFields[index])[0]
+                'uiName': Object.values(uiFields[index])[0],
+                'value': currentFieldData ? currentFieldData[Object.keys(field)[0]] : ''
             }
 
-            if (!currentFieldData) return
-            grouped[index] = {
-                ...grouped[index],
-                'value': Object.values(currentFieldData[index])[0]
-            }
         });
 
         result = Object.values(grouped)
 
         return result
     }, [fileFields, uiFields, currentFieldData])
+    console.log(itemFields)
 
     const [formData, setFormData] = useState(() => {
         const grouped = {}
         fileFields.forEach(field => {
-            grouped[Object.keys(field)[0]] = null
+            grouped[Object.keys(field)[0]] = currentFieldData ? currentFieldData[Object.keys(field)[0]] : null
         })
         return grouped
     })
@@ -102,7 +99,7 @@ function StandarNewItemDialog(
                                 return <FormInput
                                     key={index}
                                     label={item.uiName}
-                                    defaultValue={''}
+                                    defaultValue={item.value}
                                     placeholder={`${item.uiName} del ${label}`}
                                     onChange={value => editFormFields(item.name, value)}
                                     required={optionalFields.includes(item.name)}
@@ -119,7 +116,7 @@ function StandarNewItemDialog(
                                     key={index}
                                     type="number"
                                     label={item.uiName}
-                                    defaultValue={0}
+                                    defaultValue={item.value}
                                     placeholder={`${item.uiName} del ${label}`}
                                     onChange={value => editFormFields(item.name, parseInt(value))}
                                     required={optionalFields.includes(item.name)}
@@ -141,26 +138,28 @@ function StandarNewItemDialog(
                             case "price":
                                 return <PriceSelectionInput
                                     key={index}
+                                    defaultValue={item.value}
                                     onChange={value => editFormFields(item.name, parseInt(value))}
                                 />
 
                             case "currency":
                                 return <CurrencySelector
                                     key={index}
-                                    current={''}
+                                    current={item.value}
                                     onChange={value => editFormFields(item.name, value)}
                                 />
 
                             case "date":
                                 return <DatePicker
                                     label={item.uiName}
-                                    value={today}
+                                    value={item.value ?? today}
                                     onChange={value => editFormFields(item.name, value)}
                                     required={optionalFields.includes(item.name)}
                                 />
                             case "expiration":
                                 return <ExpirationSelector
                                     key={index}
+                                    defaultValue={item.value}
                                     onChange={value => editFormFields(item.name, value)}
                                 />
 
@@ -181,8 +180,8 @@ function StandarNewItemDialog(
                 "
             >
                 <DefaultButton
-                    label={'Añadir'}
-                    icon={'check'}
+                    label={currentFieldData ? 'Editar' : 'Añadir'}
+                    icon={currentFieldData ? 'pen-to-square' : 'check'}
                     disabled={!canAddItem}
                     onClick={() => {
                         additionCallback(formData)

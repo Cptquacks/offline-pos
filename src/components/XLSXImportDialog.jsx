@@ -8,7 +8,7 @@ import { normalizeExcelDate } from "../utils/date-util"
 import useDialogStore from "../stores/dialogStore"
 import DefaultButton from "./DefaultButton"
 
-function XLSXImportDialog({ title, model, optionalFields, onImport, previewComponent: Preview }) {
+function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: Preview }) {
 
     const { closeDialog } = useDialogStore()
     const { addAlert } = useAlertStore()
@@ -91,7 +91,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
         overflow-hidden
         rounded-md
         ">
-            <DialogTopBar label={title} />
+            <DialogTopBar label={'Importar'} />
 
             <div className="
             flex flex-col
@@ -187,7 +187,9 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                 mt-6! gap-1
                 ">
                     <strong className="text-lg">
-                        Haga coincidir los campos
+                        Haga coincidir los campos.
+                        <br />
+                        Los campos requeridos se denotan con <span className="text-red-400">*</span>
                     </strong>
 
                     <div className="
@@ -196,7 +198,6 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                         {previewFields.map((field, index) =>
                             <ColumnSelector
                                 key={index}
-                                //label={`${field} K:${programFields[index]?.key ?? 'ERR'}  V:${programFields[index]?.value ?? 'ERR'}`}
                                 label={field}
                                 columns={fileData.columns}
                                 optional={optionalFields.includes(programFields[index]?.key)}
@@ -211,16 +212,19 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                     </div>
                 </div>
 
-                <div className="text-lg w-fit">
-                    <strong>
-                        Previsualización
-                    </strong>
-                    {resultantData.length > 0 &&
-                        <Preview
-                            isOnPreview={true}
-                            data={resultantData[0]} />
-                    }
-                </div>
+                {
+                    Preview &&
+                    <div className="text-lg w-fit">
+                        <strong>
+                            Previsualización
+                        </strong>
+                        {resultantData.length > 0 &&
+                            <Preview
+                                isOnPreview={true}
+                                data={resultantData[0]} />
+                        }
+                    </div>
+                }
             </div>
 
             <div className="

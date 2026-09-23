@@ -3,7 +3,7 @@ import XLSXImportDialog from "./XLSXImportDialog"
 import XLSXExportDialog from "./XLSXExportDialog"
 import DefaultButton from "./DefaultButton"
 
-function ImportPanel({ title, model, optionalFields, onImport, previewComponent, exportData = [] }) {
+function ImportPanel({ model, optionalFields, onImport, previewComponent, exportData = [] }) {
     const { openDialog } = useDialogStore()
 
     const handleImport = () => {
@@ -12,7 +12,6 @@ function ImportPanel({ title, model, optionalFields, onImport, previewComponent,
                 model={model}
                 optionalFields={optionalFields}
                 onImport={onImport}
-                title={title}
                 previewComponent={previewComponent}
             />
         )

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import PreferenceSwitch from "./PreferenceSwitch"
 import FormInput from "./FormInput"
 
-function PriceSelectionInput({ onChange }) {
+function PriceSelectionInput({ defaultValue, onChange }) {
     const [switchOn, setSwitch] = useState(false)
     const [cost, setCost] = useState(0)
     const [profit, setProfit] = useState(0)
@@ -46,7 +46,7 @@ function PriceSelectionInput({ onChange }) {
                     type="number"
                     onChange={value => setCost(value)}
                     required
-                    defaultValue={0}
+                    defaultValue={defaultValue ?? 0}
                     placeholder={'Precio final...'}
                 />
             }

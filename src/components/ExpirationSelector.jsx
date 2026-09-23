@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import FormInput from "./FormInput";
 import PreferenceSwitch from "./PreferenceSwitch";
 
-function ExpirationSelector({ onChange }) {
-    const [expires, setExpires] = useState(false)
+function ExpirationSelector({ defaultValue, onChange }) {
+    const [expires, setExpires] = useState(defaultValue ? true : false)
 
     useEffect(() => {
         if (expires) return
@@ -32,7 +32,7 @@ function ExpirationSelector({ onChange }) {
                 label={'Fecha de caducidad'}
                 placeholder={'Fecha de caducidad'}
                 type="date"
-                defaultValue={new Date().toLocaleDateString('sv-SE')}
+                defaultValue={defaultValue ?? new Date().toLocaleDateString('sv-SE')}
                 onChange={onChange}
             />}
         </div>
