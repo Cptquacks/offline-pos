@@ -30,11 +30,12 @@ const useStaffStore = create((set, get) => ({
         const { salaryWaste } = get()
         const data = await updateData('staff', staff)
 
-        set({ staffData: data, salaryWaste: salaryWaste + parseFloat(staff.salary) })
+        const total = salaryWaste + parseFloat(staff.salary)
+        set({ staffData: data, salaryWaste: total })
     },
 
     modifyStaff: async (staff, index) => {
-        const { staffData } = get()
+        const { staffData, salaryWaste } = get()
         const updatedData = [...staffData]
 
         const cleanStaff = Object.fromEntries(
@@ -43,11 +44,7 @@ const useStaffStore = create((set, get) => ({
         updatedData[index] = cleanStaff
 
         const data = await writeData('staff', updatedData)
-
-        let total = 0
-        data.forEach(member => {
-            total += parseInt(member.salary)
-        });
+        const total = salaryWaste + parseFloat(staff.salary)
 
         set({ staffData: data, salaryWaste: total })
     },
@@ -65,8 +62,10 @@ const useStaffStore = create((set, get) => ({
     },
 
     overwriteFile: async (chunk) => {
+        const { loadData } = get()
         const data = await writeData('staff', chunk)
         set({ staffData: data })
+        await loadData()
     }
 }))
 
