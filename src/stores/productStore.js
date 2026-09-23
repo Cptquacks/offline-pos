@@ -28,7 +28,7 @@ const useProductStore = create((set, get) => ({
 
     modifyProduct: async (product, index) => {
         const { productData } = get()
-        const updatedData = productData
+        const updatedData = [...productData]
 
         updatedData[index] = product
         const data = await writeData('products', updatedData)
@@ -38,7 +38,7 @@ const useProductStore = create((set, get) => ({
 
     deleteProduct: async (target) => {
         const { productData } = get()
-        let updatedData = productData
+        let updatedData = [...productData]
 
         updatedData = updatedData.filter((_, index) => index !== target)
         const data = await writeData('products', updatedData)

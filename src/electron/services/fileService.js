@@ -30,7 +30,7 @@ class fileService {
             'roles.json': [],
             'tickets.json': [],
             'licenses.json': [],
-            'currencies.json': ['CUP, USD'],
+            'currencies.json': ['CUP', 'USD'],
             'preferences.json': [
                 {
                     "key": "sideBarExpanded",

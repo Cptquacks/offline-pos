@@ -43,7 +43,7 @@ function NotesControlPanel({ data, handleOpen, addNote }) {
                     iconTwo="ellipsis-h"
 
                     onChange={data => handleOpen(data)}
-                    disabled={data.notes?.length === 0}
+                    disabled={(data.notes ?? []).length === 0}
                 />
 
                 <DefaultButtonSM

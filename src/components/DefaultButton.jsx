@@ -13,8 +13,8 @@ function DefaultButton(
             transition 
             cursor-pointer
             flex 
-            items-center
-            px-3! py-1! gap-1
+            items-center justify-center
+            px-3! py-1! gap-1 md:gap-px!
             text-white!
             rounded-xs
 
@@ -40,7 +40,7 @@ function DefaultButton(
                 size={iconSize}
                 spinPulse={loading}
             />
-            <strong>
+            <strong className="md:text-sm lg:text-md">
                 {label}
             </strong>
         </button>
