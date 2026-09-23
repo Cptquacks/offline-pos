@@ -6,7 +6,7 @@ import useLicenseStore from "../stores/licenseStore"
 
 function SideBar() {
     const { preferenceData, loadData } = usePreferenceStore()
-    const { licenseList } = useLicenseStore()
+    const { licenseList, loadLicenses } = useLicenseStore()
     const appVersion = import.meta.env.VITE_PROGRAM_VERSION
     const codeName = import.meta.env.VITE_PROGRAM_CODE
 
@@ -32,7 +32,10 @@ function SideBar() {
     ]
 
     useEffect(() => {
-        loadData()
+        (async () => {
+            await loadData()
+            await loadLicenses()
+        })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
