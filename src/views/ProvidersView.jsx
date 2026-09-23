@@ -15,7 +15,7 @@ import DefaultButton from "../components/DefaultButton"
 import ConfirmDialog from "../components/ConfirmDialog"
 
 function ProvidersView() {
-    const { providerData, loadData, addProvider, modifyProvider, overwriteData } = useProviderStore()
+    const { providerData, loadData, addProvider, overwriteData } = useProviderStore()
     const { openDialog, closeDialog } = useDialogStore()
 
     const today = new Date().toLocaleDateString('sv-SE')
@@ -90,16 +90,19 @@ function ProvidersView() {
         openDialog(<ConfirmDialog callback={rebuyAll} />)
     }
 
-    const rebuyAll = () => {
-        providerData.forEach((provider, index) => {
-            if (provider.active) return
+    const rebuyAll = async () => {
+        setLoading(true)
+        let newData = [...providerData]
+        newData = newData.map(provider => {
+            if (provider.active) return provider
 
             const restockDate = addDays(provider.startedAt, provider.span)
             const newSpan = daysBetween(today, restockDate)
 
             const finalDate = addDays(provider.startedAt, provider.span - newSpan)
-            modifyProvider({ ...provider, startedAt: finalDate }, index)
+            return { ...provider, startedAt: finalDate, active: true }
         })
+        overwriteData(newData).then(() => setLoading(false))
     }
 
     useEffect(() => {
@@ -194,7 +197,7 @@ function ProvidersView() {
                     px-4! gap-3
                     ">
                         <TotalWasteDisplay
-                            elements={providerData}
+                            elements={providerData.filter(provider => provider.active)}
                         />
                     </div>
 

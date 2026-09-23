@@ -29,7 +29,7 @@ function SideBarButton({ label, icon, route, selected, onSelected, showLabel = t
         bg-(--bg-alt) ${selected ? 'bg-(--accent)/30! text-white' : ''}
         border border-(--border) rounded-md
 
-        hover:shadow-(--shadow)
+        ${selected ? 'shadow-purple-600/10 shadow-md' : 'hover:shadow-(--shadow)'}
         `} onClick={handleSelection}>
             <FontAwesomeIcon icon={`fas fa-${icon}`} size="lg" />
             {showLabel &&

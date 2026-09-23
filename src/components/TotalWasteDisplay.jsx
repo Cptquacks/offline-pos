@@ -64,7 +64,7 @@ function TotalWasteDisplay({ elements, wasteKey = 'waste' }) {
                 data-open:opacity-100
                 "
             >
-                {grouped.map((entry, index) =>
+                {grouped.sort((a, b) => b.waste - a.waste).map((entry, index) =>
                     <strong key={index}>{entry.waste} {entry.currency}</strong>
                 )}
             </div>

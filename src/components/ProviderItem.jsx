@@ -48,7 +48,7 @@ function ProviderItem({ data, isOnPreview = false }) {
 
     const handleRebuy = () => {
         let result = providerData[data.index]
-        result = { ...result, startedAt: restockDate }
+        result = { ...result, startedAt: restockDate, active: true }
         modifyProvider(result, data.index)
     }
 
