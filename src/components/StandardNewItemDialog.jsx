@@ -10,6 +10,7 @@ import DefaultButton from "./DefaultButton"
 import useDialogStore from "../stores/dialogStore"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import PhoneList from "./PhoneList"
+import ActiveSwitch from "./ActiveSwitch"
 
 function StandarNewItemDialog(
     {
@@ -39,7 +40,6 @@ function StandarNewItemDialog(
 
         return result
     }, [fileFields, uiFields, currentFieldData])
-    console.log(itemFields)
 
     const [formData, setFormData] = useState(() => {
         const grouped = {}
@@ -48,10 +48,12 @@ function StandarNewItemDialog(
         })
         return grouped
     })
+
     const editFormFields = (key, value) => {
         const result = { ...formData }
         result[key] = value
         setFormData(result)
+        console.log(result)
     }
 
     const canAddItem = useMemo(() => {
@@ -161,6 +163,13 @@ function StandarNewItemDialog(
                                     key={index}
                                     defaultValue={item.value}
                                     onChange={value => editFormFields(item.name, value)}
+                                />
+
+                            case "active":
+                                return <ActiveSwitch
+                                    defaultValue={item.value ?? true}
+                                    onChange={value => editFormFields(item.name, value)}
+                                    label={item.uiName}
                                 />
 
                             default:

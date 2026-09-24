@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react"
 import ItemsList from "../components/ItemsList"
 import useProviderStore from "../stores/providerStore"
 import ProviderItem from "../components/ProviderItem"
-import ProviderForm from "../components/ProviderForm"
 import SearchBar from "../components/SearchBar"
 import ImportPanel from "../components/ImportPanel"
 import { stringSimilarity } from "../utils/string-util"
@@ -343,6 +342,7 @@ function ProvidersView() {
 
                                     salaryDisplay={`${provider.waste} ${provider.currency}`}
                                     onDelete={() => deleteProvider(index)}
+
                                     onEdit={() => openDialog(
                                         <StandarNewItemDialog
                                             additionCallback={data => modifyProvider({ ...provider, ...data }, index)}
@@ -352,6 +352,7 @@ function ProvidersView() {
                                                 { 'currency': 'currency' },
                                                 { 'startedAt': 'date' },
                                                 { 'span': 'number' },
+                                                { 'active': 'active' },
                                                 { 'contactData': 'phone-list' },
                                             ]}
                                             uiFields={[
@@ -360,6 +361,7 @@ function ProvidersView() {
                                                 { 'currency': 'Moneda de compra' },
                                                 { 'startedAt': 'Fecha de inicio de contrato' },
                                                 { 'span': 'Dias hasta la recompra' },
+                                                { 'active': 'Relacion activa' },
                                                 { 'contactData': 'Numeros de telefono' },
                                             ]}
                                             currentFieldData={provider}
