@@ -18,6 +18,7 @@ import ActiveDisplay from "../components/ActiveDisplay"
 import NotesControlPanel from "../components/NotesControlPanel"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
 import AlertDialog from "../components/AlertDialog"
+import ButtonBelt from "../components/ButtonBelt"
 
 function ProvidersView() {
     const { providerData, loadData, addProvider, modifyProvider, deleteProvider, overwriteData } = useProviderStore()
@@ -158,16 +159,7 @@ function ProvidersView() {
                     items-center
                     px-4! py-2! gap-3
                     ">
-                        <div
-                            className="
-                            flex flex-row
-                            items-center
-                            p-2!
-                            bg-(--bg-alt)
-                            border border-white/10
-                            rounded-md
-                            "
-                        >
+                        <ButtonBelt>
                             <DefaultButton
                                 icon={'pen-to-square'}
                                 label={'Nuevo proveedor'}
@@ -200,17 +192,9 @@ function ProvidersView() {
                                     )
                                 }
                             />
-                        </div>
+                        </ButtonBelt>
 
-                        <div
-                            className="
-                            flex flex-row
-                            items-center justify-center
-                            p-2!
-                            bg-(--bg-alt)
-                            border border-white/10
-                            rounded-md
-                            "
+                        <ButtonBelt
                         >
 
                             <DefaultButton
@@ -220,18 +204,9 @@ function ProvidersView() {
 
                                 onClick={handleRebuyAll}
                             />
-                        </div>
+                        </ButtonBelt>
 
-                        <div
-                            className="
-                            flex flex-row
-                            items-center
-                            p-2! gap-2
-                            bg-(--bg-alt)
-                            border border-white/10
-                            rounded-md
-                            "
-                        >
+                        <ButtonBelt>
                             <DefaultButton
                                 icon={'clipboard-list'}
                                 label={'Seleccionar'}
@@ -240,7 +215,7 @@ function ProvidersView() {
                                 icon={'clipboard-check'}
                                 label={'Seleccionar todo'}
                             />
-                        </div>
+                        </ButtonBelt>
 
                         <ImportPanel
                             model={{

@@ -74,7 +74,7 @@ function StandardItemCard({
                             items-center
                             gap-1 p-1.75! px-6!
                             bg-(--bg-alt)
-                            border border-white/10
+                            border border-white/15
                             rounded-full
                             "
                         >

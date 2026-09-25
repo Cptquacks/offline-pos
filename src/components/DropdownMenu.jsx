@@ -65,7 +65,7 @@ function DropdownMenu({ elements, onSelected }) {
                 absolute
                 top-full left-0 right-0 origin-top
                 flex flex-col
-                w-full max-h-128
+                w-full max-h-164
                 scale-y-0
                 p-1! mt-1! gap-1
                 opacity-0
@@ -75,7 +75,7 @@ function DropdownMenu({ elements, onSelected }) {
 
                 data-open:scale-y-100
                 data-open:opacity-100
-                overflow-y-auto
+                overflow-hidden overflow-y-auto
                 "
             >
                 {elements.map((element, index) =>

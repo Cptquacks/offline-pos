@@ -22,6 +22,7 @@ import StandardItemCardWrapper from "../components/StandardItemCardWrapper"
 import DefaultButton from "../components/DefaultButton"
 import DeleteButton from "../components/DeleteButton"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
+import ButtonBelt from "../components/ButtonBelt"
 
 function InventoryView() {
     const { productData, loadData, addProduct, modifyProduct, overwriteFile, deleteProduct } = useProductStore()
@@ -194,16 +195,7 @@ function InventoryView() {
                     <div className="flex flex-row flex-wrap w-full gap-3 px-4! py-2!">
 
                         <div className="flex flex-row gap-3">
-                            <div
-                                className="
-                                    flex flex-row 
-                                    items-center
-                                    p-2!
-                                    bg-(--bg-alt)
-                                    border border-white/10
-                                    rounded-md
-                                    "
-                            >
+                            <ButtonBelt>
                                 <DefaultButton
                                     label={"Nuevo producto"}
                                     icon={"pen-to-square"}
@@ -236,19 +228,9 @@ function InventoryView() {
                                     )}
                                     iconLeft
                                 />
-                            </div>
+                            </ButtonBelt>
 
-                            <div
-                                className="
-                                    flex flex-row
-                                    gap-2 p-2! 
-                                    w-fit *:h-full
-                                    bg-(--bg-alt)
-                                    border border-white/10
-                                    rounded-md
-                                    items-center
-                                    "
-                            >
+                            <ButtonBelt>
                                 <DefaultButton
                                     icon={'sync'}
                                     label={'Rellenar inventario'}
@@ -259,19 +241,9 @@ function InventoryView() {
                                         overwriteFile(newData)
                                     }}
                                 />
-                            </div>
+                            </ButtonBelt>
 
-                            <div
-                                className="
-                                    flex flex-row
-                                    gap-2 p-2! 
-                                    w-fit *:h-full
-                                    bg-(--bg-alt)
-                                    border border-white/10
-                                    rounded-md
-                                    items-center
-                                    "
-                            >
+                            <ButtonBelt>
                                 <DefaultButton
                                     label={isSelecting ? "Cancelar" : "Seleccionar"}
                                     icon={isSelecting ? "times" : "clipboard-list"}
@@ -294,7 +266,7 @@ function InventoryView() {
                                         await deleteItems().then(() => setLoading(false))
                                     }}
                                 />}
-                            </div>
+                            </ButtonBelt>
                         </div>
 
                         <div className="
@@ -361,7 +333,7 @@ function InventoryView() {
                                         product.expiresAt ?
                                             <ExpirationDisplay
                                                 days={daysFromToday(product.expiresAt)}
-                                            /> : <p></p>
+                                            /> : null
                                     }
                                     restockButton={
                                         product.current !== product.amount &&

@@ -113,6 +113,13 @@ function StandarNewItemDialog(
                                     onChange={value => editFormFields(item.name, value)}
                                 />
 
+                            case "tag-roles":
+                                return <TagSelector
+                                    key={index}
+                                    useRoles
+                                    onChange={value => editFormFields(item.name, value)}
+                                />
+
                             case "number":
                                 return <FormInput
                                     key={index}
@@ -161,8 +168,10 @@ function StandarNewItemDialog(
                             case "expiration":
                                 return <ExpirationSelector
                                     key={index}
+                                    label={item.uiName}
                                     defaultValue={item.value}
                                     onChange={value => editFormFields(item.name, value)}
+                                    required={!optionalFields.includes(item.name)}
                                 />
 
                             case "active":
