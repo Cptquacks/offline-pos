@@ -381,6 +381,23 @@ function InventoryView() {
                                     endDate={product.expiresAt}
                                     onDelete={() => deleteProduct(index)}
                                     isOnPreview={isSelecting}
+                                    missingData={(() => {
+                                        const required = [
+                                            'name',
+                                            'tag',
+                                            'code',
+                                            'amount',
+                                            'price',
+                                            'currency'
+                                        ]
+                                        const current = Object.keys(product)
+                                            .filter(item => required.includes(item))
+
+                                        return !current.every((element, index) =>
+                                            element === required[index] &&
+                                            product[element]
+                                        )
+                                    })()}
                                 />
                             </StandardItemCardWrapper>
                         )}

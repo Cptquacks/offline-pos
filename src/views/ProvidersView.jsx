@@ -357,6 +357,22 @@ function ProvidersView() {
 
                                         />
                                     )}
+                                    missingData={(() => {
+                                        const required = [
+                                            'name',
+                                            'waste',
+                                            'currency',
+                                            'startedAt',
+                                        ]
+
+                                        const current = Object.keys(provider)
+                                            .filter(item => required.includes(item))
+
+                                        return !current.every((element, index) =>
+                                            element === required[index] &&
+                                            provider[element]
+                                        )
+                                    })()}
                                 />
                             </StandardItemCardWrapper>
                         )}

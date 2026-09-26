@@ -374,16 +374,15 @@ function StaffView() {
                                             'salary',
                                             'currency',
                                             'charge',
-                                            'contact',
-                                            'startDate',
-                                            'endDate'
+                                            'startDate'
                                         ]
 
                                         const current = Object.keys(member)
-                                        console.log(`${current} ${required}`)
-                                        return current.every(((entry, index) =>
-                                            entry === required[index] &&
-                                            entry !== 'notes'
+                                            .filter(item => required.includes(item))
+
+                                        return !current.every(((element, index) =>
+                                            element === required[index] &&
+                                            member[element]
                                         ))
                                     })()}
                                 />
