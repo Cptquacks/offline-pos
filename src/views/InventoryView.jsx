@@ -3,7 +3,6 @@ import SearchBar from "../components/SearchBar"
 import ImportPanel from "../components/ImportPanel"
 import useProductStore from "../stores/productStore"
 import ItemsList from "../components/ItemsList"
-import ProductItem from "../components/ProductItem"
 import { stringSimilarity } from "../utils/string-util"
 import { daysFromToday } from "../utils/date-util"
 import useTagStore from "../stores/tagStore"
@@ -192,7 +191,7 @@ function InventoryView() {
                         <ButtonBelt>
                             <DefaultButton
                                 label={"Nuevo producto"}
-                                icon={"pen-to-square"}
+                                icon={"plus"}
                                 onClick={() => openDialog(
                                     <StandarNewItemDialog
                                         icon={'box'}
@@ -220,7 +219,6 @@ function InventoryView() {
                                         alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
                                     />
                                 )}
-                                iconLeft
                             />
                         </ButtonBelt>
 

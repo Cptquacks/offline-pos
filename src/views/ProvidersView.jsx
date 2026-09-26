@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import ItemsList from "../components/ItemsList"
 import useProviderStore from "../stores/providerStore"
-import ProviderItem from "../components/ProviderItem"
 import SearchBar from "../components/SearchBar"
 import ImportPanel from "../components/ImportPanel"
 import { stringSimilarity } from "../utils/string-util"
@@ -159,9 +158,8 @@ function ProvidersView() {
                     ">
                         <ButtonBelt>
                             <DefaultButton
-                                icon={'pen-to-square'}
+                                icon={'plus'}
                                 label={'Nuevo proveedor'}
-                                iconLeft
                                 onClick={
                                     () => openDialog(
                                         <StandarNewItemDialog
