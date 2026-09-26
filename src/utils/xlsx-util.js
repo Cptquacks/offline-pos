@@ -1,5 +1,7 @@
 
-
+/**
+ * @returns {Object}
+ */
 export async function importFile() {
     if (!window.electronAPI) return { canceled: true, error: 'Electron API not ready' }
 
@@ -11,9 +13,9 @@ export async function importFile() {
 }
 
 /**
- * 
  * @param {Object} data 
  * @param {String} filePath 
+ * @returns {Object}
  */
 export async function exportFile(content, filePath) {
     if (!window.electronAPI) return { canceled: true, error: 'Electron API not ready' }
