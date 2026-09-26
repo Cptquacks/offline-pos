@@ -93,14 +93,9 @@ function InventoryView() {
         const newTags = []
         importedData.forEach(fragment => {
 
-            if (
-                fragment.tag &&
-                fragment.tag.trim().length > 0 &&
-                !tagList.includes(fragment.tag) &&
-                !newTags.includes(fragment.tag)
-            ) {
+            if (fragment.tag && !newTags.includes(fragment.tag))
+
                 newTags.push(fragment.tag)
-            }
             fragment.current ? fragment.current : fragment.current = fragment.amount
             fragment.current = parseInt(fragment.current)
             fragment.amount = parseInt(fragment.amount)
@@ -111,6 +106,7 @@ function InventoryView() {
         })
 
         for (let index = 0; index < newTags.length; index++) {
+            if (tagList.some(item => item.name === newTags[index])) continue
             await addTag({ name: newTags[index], color: randomLCH() })
         }
 
@@ -194,104 +190,111 @@ function InventoryView() {
                 ">
                     <div className="flex flex-row flex-wrap w-full gap-3 px-4! py-2!">
 
-                        <div className="flex flex-row gap-3">
-                            <ButtonBelt>
-                                <DefaultButton
-                                    label={"Nuevo producto"}
-                                    icon={"pen-to-square"}
-                                    onClick={() => openDialog(
-                                        <StandarNewItemDialog
-                                            icon={'box'}
-                                            label={'producto'}
-                                            fileFields={[
-                                                { 'name': 'text' },
-                                                { 'tag': 'tag' },
-                                                { 'code': 'text' },
-                                                { 'amount': 'number' },
-                                                { 'price': 'price' },
-                                                { 'currency': 'currency' },
-                                                { 'expiresAt': 'expiration' }
-                                            ]}
-                                            uiFields={[
-                                                { 'name': 'Nombre' },
-                                                { 'tag': 'Tipo' },
-                                                { 'code': 'Numero de serie' },
-                                                { 'amount': 'Stock' },
-                                                { 'price': 'Precio' },
-                                                { 'currency': 'Moneda de pago' },
-                                                { 'expiresAt': 'Fecha de caducidad' }
-                                            ]}
-                                            optionalFields={['expiresAt']}
-                                            additionCallback={value => addProduct(value)}
-                                            alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
-                                        />
-                                    )}
-                                    iconLeft
-                                />
-                            </ButtonBelt>
-
-                            <ButtonBelt>
-                                <DefaultButton
-                                    icon={'sync'}
-                                    label={'Rellenar inventario'}
-                                    iconLeft
-                                    onClick={() => {
-                                        let newData = [...productData]
-                                        newData = newData.map(entry => ({ ...entry, current: entry.amount }))
-                                        overwriteFile(newData)
-                                    }}
-                                />
-                            </ButtonBelt>
-
-                            <ButtonBelt>
-                                <DefaultButton
-                                    label={isSelecting ? "Cancelar" : "Seleccionar"}
-                                    icon={isSelecting ? "times" : "clipboard-list"}
-                                    onClick={() => setSelecting(!isSelecting)}
-                                />
-
-                                {!isSelecting && <DefaultButton
-                                    label={isSelecting ? "Cancelar" : "Seleccionar todos"}
-                                    icon={isSelecting ? "times" : "clipboard-check"}
-                                    onClick={() => {
-                                        setIndexes(productData.map((_, index) => index))
-                                        setSelecting(true)
-                                    }}
-                                />}
-
-                                {selectedIndexes.length > 0 && <DeleteButton
-                                    label={`Eliminar todos (${selectedIndexes.length})`}
-                                    onDelete={async () => {
-                                        setLoading(true)
-                                        await deleteItems().then(() => setLoading(false))
-                                    }}
-                                />}
-                            </ButtonBelt>
-                        </div>
-
-                        <div className="
-                        flex flex-row 
-                        justify-between
-                        gap-1
-                        ">
-                            <ImportPanel
-                                model={{
-                                    "name": "Nombre",
-                                    "tag": "Categoría",
-                                    "code": "Codigo de barras",
-                                    "description": "Descripción",
-                                    "amount": "Cantidad",
-                                    "price": "Precio",
-                                    "currency": "Moneda",
-                                    "expiresAt": "Caducidad",
-                                    "current": "Disponibilidad"
-                                }}
-                                optionalFields={['description', 'expiresAt', 'current']}
-                                onImport={data => handleImportation(data)}
-                                previewComponent={({ data }) => <ProductItem data={data} isOnPreview={true} />}
-                                exportData={exportedData}
+                        <ButtonBelt>
+                            <DefaultButton
+                                label={"Nuevo producto"}
+                                icon={"pen-to-square"}
+                                onClick={() => openDialog(
+                                    <StandarNewItemDialog
+                                        icon={'box'}
+                                        label={'producto'}
+                                        fileFields={[
+                                            { 'name': 'text' },
+                                            { 'tag': 'tag' },
+                                            { 'code': 'text' },
+                                            { 'amount': 'number' },
+                                            { 'price': 'price' },
+                                            { 'currency': 'currency' },
+                                            { 'expiresAt': 'expiration' }
+                                        ]}
+                                        uiFields={[
+                                            { 'name': 'Nombre' },
+                                            { 'tag': 'Tipo' },
+                                            { 'code': 'Numero de serie' },
+                                            { 'amount': 'Stock' },
+                                            { 'price': 'Precio' },
+                                            { 'currency': 'Moneda de pago' },
+                                            { 'expiresAt': 'Fecha de caducidad' }
+                                        ]}
+                                        optionalFields={['expiresAt']}
+                                        additionCallback={value => addProduct(value)}
+                                        alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
+                                    />
+                                )}
+                                iconLeft
                             />
-                        </div>
+                        </ButtonBelt>
+
+                        <ButtonBelt>
+                            <DefaultButton
+                                icon={'sync'}
+                                label={'Rellenar inventario'}
+                                iconLeft
+                                onClick={() => {
+                                    let newData = [...productData]
+                                    newData = newData.map(entry => ({ ...entry, current: entry.amount }))
+                                    overwriteFile(newData)
+                                }}
+                            />
+                        </ButtonBelt>
+
+                        <ButtonBelt>
+                            <DefaultButton
+                                label={isSelecting ? "Cancelar" : "Seleccionar"}
+                                icon={isSelecting ? "times" : "clipboard-list"}
+                                onClick={() => setSelecting(!isSelecting)}
+                            />
+
+                            {!isSelecting && <DefaultButton
+                                label={isSelecting ? "Cancelar" : "Seleccionar todos"}
+                                icon={isSelecting ? "times" : "clipboard-check"}
+                                onClick={() => {
+                                    setIndexes(productData.map((_, index) => index))
+                                    setSelecting(true)
+                                }}
+                            />}
+
+                            {selectedIndexes.length > 0 && <DeleteButton
+                                label={`Eliminar todos (${selectedIndexes.length})`}
+                                onDelete={async () => {
+                                    setLoading(true)
+                                    await deleteItems().then(() => setLoading(false))
+                                }}
+                            />}
+                        </ButtonBelt>
+
+                        <ImportPanel
+                            model={{
+                                "name": "Nombre",
+                                "tag": "Categoría",
+                                "code": "Codigo de barras",
+                                "description": "Descripción",
+                                "amount": "Cantidad",
+                                "price": "Precio",
+                                "currency": "Moneda",
+                                "expiresAt": "Caducidad",
+                                "current": "Disponibilidad"
+                            }}
+                            optionalFields={['description', 'expiresAt', 'current']}
+                            onImport={data => handleImportation(data)}
+                            previewComponent={({ data }) =>
+                                <StandardItemCard
+                                    icon="box"
+                                    title={data.name}
+                                    codeBar={data.code ?? 'N/A'}
+                                    endDate={data.expiresAt}
+                                    stockDisplay={
+                                        <StockDisplay
+                                            total={data.amount}
+                                            amount={data.current}
+                                        />
+                                    }
+                                    salaryDisplay={data.price && data.currency}
+                                    isOnPreview
+                                />
+                            }
+                            exportData={exportedData}
+                        />
 
                     </div>
 

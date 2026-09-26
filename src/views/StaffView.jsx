@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react"
-import EmployeForm from "../components/EmployeForm"
 import SearchBar from "../components/SearchBar"
 import ImportPanel from "../components/ImportPanel"
 import ItemsList from "../components/ItemsList"
@@ -17,7 +16,7 @@ import StandardItemCardWrapper from "../components/StandardItemCardWrapper"
 import StandardItemCard from "../components/StandardItemCard"
 import TagItem from "../components/TagItem"
 import ExpirationDisplay from "../components/ExpirationDisplay"
-import { daysBetween, daysFromToday, getToday } from "../utils/date-util"
+import { daysFromToday, getToday } from "../utils/date-util"
 import DefaultButton from "../components/DefaultButton"
 import NotesControlPanel from "../components/NotesControlPanel"
 import ButtonBelt from "../components/ButtonBelt"
@@ -83,27 +82,24 @@ function StaffView() {
         setLoadValue({ current: 0, total: importedData.length })
 
         const newRoles = []
-        importedData.forEach((fragment, index) => {
-            if (
-                fragment.charge &&
-                fragment.charge.trim().length > 0 &&
-                !roleList.includes(fragment.charge) &&
-                !newRoles.includes(fragment.charge)
-            ) {
+        importedData.forEach(fragment => {
+            if (fragment.charge && !newRoles.includes(fragment.charge))
                 newRoles.push(fragment.charge)
-            }
 
-            if (!fragment['currency']) {
-                importedData[index]['currency'] = 'CUP'
-            }
+            if (!fragment['currency'])
+                fragment['currency'] = "CUP"
 
-            fragment.salary = parseInt(fragment.salary)
+            if (!fragment.startDate)
+                fragment.startDate = getToday()
+
+            fragment.salary = parseFloat(fragment.salary)
             fragment['notes'] = []
 
             setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
         })
 
         for (let index = 0; index < newRoles.length; index++) {
+            if (roleList.some(item => item.name === newRoles[index])) continue
             await addRole({ name: newRoles[index], color: randomLCH() })
         }
 
@@ -231,25 +227,41 @@ function StaffView() {
                             />
                         </ButtonBelt>
 
-                        <div>
-                            <ImportPanel
-                                model={{
-                                    "name": "Nombre",
-                                    "ID": "Carnet de identidad",
-                                    "salary": "Salario",
-                                    "currency": "Moneda de pago",
-                                    "charge": "Cargo",
-                                    "contact": "Numero telefoníco",
-                                    "startDate": "Inicio decontrato",
-                                    "endDate": "Fin de contrato"
-                                }}
-                                optionalFields={["currency", "charge", "contact", "ID", "startDate", "endDate"]}
-                                title="Importar"
-                                onImport={data => handleImportation(data)}
-                                previewComponent={({ data }) => <EmployeItem data={data} isOnPreview={true} />}
-                                exportData={exportedData}
-                            />
-                        </div>
+                        <ImportPanel
+                            model={{
+                                "name": "Nombre",
+                                "ID": "Carnet de identidad",
+                                "salary": "Salario",
+                                "currency": "Moneda de pago",
+                                "charge": "Cargo",
+                                "contact": "Numero telefoníco",
+                                "startDate": "Inicio decontrato",
+                                "endDate": "Fin de contrato"
+                            }}
+                            optionalFields={["currency", "charge", "contact", "ID", "startDate", "endDate"]}
+                            title="Importar"
+                            onImport={data => handleImportation(data)}
+                            previewComponent={({ data }) =>
+                                <StandardItemCard
+                                    icon="user-edit"
+                                    title={data.name}
+                                    codeBar={data.ID}
+                                    startDate={data.startDate}
+                                    endDate={data.endDate}
+                                    tagItem={
+                                        <TagItem
+                                            icon={'user'}
+                                            color={roleList.find(item => item.name === data.charge)?.color ?? '#000'}
+                                            label={data.charge}
+                                        />
+                                    }
+                                    salaryDisplay={data.salary}
+
+                                    isOnPreview
+                                />
+                            }
+                            exportData={exportedData}
+                        />
 
                         <div className="flex flex-row gap-1">
                             <TotalWasteDisplay

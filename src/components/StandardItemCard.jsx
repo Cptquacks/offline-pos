@@ -43,6 +43,7 @@ function StandardItemCard({
                     flex flex-row 
                     w-full
                     items-start justify-between 
+                    gap-12
                     "
                 >
                     <div

@@ -11,7 +11,7 @@
 
 import { create } from "zustand";
 import { loadData, updateData, writeData } from "../utils/storage-util";
-import { colorParser } from "../utils/tag-util";
+import { colorParser, OriginalLCHParser } from "../utils/tag-util";
 
 /**@type {import("zustand").UseBoundStore<import("zustand").StoreApi<tagStore>>} */
 
@@ -25,7 +25,7 @@ const useTagStore = create((set, get) => ({
         set({ tagList: data })
     },
     addTag: async (tag) => {
-        const data = await updateData('tags', tag)
+        const data = await updateData('tags', ({ ...tag, color: OriginalLCHParser(tag.color) }))
 
         set({ tagList: data })
     },

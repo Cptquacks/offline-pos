@@ -5,7 +5,7 @@ import ProviderItem from "../components/ProviderItem"
 import SearchBar from "../components/SearchBar"
 import ImportPanel from "../components/ImportPanel"
 import { stringSimilarity } from "../utils/string-util"
-import { addDays, daysBetween, daysFromToday } from "../utils/date-util"
+import { addDays, daysBetween, daysFromToday, getToday } from "../utils/date-util"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import TotalWasteDisplay from "../components/TotalWasteDisplay"
 import useDialogStore from "../stores/dialogStore"
@@ -71,13 +71,11 @@ function ProvidersView() {
         setLoading(true)
         setLoadValue({ current: 0, total: importedData.length })
 
-        const today = new Date().toLocaleDateString('sv-SE')
-
         importedData.forEach(fragment => {
-            fragment.waste = parseInt(fragment.waste)
+            fragment.waste = parseFloat(fragment.waste)
             fragment.currency ? fragment.currency : fragment.currency = "CUP"
 
-            fragment.startedAt ? fragment.startedAt : fragment.startedAt = today
+            fragment.startedAt ? fragment.startedAt : fragment.startedAt = getToday()
             fragment.span ? fragment.span = parseInt(fragment.span) : fragment.span = 31
 
             const isExpired = daysFromToday(addDays(fragment.startedAt, fragment.span))
@@ -230,7 +228,22 @@ function ProvidersView() {
                             optionalFields={["startedAt", "span", "active", "contactData", "currency"]}
                             title={"Importar"}
                             onImport={data => handleImportation(data)}
-                            previewComponent={({ data }) => <ProviderItem data={data} isOnPreview={true} />}
+                            previewComponent={({ data }) =>
+                                <StandardItemCard
+                                    icon="handshake-alt"
+                                    title={data.name}
+                                    salaryDisplay={data.waste}
+                                    startDate={data.startedAt}
+                                    endDate={addDays(data.startedAt, data.span)}
+
+                                    tagItem={
+                                        <ActiveDisplay
+                                            isActive={data.active}
+                                        />
+                                    }
+                                    isOnPreview
+                                />
+                            }
                             exportData={exportedData}
                         />
                     </div>

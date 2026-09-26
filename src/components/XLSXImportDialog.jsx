@@ -95,7 +95,7 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
 
             <div className="
             flex flex-col
-            p-4! gap-3
+            p-4! gap-6
             overflow-y-auto
             ">
                 <div className="
@@ -214,9 +214,16 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
 
                 {
                     Preview &&
-                    <div className="text-lg w-fit">
+                    <div
+                        className="
+                        flex flex-col
+                        gap-3
+                        w-full
+                        text-lg
+                        "
+                    >
                         <strong>
-                            Previsualización
+                            Previsualización:
                         </strong>
                         {resultantData.length > 0 &&
                             <Preview
