@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { loadData, updateData, writeData } from "../utils/storage-util";
+import { getToday } from "../utils/date-util";
 
 
 
@@ -27,7 +28,6 @@ const useTraceStore = create((set, get) => ({
 
     loadData: async () => {
         const { currentTrace } = get()
-        const today = new Date().toLocaleDateString('sv-SE')
 
         let data = await loadData('traces') ?? []
         data.sort((a, b) => b.date.localeCompare(a.date))
@@ -35,7 +35,7 @@ const useTraceStore = create((set, get) => ({
         set({
             traceData: data,
             currentTrace: currentTrace ?? {
-                'date': today,
+                'date': getToday(),
                 'refunds': 0,
                 'sells': 0,
                 'total': {}
@@ -45,15 +45,13 @@ const useTraceStore = create((set, get) => ({
     },
 
     addTrace: async (trace) => {
-        const today = new Date().toLocaleDateString('sv-SE')
-
         let data = await updateData('traces', trace)
         data.sort((a, b) => b.date.localeCompare(a.date))
 
         set({
             traceData: data,
             currentTrace: {
-                'date': today,
+                'date': getToday(),
                 'refunds': 0,
                 'sells': 0,
                 'total': {}
@@ -64,13 +62,11 @@ const useTraceStore = create((set, get) => ({
 
     closeTrace: async () => {
         const { currentTrace } = get()
-
-        const today = new Date().toLocaleDateString('sv-SE')
         let todayTrace = currentTrace
 
         if (!todayTrace)
             todayTrace = {
-                'date': today,
+                'date': getToday(),
                 'refunds': 0,
                 'sells': 0,
                 'total': {}
@@ -84,7 +80,7 @@ const useTraceStore = create((set, get) => ({
         set({
             traceData: data,
             currentTrace: {
-                'date': today,
+                'date': getToday(),
                 'refunds': 0,
                 'sells': 0,
                 'total': {}
@@ -95,8 +91,6 @@ const useTraceStore = create((set, get) => ({
 
     updateTrace: async (trace, index) => {
         const { traceData } = get()
-
-        const today = new Date().toLocaleDateString('sv-SE')
         let updatedTraces = new Array(traceData)
         updatedTraces[index] = { ...updatedTraces[index], ...trace }
 
@@ -106,7 +100,7 @@ const useTraceStore = create((set, get) => ({
         set({
             traceData: data,
             currentTrace: {
-                'date': today,
+                'date': getToday(),
                 'refunds': 0,
                 'sells': 0,
                 'total': {}
@@ -119,7 +113,6 @@ const useTraceStore = create((set, get) => ({
         const { traceData, currentTrace, traceLoaded } = get()
         if (!traceLoaded) return
 
-        const today = new Date().toLocaleDateString('sv-SE')
         let groupedTrace = {}
         let updatedTrace = traceData
             .map(trace => trace)
@@ -157,7 +150,7 @@ const useTraceStore = create((set, get) => ({
                 ...updatedTrace,
                 currentTrace,
                 {
-                    date: today,
+                    date: getToday(),
                     refunds: 0,
                     sells: 0,
                     total: {}
@@ -172,7 +165,7 @@ const useTraceStore = create((set, get) => ({
     overwriteTrace: async (chunk) => {
         let data = await writeData('traces', chunk)
         data.push({
-            "date": new Date().toLocaleDateString('sv-SE'),
+            "date": getToday(),
             "refunds": 0,
             "sells": 0,
             "total": {
