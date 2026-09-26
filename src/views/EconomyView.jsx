@@ -439,8 +439,8 @@ function EconomyView() {
                     <ImportPanel
                         model={{
                             "date": "Fecha",
-                            "sells": "Ventas",
                             "refunds": "Reembolos",
+                            "sells": "Ventas",
                             ...currencies
                         }}
                         optionalFields={["refunds", ...currencyList.slice(1)]}
@@ -483,12 +483,14 @@ function EconomyView() {
                             data={predictedTrace}>
                             <Line
                                 name="Ventas"
-                                dataKey="real" />
+                                dataKey="real"
+                            />
                             <Line
                                 name="Predicción"
                                 dataKey="predicted"
                                 stroke="var(--accent)"
-                                strokeDasharray="8 8" />
+                                strokeDasharray="8 8"
+                            />
 
                             <XAxis
                                 dataKey="date" />
