@@ -135,7 +135,7 @@ function KioskView() {
                                         { ...data, cart: amount }
                                     ]))
                                 }
-                                onRefund={(data, amount) => handleRefund(data, amount)}
+                                onRefund={data => handleRefund(data, 1)}
                             />)}
                     </ItemsList>
                 </div>

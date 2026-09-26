@@ -61,24 +61,7 @@ const useTraceStore = create((set, get) => ({
     },
 
     closeTrace: async () => {
-        const { currentTrace } = get()
-        let todayTrace = currentTrace
-
-        if (!todayTrace)
-            todayTrace = {
-                'date': getToday(),
-                'refunds': 0,
-                'sells': 0,
-                'total': {}
-            }
-
-        let data = await updateData('traces', todayTrace)
-        data
-            .filter(trace => trace.sells !== 0 || trace.refunds !== 0)
-            .sort((a, b) => b.date.localeCompare(a.date))
-
         set({
-            traceData: data,
             currentTrace: {
                 'date': getToday(),
                 'refunds': 0,
@@ -199,10 +182,16 @@ const useTraceStore = create((set, get) => ({
 
     addRefund: async (product, amount) => {
         const { currentTrace } = get();
-        const updatedTrace = { ...currentTrace };
+        const updatedTrace = {
+            ...currentTrace,
+            refunds: currentTrace.refunds + parseInt(amount),
+        };
 
-        updatedTrace.sells -= parseInt(amount)
-        updatedTrace.refunds += parseInt(amount)
+        if (!updatedTrace.total[product.currency] || !product.currency)
+            updatedTrace.total['CUP'] = 0
+
+        else
+            updatedTrace.total[product.currency] -= product.price
 
         set({ currentTrace: updatedTrace });
     }
