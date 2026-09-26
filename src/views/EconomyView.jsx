@@ -479,7 +479,7 @@ function EconomyView() {
                             border border-(--border)
                             rounded-md
                             "
-                            style={{ width: "100%", aspectRatio: 2.5, maxWidth: 600 }}
+                            style={{ width: "100%", aspectRatio: 2.5, maxWidth: '95%' }}
                             data={predictedTrace}>
                             <Line
                                 name="Ventas"
@@ -491,7 +491,7 @@ function EconomyView() {
                                 stroke="var(--accent)"
                                 strokeDasharray="8 8"
                             />
-
+                            <YAxis />
                             <XAxis
                                 dataKey="date" />
 
@@ -506,7 +506,7 @@ function EconomyView() {
                             border border-(--border)
                             rounded-md
                             "
-                            style={{ width: "100%", aspectRatio: 2.5, maxWidth: 600 }}
+                            style={{ width: "100%", aspectRatio: 2.5, maxWidth: '95%' }}
                             data={barTrace}>
                             <Bar
                                 name="Ventas"
@@ -516,7 +516,7 @@ function EconomyView() {
                                 name="Devoluciones"
                                 dataKey="refunds"
                                 fill="var(--accent)" />
-
+                            <YAxis />
                             <XAxis dataKey="date" />
 
                             <Legend />
@@ -541,7 +541,7 @@ function EconomyView() {
                             border border-(--border)
                             rounded-md
                             "
-                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: '95%' }}
                             data={salesTrace}>
 
                             {traceCurrencies.map((currency, index) =>
@@ -553,6 +553,7 @@ function EconomyView() {
                                 />
                             )}
 
+                            <YAxis />
                             <XAxis dataKey="date" />
 
                             <Legend />
@@ -567,7 +568,7 @@ function EconomyView() {
                             border border-(--border)
                             rounded-md
                             "
-                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: '95%' }}
                             data={netSalesTrace}>
 
 
@@ -629,7 +630,7 @@ function EconomyView() {
                                         border border-(--border)
                                         rounded-md
                                         "
-                                        style={{ width: '100%', aspectRatio: 1, maxWidth: 600 }}
+                                        style={{ width: '100%', aspectRatio: 1, maxWidth: '95%' }}
                                         data={entry}
                                     >
 
@@ -657,7 +658,7 @@ function EconomyView() {
                                         border border-(--border)
                                         rounded-md
                                         "
-                                        style={{ width: '100%', aspectRatio: 1, maxWidth: 600 }}
+                                        style={{ width: '100%', aspectRatio: 1, maxWidth: '95%' }}
                                         data={roleTrace.filter(trace => trace.currency === currencyList[index])}
                                     >
                                         <Bar
@@ -706,7 +707,7 @@ function EconomyView() {
                                 border border-(--border)
                                 rounded-md
                                 "
-                                style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                                style={{ width: '100%', aspectRatio: 2.5, maxWidth: '95%' }}
                                 data={providerTrace.filter(provider => provider.currency === entry)}
                             >
 
