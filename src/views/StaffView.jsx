@@ -21,6 +21,7 @@ import DefaultButton from "../components/DefaultButton"
 import NotesControlPanel from "../components/NotesControlPanel"
 import ButtonBelt from "../components/ButtonBelt"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
+import MissingData from "../components/MissingData"
 
 function StaffView() {
     const { staffData, loadData, addStaff, modifyStaff, overwriteFile, deleteStaff } = useStaffStore()
@@ -213,6 +214,7 @@ function StaffView() {
                                 icon={'sync'}
                                 iconLeft
                                 label={`Recontratar todos (${expiredList.length})`}
+                                disabled={expiredList.length === 0}
                             />
                         </ButtonBelt>
 
@@ -337,7 +339,54 @@ function StaffView() {
                                         }
                                     )}
                                     onDelete={() => deleteStaff(index)}
+                                    onEdit={() => openDialog(
+                                        <StandarNewItemDialog
+                                            fileFields={[
+                                                { 'name': 'text' },
+                                                { 'ID': 'number' },
+                                                { 'salary': 'number' },
+                                                { 'currency': 'currency' },
+                                                { 'charge': 'tag-roles' },
+                                                { 'contact': 'phone' },
+                                                { 'startDate': 'date' },
+                                                { 'endDate': 'expiration' }
+                                            ]}
+                                            uiFields={[
+                                                { 'name': 'Nombre' },
+                                                { 'ID': 'Carnet de Identidad' },
+                                                { 'salary': 'Salario' },
+                                                { 'currency': 'Moneda de pago' },
+                                                { 'charge': 'Cargo' },
+                                                { 'contact': 'Numero telefonico' },
+                                                { 'startDate': 'Fecha de contratacion' },
+                                                { 'endDate': 'Fecha de despido' }
+                                            ]}
+                                            icon={'user-edit'}
+                                            label={'empleado'}
+                                            optionalFields={['endDate', 'contact']}
+                                            currentFieldData={member}
+                                            additionCallback={data => modifyStaff({ ...member, ...data }, index)}
+                                        />
+                                    )}
+                                    missingData={(() => {
+                                        const required = [
+                                            'name',
+                                            'ID',
+                                            'salary',
+                                            'currency',
+                                            'charge',
+                                            'contact',
+                                            'startDate',
+                                            'endDate'
+                                        ]
 
+                                        const current = Object.keys(member)
+                                        console.log(`${current} ${required}`)
+                                        return current.every(((entry, index) =>
+                                            entry === required[index] &&
+                                            entry !== 'notes'
+                                        ))
+                                    })()}
                                 />
                             </StandardItemCardWrapper>
                         )}

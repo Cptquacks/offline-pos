@@ -197,9 +197,9 @@ function ProvidersView() {
 
                             <DefaultButton
                                 label={`Recomprar todo (${totalRebuys})`}
-                                icon={'hand-holding-usd'}
+                                icon={'sync'}
                                 disabled={!totalRebuys}
-
+                                iconLeft
                                 onClick={handleRebuyAll}
                             />
                         </ButtonBelt>

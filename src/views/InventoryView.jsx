@@ -227,13 +227,17 @@ function InventoryView() {
                         <ButtonBelt>
                             <DefaultButton
                                 icon={'sync'}
-                                label={'Rellenar inventario'}
+                                label={`
+                                    Rellenar inventario 
+                                    (${productData.filter(entry => entry.amount > entry.current).length})`
+                                }
                                 iconLeft
                                 onClick={() => {
                                     let newData = [...productData]
                                     newData = newData.map(entry => ({ ...entry, current: entry.amount }))
                                     overwriteFile(newData)
                                 }}
+                                disabled={!productData.some(entry => entry.amount > entry.current)}
                             />
                         </ButtonBelt>
 

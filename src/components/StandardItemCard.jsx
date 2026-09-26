@@ -3,6 +3,7 @@ import EditButton from "./EditButton";
 import DeleteButton from "./DeleteButton";
 import DateDisplay from "./DateDisplay";
 import NoteItem from "./NoteItem";
+import MissingData from "./MissingData";
 
 function StandardItemCard({
     icon = 'times',
@@ -14,7 +15,7 @@ function StandardItemCard({
     noteData = [], notesOpen = false,
     startDate, endDate,
     onEdit, onDelete, onNoteDelete,
-    isOnPreview = false
+    isOnPreview = false, missingData = false
 
 }) {
     return (
@@ -85,6 +86,8 @@ function StandardItemCard({
                     }
                     {(startDate || endDate) && <DateDisplay startsAt={startDate} endsAt={endDate} />}
                     {expirationDisplay || notesDisplay}
+
+                    {missingData && <MissingData />}
                 </div>
 
                 {!isOnPreview && <div className="flex flex-row gap-1 *:h-full">
