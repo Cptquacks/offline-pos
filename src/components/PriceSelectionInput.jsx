@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react"
 import PreferenceSwitch from "./PreferenceSwitch"
 import FormInput from "./FormInput"
+import ButtonBelt from "./ButtonBelt"
 
 function PriceSelectionInput({ defaultValue, onChange }) {
     const [switchOn, setSwitch] = useState(false)
-    const [cost, setCost] = useState(0)
-    const [profit, setProfit] = useState(0)
+    const [cost, setCost] = useState(defaultValue ?? 0)
+    const [profit, setProfit] = useState(25)
 
     const finalPrice = useMemo(() => {
-        return cost + (cost * (profit / 100))
+        return parseInt(cost + (cost * (profit / 100)))
     }, [cost, profit])
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,7 +59,7 @@ function PriceSelectionInput({ defaultValue, onChange }) {
                     type="number"
                     onChange={value => setCost(value)}
                     required
-                    defaultValue={0}
+                    defaultValue={defaultValue ?? 0}
                     placeholder={'Costo original...'}
                 />
             }
@@ -70,9 +71,15 @@ function PriceSelectionInput({ defaultValue, onChange }) {
                     type="number"
                     onChange={value => setProfit(value)}
                     required
-                    defaultValue={0}
+                    defaultValue={25}
                     placeholder={'Margen final...'}
                 />
+            }
+
+            {switchOn &&
+                <ButtonBelt>
+                    <strong>Precio final: {finalPrice}</strong>
+                </ButtonBelt>
             }
         </div>
     )
