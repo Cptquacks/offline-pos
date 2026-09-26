@@ -1,3 +1,6 @@
+export function getToday() {
+    return new Date().toLocaleDateString('sv-SE')
+}
 /**
  * Diferencia en días entre dos fechas (formato YYYY-MM-DD)
  * @param {string} a - Fecha 1
