@@ -1,4 +1,3 @@
-import { faFilter } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
 
@@ -20,13 +19,16 @@ function TagFilter({ filters = [], onSelect }) {
         text-lg font-bold!
         border border-(--border)
         rounded-full">
-            <FontAwesomeIcon icon={faFilter} />
+            <FontAwesomeIcon icon={'filter'} />
 
-            <select className="
-            cursor-pointer
-            bg-(--bg-alt)
-            rounded-md
-            " onChange={handleSelection} value={selection}>
+            <select
+                className="
+                cursor-pointer
+                bg-(--bg-alt)
+                rounded-md
+                "
+                onChange={handleSelection} value={selection}
+            >
 
                 <option value="All">Todos</option>
 

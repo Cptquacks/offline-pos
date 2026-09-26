@@ -1,4 +1,3 @@
-import { faCheck } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function SuccessToast({ label }) {
@@ -27,7 +26,7 @@ function SuccessToast({ label }) {
                     flex-1
                     px-4!
                     "
-                    icon={faCheck}
+                    icon={'check'}
                     size="md" />
             </div>
 
