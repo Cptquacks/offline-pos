@@ -94,7 +94,6 @@ function InventoryView() {
         importedData.forEach(fragment => {
 
             if (fragment.tag && !newTags.includes(fragment.tag))
-
                 newTags.push(fragment.tag)
             fragment.current ? fragment.current : fragment.current = fragment.amount
             fragment.current = parseInt(fragment.current)
