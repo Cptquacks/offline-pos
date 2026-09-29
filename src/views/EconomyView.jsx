@@ -17,6 +17,7 @@ import useDialogStore from "../stores/dialogStore"
 import EmptyList from "../components/EmptyList"
 import PreferenceSwitch from "../components/PreferenceSwitch"
 import LoadingDialog from "../components/LoadingDialog"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 
 
@@ -751,11 +752,13 @@ function EconomyView() {
                 {closesCount > 1 &&
                     <div className="
                     flex flex-row
-                    p-2!
+                    p-2! gap-1
+                    items-center
                     bg-(--bg-soft)
                     border border-(--border)
                     rounded-md
                     ">
+                        <FontAwesomeIcon icon={'info-circle'} />
                         <p>
                             Veces cerradas hoy: <strong>{closesCount}</strong>
                         </p>

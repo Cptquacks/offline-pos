@@ -137,6 +137,7 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
                                     {fileData.columns.map((entry, index) =>
                                         <th
                                             className="
+                                            px-2! py-0.5!
                                             border border-(--border)
                                             "
                                             key={index}
@@ -150,6 +151,7 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
                                         {fileData.columns.map((col, colIndex) =>
                                             <td
                                                 className="
+                                                px-2! py-0.5!
                                                 border border-(--border)
                                                 "
                                                 key={colIndex}>
@@ -159,6 +161,7 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
                                     </tr>
                                 )}
                                 <tr className="
+                                px-4! py-1!
                                 border border-(--border)
                                 ">
                                     <td>
