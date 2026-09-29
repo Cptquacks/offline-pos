@@ -20,6 +20,7 @@ import AlertDialog from "../components/AlertDialog"
 import ButtonBelt from "../components/ButtonBelt"
 import SearchBarWrapper from "../components/SearchBarWrapper"
 import DeleteButton from "../components/DeleteButton"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function ProvidersView() {
     const { providerData, loadData, addProvider, modifyProvider, deleteProvider, overwriteData } = useProviderStore()
@@ -415,6 +416,39 @@ function ProvidersView() {
                                             provider[element]
                                         )
                                     })()}
+                                    contactButton={
+                                        provider.contactData.length !== 0 && <DefaultButton
+                                            icon={'phone'}
+                                            label={'Contacto'}
+                                            onClick={() =>
+                                                openDialog(
+                                                    <AlertDialog
+                                                        color={'text-green-400'}
+                                                        title={'Contactos'}
+                                                        icon={'info-circle'}
+                                                        label={
+                                                            provider.contactData.map((item, index) =>
+                                                                <section
+                                                                    className="
+                                                                    flex flex-row
+                                                                    items-center
+                                                                    px-2! py-1! gap-1
+                                                                    rounded-md
+                                                                    bg-(--bg-soft)
+                                                                    border border-white/15
+                                                                    "
+                                                                    key={index}
+                                                                >
+                                                                    <FontAwesomeIcon icon={'phone'} />
+                                                                    <strong>{item.value}</strong>
+                                                                </section>
+                                                            )
+                                                        }
+                                                    />
+                                                )
+                                            }
+                                        />
+                                    }
                                 />
                             </StandardItemCardWrapper>
                         )}

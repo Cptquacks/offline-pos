@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import useDialogStore from "../stores/dialogStore"
 import DefaultButton from "./DefaultButton"
 
-function AlertDialog({ label }) {
+function AlertDialog({ title, label, icon, color }) {
     const { closeDialog } = useDialogStore()
     return (
         <section
@@ -28,12 +28,12 @@ function AlertDialog({ label }) {
                 "
             >
                 <FontAwesomeIcon
-                    className="text-red-400"
-                    icon={'exclamation-triangle'}
+                    className={`${color}`}
+                    icon={icon ?? 'exclamation-triangle'}
                     size="2x"
                 />
                 <strong className="text-3xl">
-                    Atencion
+                    {title}
                 </strong>
             </div>
 

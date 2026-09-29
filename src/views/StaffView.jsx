@@ -22,6 +22,8 @@ import ButtonBelt from "../components/ButtonBelt"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
 import SearchBarWrapper from "../components/SearchBarWrapper"
 import DeleteButton from "../components/DeleteButton"
+import AlertDialog from "../components/AlertDialog"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function StaffView() {
     const { staffData, loadData, addStaff, modifyStaff, overwriteFile, deleteStaff } = useStaffStore()
@@ -421,6 +423,36 @@ function StaffView() {
                                             member[element]
                                         ))
                                     })()}
+                                    contactButton={
+                                        <DefaultButton
+                                            icon={'phone'}
+                                            label={'Contacto'}
+                                            onClick={() =>
+                                                openDialog(
+                                                    <AlertDialog
+                                                        color={'text-green-400'}
+                                                        title={'Contactos'}
+                                                        icon={'info-circle'}
+                                                        label={
+                                                            <section
+                                                                className="
+                                                                flex flex-row
+                                                                items-center
+                                                                px-2! py-1! gap-1
+                                                                rounded-md
+                                                                bg-(--bg-soft)
+                                                                border border-white/15
+                                                                "
+                                                            >
+                                                                <FontAwesomeIcon icon={'phone'} />
+                                                                <strong>{member.contact}</strong>
+                                                            </section>
+                                                        }
+                                                    />
+                                                )
+                                            }
+                                        />
+                                    }
                                 />
                             </StandardItemCardWrapper>
                         )}
