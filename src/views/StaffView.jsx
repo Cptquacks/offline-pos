@@ -331,11 +331,11 @@ function StaffView() {
                                     }
                                     notesOpen={notesIndex.includes(index)}
                                     noteData={member.notes}
-                                    onNoteDelete={index => modifyStaff(
+                                    onNoteDelete={note => modifyStaff(
                                         {
                                             ...member,
-                                            notes: member.notes.filter((_, i) => i !== index)
-                                        }
+                                            notes: member.notes.filter((_, i) => i !== note)
+                                        }, index
                                     )}
                                     onDelete={() => deleteStaff(index)}
                                     onEdit={() => openDialog(
