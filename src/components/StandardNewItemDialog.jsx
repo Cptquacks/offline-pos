@@ -144,6 +144,7 @@ function StandarNewItemDialog(
                             case "phone-list":
                                 return <PhoneList
                                     key={index}
+                                    defaultValue={item.value}
                                     onChange={value => editFormFields(item.name, value)}
                                 />
 
@@ -151,6 +152,7 @@ function StandarNewItemDialog(
                                 return <PhoneList
                                     key={index}
                                     single
+                                    defaultValue={item.value}
                                     onChange={value => editFormFields(item.name, value)}
                                 />
 

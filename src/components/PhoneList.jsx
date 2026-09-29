@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import DeleteButton from "./DeleteButton"
 import DefaultButton from "./DefaultButton"
 
-function PhoneList({ single = false, onChange }) {
-    const [listData, setData] = useState([])
-    const [fieldData, setFieldData] = useState()
+function PhoneList({ single = false, onChange, defaultValue }) {
+    const [listData, setData] = useState(defaultValue ?? [])
+    const [fieldData, setFieldData] = useState(defaultValue ?? null)
 
     useEffect(() => {
         if (single) return
@@ -22,7 +22,7 @@ function PhoneList({ single = false, onChange }) {
         <section
             className="
             flex flex-col
-            p-4!
+            p-4! gap-3
             bg-(--bg-soft)
             border border-white/15
             rounded-md
@@ -51,7 +51,7 @@ function PhoneList({ single = false, onChange }) {
                         icon="plus"
                         label={'Añadir numero'}
                         iconLeft
-                        onClick={() => setData(prev => [...prev, 1234])}
+                        onClick={() => setData(prev => [...prev, { 'value': null }])}
                     />
                 }
             </div>
@@ -59,6 +59,7 @@ function PhoneList({ single = false, onChange }) {
             <div
                 className="
                 flex flex-col
+                gap-1
                 "
             >
                 {single &&
@@ -83,7 +84,6 @@ function PhoneList({ single = false, onChange }) {
                             key={index}
                             className="
                             flex flex-row
-                            w-fit
                             items-center justify-between
                             p-2! gap-3
                             bg-(--bg-alt)
@@ -92,7 +92,7 @@ function PhoneList({ single = false, onChange }) {
                             "
                         >
                             <div className="flex flex-row gap-1 items-center">
-                                <strong>#{index} : </strong>
+                                <strong>#{index + 1} : </strong>
                                 <input
                                     className="
                                     p-2! py-0.75!
@@ -103,16 +103,19 @@ function PhoneList({ single = false, onChange }) {
                                     type="tel"
                                     placeholder="Numero telefonico..."
                                     required={!single}
-                                    value={item}
-                                    onChange={event => {
-                                        const result = [...listData]
-                                        result[index] = event.target.value
-                                        setData(result)
-                                    }}
+                                    value={item.value}
+                                    onChange={event =>
+                                        setData(prev =>
+                                            prev.map((entry, i) =>
+                                                i === index ?
+                                                    { 'value': event.target.value } :
+                                                    entry
+                                            ))
+                                    }
                                 />
                             </div>
                             <DeleteButton
-                                onDelete={() => listData.filter((_, i) => i != index)}
+                                onDelete={() => listData.filter((_, i) => i !== index)}
                             />
                         </div>
                     )
