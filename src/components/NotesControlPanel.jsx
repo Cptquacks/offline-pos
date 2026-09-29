@@ -16,10 +16,11 @@ function NotesControlPanel({ data, handleOpen, addNote }) {
 
         <div className="
         flex flex-row
+        h-full
         items-center justify-between
-        px-4! pr-1! py-1! gap-3
+        px-4! pr-2! py-1! gap-3
         bg-(--bg-alt)
-        border border-(--border)
+        border border-white/15
         rounded-full
         ">
             <div className="

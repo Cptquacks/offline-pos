@@ -11,7 +11,7 @@ function DialogRoot() {
         <div className="
         fixed 
         inset-0 
-        z-50 flex 
+        z-100 flex 
         items-center 
         justify-center 
         bg-black/80

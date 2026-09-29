@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useState } from "react"
 import DeleteButton from "./DeleteButton"
 import DefaultButton from "./DefaultButton"

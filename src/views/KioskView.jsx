@@ -14,6 +14,7 @@ import DropdownMenu from "../components/DropdownMenu"
 import useTagStore from "../stores/tagStore"
 import { stringSimilarity } from "../utils/string-util"
 import DefaultButton from "../components/DefaultButton"
+import SearchBarWrapper from "../components/SearchBarWrapper"
 
 function KioskView() {
     const { productData, loadData, modifyProduct } = useProductStore()
@@ -21,6 +22,7 @@ function KioskView() {
     const { tagList, loadTags } = useTagStore()
     const { addSell, addRefund } = useTraceStore()
 
+    const [scroll, setScroll] = useState(0)
     const tags = useMemo(() => {
         let result = [{ label: 'Todos', icon: 'filter', value: 'All' }]
         const mappedArray = tagList.map(tag => ({ label: tag.name, icon: 'tag' }))
@@ -102,15 +104,10 @@ function KioskView() {
             <div className="
             flex flex-col
             col-span-2 row-span-2
-            gap-3
             bg-(--bg-soft)
             rounded-md
             ">
-                <div className="
-                flex flex-row
-                justify-between
-                py-2! px-4! gap-3
-                ">
+                <SearchBarWrapper scroll={scroll}>
                     <SearchBar
                         onSearch={data => setQuery(data)}
                     />
@@ -118,12 +115,15 @@ function KioskView() {
                         elements={tags}
                         onSelected={data => setFilter(data)}
                     />
-                </div>
+                </SearchBarWrapper>
 
-                <div className="
-                flex flex-col
-                overflow-y-auto
-                ">
+                <div
+                    className="
+                    flex flex-col
+                    overflow-y-auto
+                    "
+                    onScroll={event => setScroll(event.currentTarget.scrollTop)}
+                >
                     <ItemsList>
                         {filteredList.map((item, index) =>
                             <KioskProductItem
@@ -190,7 +190,10 @@ function KioskView() {
                             data={{ index: index, ...item }}
                             onRemove={(target) => {
                                 setCartItems(prev => prev.filter((_, index) => index !== target))
-                            }} />
+                            }}
+                            itemColor={tagList.filter(tag => tag.name === item.tag)[0]?.color ?? '#000'}
+                        />
+
                     )}
                 </ItemsList>
             </div>

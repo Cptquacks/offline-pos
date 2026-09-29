@@ -18,6 +18,8 @@ import NotesControlPanel from "../components/NotesControlPanel"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
 import AlertDialog from "../components/AlertDialog"
 import ButtonBelt from "../components/ButtonBelt"
+import SearchBarWrapper from "../components/SearchBarWrapper"
+import DeleteButton from "../components/DeleteButton"
 
 function ProvidersView() {
     const { providerData, loadData, addProvider, modifyProvider, deleteProvider, overwriteData } = useProviderStore()
@@ -25,6 +27,7 @@ function ProvidersView() {
 
     const today = new Date().toLocaleDateString('sv-SE')
 
+    const [scroll, setScroll] = useState(0)
     const [query, setQuery] = useState('')
     const filteredList = useMemo(() => {
         let result = providerData
@@ -60,6 +63,8 @@ function ProvidersView() {
     const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
 
     // use indexes
+    const [indexes, selectedIndexes] = useState([])
+    const [isSelecting, setSelecting] = useState(false)
     const [notesOpened, setOpened] = useState([])
 
     /**
@@ -129,6 +134,11 @@ function ProvidersView() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, loadValue])
 
+    useEffect(() => {
+        if (isSelecting) return
+        selectedIndexes([])
+    }, [isSelecting])
+
     return (
         <section className="
         grid grid-cols-1 grid-rows-1
@@ -142,15 +152,18 @@ function ProvidersView() {
             bg-(--bg-soft)
             rounded-md
             ">
-                <div className="py-2! px-4!">
+                <SearchBarWrapper scroll={scroll}>
                     <SearchBar onSearch={query => setQuery(query)} />
-                </div>
+                </SearchBarWrapper>
 
-                <div className="
-                flex flex-col
-                gap-3
-                overflow-y-auto
-                ">
+                <div
+                    className="
+                    flex flex-col
+                    gap-3
+                    overflow-y-auto
+                    "
+                    onScroll={event => setScroll(event.currentTarget.scrollTop)}
+                >
                     <div className="
                     flex flex-wrap flex-row
                     items-center
@@ -204,13 +217,31 @@ function ProvidersView() {
 
                         <ButtonBelt>
                             <DefaultButton
-                                icon={'clipboard-list'}
-                                label={'Seleccionar'}
+                                icon={isSelecting ? 'times' : 'clipboard-list'}
+                                label={isSelecting ? 'Cancelar' : 'Seleccionar'}
+                                onClick={() => setSelecting(!isSelecting)}
                             />
-                            <DefaultButton
+                            {!isSelecting && <DefaultButton
                                 icon={'clipboard-check'}
-                                label={'Seleccionar todo'}
-                            />
+                                label={'Seleccionar todos'}
+                                onClick={() => {
+                                    setSelecting(true)
+                                    selectedIndexes(providerData.map((_, i) => i))
+                                }}
+                            />}
+                            {isSelecting && <DeleteButton
+                                label={`Eliminar todos (${indexes.length})`}
+                                onDelete={async () => {
+                                    setLoading(true);
+                                    (async () => {
+                                        await overwriteData(providerData.filter((_, i) => !indexes.includes(i)))
+                                            .then(() => {
+                                                setLoading(false)
+                                                selectedIndexes([])
+                                            })
+                                    })()
+                                }}
+                            />}
                         </ButtonBelt>
 
                         <ImportPanel
@@ -258,7 +289,18 @@ function ProvidersView() {
 
                     <ItemsList>
                         {filteredList.map((provider, index) =>
-                            <StandardItemCardWrapper key={index}>
+                            <StandardItemCardWrapper
+                                key={index}
+                                canSelect={isSelecting}
+                                onSelect={() => {
+                                    if (indexes.includes(index)) {
+                                        selectedIndexes(prev => prev.filter(item => item !== index))
+                                        return
+                                    }
+                                    selectedIndexes(prev => [...prev, index])
+                                }}
+                                isSelected={indexes.includes(index)}
+                            >
                                 <StandardItemCard
                                     icon="handshake-alt"
                                     title={provider.name}

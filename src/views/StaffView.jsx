@@ -20,13 +20,15 @@ import DefaultButton from "../components/DefaultButton"
 import NotesControlPanel from "../components/NotesControlPanel"
 import ButtonBelt from "../components/ButtonBelt"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
-import MissingData from "../components/MissingData"
+import SearchBarWrapper from "../components/SearchBarWrapper"
+import DeleteButton from "../components/DeleteButton"
 
 function StaffView() {
     const { staffData, loadData, addStaff, modifyStaff, overwriteFile, deleteStaff } = useStaffStore()
     const { roleList, addRole, loadRoles } = useRoleStore()
     const { openDialog, closeDialog } = useDialogStore()
 
+    const [scroll, setScroll] = useState(0)
     const roles = useMemo(() => {
         let result = [{ label: 'Todos', icon: 'filter', value: 'All' }]
         const mappedRoles = roleList.map(role => ({ label: role.name, icon: 'user-tag' }))
@@ -72,6 +74,8 @@ function StaffView() {
     const [isLoading, setLoading] = useState(false)
     const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
 
+    const [indexes, selectedIndexes] = useState([])
+    const [isSelecting, setSelecting] = useState(false)
     const [notesIndex, setIndex] = useState([])
     /**
      * 
@@ -137,11 +141,17 @@ function StaffView() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, loadValue])
 
+    useEffect(() => {
+        if (isSelecting) return
+        selectedIndexes([])
+    }, [isSelecting])
+
     return (
         <section className="
         grid grid-cols-1 grid-rows-1 
         h-full
         p-4! gap-3
+        overflow-hidden
         ">
             <div className="
             flex flex-col 
@@ -150,22 +160,21 @@ function StaffView() {
             rounded-md
             ">
 
-                <div className="
-                flex flex-row 
-                gap-2 py-2! px-4! 
-                justify-between
-                ">
+                <SearchBarWrapper scroll={scroll}>
                     <SearchBar onSearch={query => setQuery(query)} />
                     <DropdownMenu
                         elements={roles}
                         onSelected={filter => setFilter(filter)}
                     />
-                </div>
+                </SearchBarWrapper>
 
-                <div className="
-                flex flex-col
-                overflow-y-auto
-                ">
+                <div
+                    className="
+                    flex flex-col
+                    overflow-y-auto
+                    "
+                    onScroll={event => setScroll(event.currentTarget.scrollTop)}
+                >
                     <div className="
                     flex flex-row flex-wrap
                     w-full
@@ -179,7 +188,7 @@ function StaffView() {
                                     <StandarNewItemDialog
                                         additionCallback={data => addStaff(data)}
                                         fileFields={[
-                                            { 'name': 'text' },
+                                            { 'name': 'name' },
                                             { 'ID': 'number' },
                                             { 'salary': 'number' },
                                             { 'currency': 'currency' },
@@ -208,7 +217,6 @@ function StaffView() {
                         </ButtonBelt>
 
                         <ButtonBelt>
-
                             <DefaultButton
                                 icon={'sync'}
                                 iconLeft
@@ -219,13 +227,32 @@ function StaffView() {
 
                         <ButtonBelt>
                             <DefaultButton
-                                icon={'clipboard-list'}
-                                label={'Seleccionar'}
+                                icon={isSelecting ? 'times' : 'clipboard-list'}
+                                label={isSelecting ? 'Cancelar' : 'Seleccionar'}
+                                onClick={() => setSelecting(!isSelecting)}
                             />
-                            <DefaultButton
+                            {!isSelecting && <DefaultButton
                                 icon={'clipboard-check'}
                                 label={'Seleccionar todos'}
-                            />
+                                onClick={() => {
+                                    setSelecting(true)
+                                    selectedIndexes(staffData.map((_, i) => i))
+                                }}
+                            />}
+                            {isSelecting && <DeleteButton
+                                label={`Eliminar todos (${indexes.length})`}
+                                onDelete={async () => {
+                                    setLoading(true);
+                                    (async () => {
+                                        await overwriteFile(staffData.filter((_, i) => !indexes.includes(i)))
+                                            .then(() => {
+                                                setLoading(false)
+                                                selectedIndexes([])
+                                            })
+                                    })()
+                                }}
+                            />}
+
                         </ButtonBelt>
 
                         <ImportPanel
@@ -276,6 +303,15 @@ function StaffView() {
                         {filteredList.map((member, index) =>
                             <StandardItemCardWrapper
                                 key={index}
+                                canSelect={isSelecting}
+                                onSelect={() => {
+                                    if (indexes.includes(index)) {
+                                        selectedIndexes(prev => prev.filter(item => item !== index))
+                                        return
+                                    }
+                                    selectedIndexes(prev => [...prev, index])
+                                }}
+                                isSelected={indexes.includes(index)}
                             >
                                 <StandardItemCard
                                     icon="user"
@@ -296,7 +332,7 @@ function StaffView() {
                                             days={daysFromToday(member.endDate)}
                                         />
                                     }
-                                    salaryDisplay={member.salary}
+                                    salaryDisplay={`${member.salary} ${member.currency ?? 'CUP'}`}
                                     restockButton={
                                         (member.endDate && daysFromToday(member.endDate) <= 0) &&
                                         <DefaultButton
@@ -341,7 +377,7 @@ function StaffView() {
                                     onEdit={() => openDialog(
                                         <StandarNewItemDialog
                                             fileFields={[
-                                                { 'name': 'text' },
+                                                { 'name': 'name' },
                                                 { 'ID': 'number' },
                                                 { 'salary': 'number' },
                                                 { 'currency': 'currency' },

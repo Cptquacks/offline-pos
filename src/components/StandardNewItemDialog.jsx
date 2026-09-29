@@ -53,7 +53,6 @@ function StandarNewItemDialog(
         const result = { ...formData }
         result[key] = value
         setFormData(result)
-        console.log(result)
     }
 
     const canAddItem = useMemo(() => {
@@ -105,7 +104,18 @@ function StandarNewItemDialog(
                                     placeholder={`${item.uiName} del ${label}`}
                                     onChange={value => editFormFields(item.name, value)}
                                     required={optionalFields.includes(item.name)}
-                                />;
+                                />
+
+                            case "name":
+                                return <FormInput
+                                    key={index}
+                                    label={item.uiName}
+                                    defaultValue={item.value}
+                                    placeholder={`${item.uiName} del ${label}`}
+                                    onChange={value => editFormFields(item.name, value)}
+                                    required={optionalFields.includes(item.name)}
+                                    isValid={/([A-Z][a-z]+\s?)+/.test(formData[item.name])}
+                                />
 
                             case "tag":
                                 return <TagSelector

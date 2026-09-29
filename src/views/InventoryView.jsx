@@ -22,6 +22,7 @@ import DefaultButton from "../components/DefaultButton"
 import DeleteButton from "../components/DeleteButton"
 import StandarNewItemDialog from "../components/StandardNewItemDialog"
 import ButtonBelt from "../components/ButtonBelt"
+import SearchBarWrapper from "../components/SearchBarWrapper"
 
 function InventoryView() {
     const { productData, loadData, addProduct, modifyProduct, overwriteFile, deleteProduct } = useProductStore()
@@ -29,7 +30,7 @@ function InventoryView() {
     const { openDialog, closeDialog } = useDialogStore()
     const { addAlert } = useAlertStore()
 
-
+    const [scroll, setScroll] = useState(0)
     const [query, setQuery] = useState('')
     const [filter, setFilter] = useState('All')
 
@@ -170,22 +171,22 @@ function InventoryView() {
             rounded-md
             ">
 
-                <div className="
-                flex flex-row
-                px-4! py-2! gap-3
-                justify-between
-                ">
+                <SearchBarWrapper scroll={scroll}>
                     <SearchBar onSearch={query => handleSearch(query)} />
                     <DropdownMenu
                         elements={tags}
                         onSelected={filter => handleFilter(filter)}
                     />
-                </div>
+                </SearchBarWrapper>
 
-                <div className="
-                flex flex-col
-                overflow-y-auto
-                ">
+                <div
+                    className="
+                    flex flex-col
+                    overflow-y-auto
+                    "
+
+                    onScroll={event => setScroll(event.currentTarget.scrollTop)}
+                >
                     <div className="flex flex-row flex-wrap w-full gap-3 px-4! py-2!">
 
                         <ButtonBelt>
@@ -404,7 +405,7 @@ function InventoryView() {
                     </ItemsList>
                 </div>
             </div>
-        </section>
+        </section >
     )
 }
 

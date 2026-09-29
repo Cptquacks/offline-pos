@@ -85,12 +85,13 @@ function StandardItemCard({
                         </div>
                     }
                     {(startDate || endDate) && <DateDisplay startsAt={startDate} endsAt={endDate} />}
-                    {expirationDisplay || notesDisplay}
+                    {expirationDisplay}
 
                     {missingData && <MissingData />}
                 </div>
 
                 {!isOnPreview && <div className="flex flex-row gap-1 *:h-full">
+                    {notesDisplay}
                     {restockButton}
                     <EditButton onClick={onEdit} />
                     <DeleteButton onDelete={onDelete} />

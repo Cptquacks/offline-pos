@@ -6,8 +6,8 @@ function MissingData() {
         <div className="
         flex flex-row
         items-center
-        h-fit w-fit
-        px-4! py-0.5! gap-1
+        h-full w-fit
+        px-6! pr-7! py-0.5! gap-1
         bg-amber-950/30
         border border-amber-600
         text-amber-600!

@@ -1,6 +1,13 @@
 import { useState } from "react"
+import WarningDisplay from "./WarningDisplay"
 
-function FormInput({ label, placeholder, onChange, defaultValue = null, type = 'text', required = true, min = 1 }) {
+function FormInput({
+    label, placeholder,
+    onChange, defaultValue = null,
+    type = 'text',
+    required = true, min = 1,
+    isValid = true
+}) {
     const [value, setValue] = useState(defaultValue ?? '')
 
     const handleChange = (event) => {
@@ -41,6 +48,12 @@ function FormInput({ label, placeholder, onChange, defaultValue = null, type = '
                 placeholder={placeholder}
                 required={required}
             />
+            {(!isValid && value.length > 0) &&
+                <WarningDisplay
+                    label={'El valor ingresado no es valido'}
+                    important
+                />
+            }
         </div>
     )
 }
