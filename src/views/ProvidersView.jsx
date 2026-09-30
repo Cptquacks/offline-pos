@@ -99,19 +99,26 @@ function ProvidersView() {
     }
 
     const handleRebuyAll = () => {
-        openDialog(<ConfirmDialog callback={rebuyAll} />)
+        openDialog(<ConfirmDialog callback={() => rebuyAll()} />)
     }
 
-    const rebuyAll = () => {
-        providerData.forEach((provider, index) => {
-            if (provider.active) return
+    const rebuyAll = async () => {
+        const today = getToday()
+        const updatedData = providerData.map(provider => provider.active ?
+            provider :
+            ({
+                ...provider,
+                startedAt: (() => {
+                    const restockDate = addDays(provider.startedAt, provider.span)
+                    const newSpan = daysBetween(today, restockDate)
 
-            const restockDate = addDays(provider.startedAt, provider.span)
-            const newSpan = daysBetween(today, restockDate)
-
-            const finalDate = addDays(provider.startedAt, provider.span - newSpan)
-            modifyProvider({ ...provider, startedAt: finalDate }, index)
-        })
+                    const finalDate = addDays(provider.startedAt, provider.span - newSpan)
+                    return finalDate
+                })()
+            })
+        )
+        setLoading(true)
+        await overwriteData(updatedData).then(() => setLoading(false))
     }
 
     useEffect(() => {
@@ -212,7 +219,7 @@ function ProvidersView() {
                                 icon={'sync'}
                                 disabled={!totalRebuys}
                                 iconLeft
-                                onClick={handleRebuyAll}
+                                onClick={() => handleRebuyAll()}
                             />
                         </ButtonBelt>
 

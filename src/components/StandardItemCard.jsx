@@ -65,7 +65,9 @@ function StandardItemCard({
             <footer
                 className="
                 flex flex-row
+                flex-wrap
                 justify-between *:items-center
+                gap-1
                 "
             >
                 <div className="flex flex-row gap-3">
