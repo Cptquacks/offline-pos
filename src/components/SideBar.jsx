@@ -7,8 +7,8 @@ import useLicenseStore from "../stores/licenseStore"
 function SideBar() {
     const { preferenceData, loadData } = usePreferenceStore()
     const { licenseList, loadLicenses } = useLicenseStore()
-    const appVersion = import.meta.env.VITE_PROGRAM_VERSION
-    const codeName = import.meta.env.VITE_PROGRAM_CODE
+    const appVersion = import.meta.env.VITE_PROGRAM_VER
+    const codeName = import.meta.env.VITE_PROGRAM_CODENAME
 
     const showLabel = useMemo(() => {
         const result = preferenceData.find(pref => pref.key === 'sideBarExpanded')
