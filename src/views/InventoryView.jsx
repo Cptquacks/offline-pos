@@ -315,9 +315,9 @@ function InventoryView() {
                                     }
                                     setIndexes(prev => [...prev, index].toSorted((a, b) => a - b))
                                 }}
+                                key={index}
                             >
                                 <StandardItemCard
-                                    key={index}
                                     icon="box"
                                     title={product.name}
                                     codeBar={product.code ?? 'N/A'}
