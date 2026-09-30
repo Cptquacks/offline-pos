@@ -423,7 +423,7 @@ function StaffView() {
                                             member[element]
                                         ))
                                     })()}
-                                    contactButton={
+                                    contactButton={member.contact &&
                                         <DefaultButton
                                             icon={'phone'}
                                             label={'Contacto'}
