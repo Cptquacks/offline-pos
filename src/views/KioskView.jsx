@@ -15,6 +15,7 @@ import useTagStore from "../stores/tagStore"
 import { stringSimilarity } from "../utils/string-util"
 import DefaultButton from "../components/DefaultButton"
 import SearchBarWrapper from "../components/SearchBarWrapper"
+import { filterObjectKeys } from "../utils/filter-util"
 
 function KioskView() {
     const { productData, loadData, modifyProduct } = useProductStore()
@@ -64,7 +65,7 @@ function KioskView() {
             const data = cartItems.find(product => productData[index].name === product.name)
             if (!data) return
             const updatedProduct = { ...data, current: data.current - data.cart }
-            modifyProduct(updatedProduct, index)
+            modifyProduct(filterObjectKeys(updatedProduct, ['index', 'cart']), index)
         }
 
         setCartItems([])
@@ -83,7 +84,7 @@ function KioskView() {
         productData.forEach((item, index) => {
             if (item.name !== data.name) return
             const updatedProduct = { ...item, current: parseInt(item.current) + parseInt(amount) }
-            modifyProduct(updatedProduct, index)
+            modifyProduct(filterObjectKeys(updatedProduct, ['index', 'cart']), index)
         })
     }
 

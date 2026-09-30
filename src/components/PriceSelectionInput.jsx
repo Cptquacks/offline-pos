@@ -9,7 +9,7 @@ function PriceSelectionInput({ defaultValue, onChange }) {
     const [profit, setProfit] = useState(25)
 
     const finalPrice = useMemo(() => {
-        return parseInt(cost + (cost * (profit / 100)))
+        return parseFloat(cost) + (cost * (profit / 10))
     }, [cost, profit])
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,7 +45,7 @@ function PriceSelectionInput({ defaultValue, onChange }) {
                     label={'Precio'}
                     min={0}
                     type="number"
-                    onChange={value => setCost(value)}
+                    onChange={value => setCost(parseFloat(value))}
                     required
                     defaultValue={defaultValue ?? 0}
                     placeholder={'Precio final...'}
@@ -57,7 +57,7 @@ function PriceSelectionInput({ defaultValue, onChange }) {
                     label={'Costo original'}
                     min={0}
                     type="number"
-                    onChange={value => setCost(value)}
+                    onChange={value => setCost(parseFloat(value))}
                     required
                     defaultValue={defaultValue ?? 0}
                     placeholder={'Costo original...'}
@@ -66,10 +66,10 @@ function PriceSelectionInput({ defaultValue, onChange }) {
 
             {switchOn &&
                 <FormInput
-                    label={'Margen de ganancia'}
+                    label={'Porcentaje de ganancia'}
                     min={0}
                     type="number"
-                    onChange={value => setProfit(value)}
+                    onChange={value => setProfit(parseFloat(value))}
                     required
                     defaultValue={25}
                     placeholder={'Margen final...'}
