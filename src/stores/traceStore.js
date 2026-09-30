@@ -3,8 +3,6 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
 import { getToday } from "../utils/date-util";
 
 
-
-
 /**
  * @typedef {Object} traceStore
  * @property {Array} traceData
