@@ -1,12 +1,19 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import useAlertStore from "../stores/alertStore"
 
 function AlertRoot() {
     const { alertTrail, removeAlert } = useAlertStore()
+    const [canRemove, setRemovable] = useState(true)
 
     useEffect(() => {
+        if (alertTrail.length === 0) return
+
+        if (!canRemove) return
+        setRemovable(false)
+
         setTimeout(() => {
             removeAlert()
+            setRemovable(true)
         }, 1500);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [alertTrail])
