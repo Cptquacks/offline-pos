@@ -66,7 +66,7 @@ function StandardItemCard({
                 className="
                 flex flex-row
                 flex-wrap
-                justify-between *:items-center
+                justify-between *:items-start
                 gap-1
                 "
             >
@@ -92,13 +92,21 @@ function StandardItemCard({
                     {missingData && <MissingData />}
                 </div>
 
-                {!isOnPreview && <div className="flex flex-row gap-1 *:h-full">
-                    {notesDisplay}
-                    {contactButton}
-                    {restockButton}
-                    <EditButton onClick={onEdit} />
-                    <DeleteButton onDelete={onDelete} />
-                </div>}
+                <div className="flex flex-col gap-3 items-end!">
+                    {!isOnPreview &&
+                        <div className="flex flex-row gap-1 *:h-full">
+                            {contactButton}
+                            {restockButton}
+                            <EditButton onClick={onEdit} />
+                            <DeleteButton onDelete={onDelete} />
+                        </div>
+                    }
+                    {(!isOnPreview && notesDisplay) &&
+                        <div>
+                            {notesDisplay}
+                        </div>
+                    }
+                </div>
             </footer>
 
             {((noteData ?? []).length > 0 && notesOpen) &&
