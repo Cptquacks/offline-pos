@@ -136,12 +136,12 @@ function ResumeView() {
                 {!isLoading &&
                     <BarChart
                         className="
-                        p-4!
+                        p-2!
                         bg-(--bg-soft)
                         border border-(--border)
                         rounded-md
                         "
-                        style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                        style={{ width: '100%', aspectRatio: 2.5, maxWidth: "90%" }}
                         data={currencyTrace}>
 
                         {currencyList.map((entry, index) =>
@@ -153,6 +153,7 @@ function ResumeView() {
                             />
                         )}
 
+                        <YAxis />
                         <XAxis dataKey="date" />
 
                         <Tooltip />
@@ -163,12 +164,12 @@ function ResumeView() {
                 {!isLoading &&
                     <BarChart
                         className="
-                            p-4!
+                            p-2!
                             bg-(--bg-soft)
                             border border-(--border)
                             rounded-md
                             "
-                        style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                        style={{ width: '100%', aspectRatio: 2.5, maxWidth: "90%" }}
                         data={salesTrace}>
 
                         <Bar
@@ -181,6 +182,7 @@ function ResumeView() {
                             dataKey="refunds"
                             fill="var(--accent)" />
 
+                        <YAxis />
                         <XAxis dataKey="date" />
 
                         <Tooltip />

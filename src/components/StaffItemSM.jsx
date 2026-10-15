@@ -1,4 +1,3 @@
-import { faUser } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import EmployeContractIndicator from "./EmployeContractIndicator"
 import { useMemo } from "react"
@@ -23,7 +22,7 @@ function StaffItemSM({ data }) {
             <div className="
             flex flex-row gap-2
             ">
-                <FontAwesomeIcon icon={faUser} size="3x" />
+                <FontAwesomeIcon icon={'user'} size="3x" />
                 <div className="
                 flex flex-col
                 gap-3

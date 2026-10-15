@@ -3,7 +3,7 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
 
 
 /**
- * @typedef {Object} productStore
+ * @typedef {Object} productStore Store for products
  * @property {Array} productData
  * @property {() => Promise<void>} loadData
  * @property {(product: Object) => Promise<void>} addProduct

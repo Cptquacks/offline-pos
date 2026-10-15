@@ -17,6 +17,7 @@ import useDialogStore from "../stores/dialogStore"
 import EmptyList from "../components/EmptyList"
 import PreferenceSwitch from "../components/PreferenceSwitch"
 import LoadingDialog from "../components/LoadingDialog"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 
 
@@ -421,7 +422,7 @@ function EconomyView() {
                 bg-(--bg-alt)
                 items-center
                 w-full
-                p-2! gap-1
+                p-2! gap-1.5
                 border border-(--border)
                 rounded-md
                 ">
@@ -439,8 +440,8 @@ function EconomyView() {
                     <ImportPanel
                         model={{
                             "date": "Fecha",
-                            "sells": "Ventas",
                             "refunds": "Reembolos",
+                            "sells": "Ventas",
                             ...currencies
                         }}
                         optionalFields={["refunds", ...currencyList.slice(1)]}
@@ -479,17 +480,19 @@ function EconomyView() {
                             border border-(--border)
                             rounded-md
                             "
-                            style={{ width: "100%", aspectRatio: 2.5, maxWidth: 600 }}
+                            style={{ width: "100%", aspectRatio: 2.5, maxWidth: '95%' }}
                             data={predictedTrace}>
                             <Line
                                 name="Ventas"
-                                dataKey="real" />
+                                dataKey="real"
+                            />
                             <Line
                                 name="Predicción"
                                 dataKey="predicted"
                                 stroke="var(--accent)"
-                                strokeDasharray="8 8" />
-
+                                strokeDasharray="8 8"
+                            />
+                            <YAxis />
                             <XAxis
                                 dataKey="date" />
 
@@ -504,7 +507,7 @@ function EconomyView() {
                             border border-(--border)
                             rounded-md
                             "
-                            style={{ width: "100%", aspectRatio: 2.5, maxWidth: 600 }}
+                            style={{ width: "100%", aspectRatio: 2.5, maxWidth: '95%' }}
                             data={barTrace}>
                             <Bar
                                 name="Ventas"
@@ -514,7 +517,7 @@ function EconomyView() {
                                 name="Devoluciones"
                                 dataKey="refunds"
                                 fill="var(--accent)" />
-
+                            <YAxis />
                             <XAxis dataKey="date" />
 
                             <Legend />
@@ -539,7 +542,7 @@ function EconomyView() {
                             border border-(--border)
                             rounded-md
                             "
-                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: '95%' }}
                             data={salesTrace}>
 
                             {traceCurrencies.map((currency, index) =>
@@ -551,6 +554,7 @@ function EconomyView() {
                                 />
                             )}
 
+                            <YAxis />
                             <XAxis dataKey="date" />
 
                             <Legend />
@@ -565,7 +569,7 @@ function EconomyView() {
                             border border-(--border)
                             rounded-md
                             "
-                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                            style={{ width: '100%', aspectRatio: 2.5, maxWidth: '95%' }}
                             data={netSalesTrace}>
 
 
@@ -627,7 +631,7 @@ function EconomyView() {
                                         border border-(--border)
                                         rounded-md
                                         "
-                                        style={{ width: '100%', aspectRatio: 1, maxWidth: 600 }}
+                                        style={{ width: '100%', aspectRatio: 1, maxWidth: '95%' }}
                                         data={entry}
                                     >
 
@@ -655,7 +659,7 @@ function EconomyView() {
                                         border border-(--border)
                                         rounded-md
                                         "
-                                        style={{ width: '100%', aspectRatio: 1, maxWidth: 600 }}
+                                        style={{ width: '100%', aspectRatio: 1, maxWidth: '95%' }}
                                         data={roleTrace.filter(trace => trace.currency === currencyList[index])}
                                     >
                                         <Bar
@@ -704,7 +708,7 @@ function EconomyView() {
                                 border border-(--border)
                                 rounded-md
                                 "
-                                style={{ width: '100%', aspectRatio: 2.5, maxWidth: 600 }}
+                                style={{ width: '100%', aspectRatio: 2.5, maxWidth: '95%' }}
                                 data={providerTrace.filter(provider => provider.currency === entry)}
                             >
 
@@ -748,11 +752,13 @@ function EconomyView() {
                 {closesCount > 1 &&
                     <div className="
                     flex flex-row
-                    p-2!
+                    p-2! gap-1
+                    items-center
                     bg-(--bg-soft)
                     border border-(--border)
                     rounded-md
                     ">
+                        <FontAwesomeIcon icon={'info-circle'} />
                         <p>
                             Veces cerradas hoy: <strong>{closesCount}</strong>
                         </p>

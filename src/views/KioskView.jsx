@@ -14,6 +14,8 @@ import DropdownMenu from "../components/DropdownMenu"
 import useTagStore from "../stores/tagStore"
 import { stringSimilarity } from "../utils/string-util"
 import DefaultButton from "../components/DefaultButton"
+import SearchBarWrapper from "../components/SearchBarWrapper"
+import { filterObjectKeys } from "../utils/filter-util"
 
 function KioskView() {
     const { productData, loadData, modifyProduct } = useProductStore()
@@ -21,6 +23,7 @@ function KioskView() {
     const { tagList, loadTags } = useTagStore()
     const { addSell, addRefund } = useTraceStore()
 
+    const [scroll, setScroll] = useState(0)
     const tags = useMemo(() => {
         let result = [{ label: 'Todos', icon: 'filter', value: 'All' }]
         const mappedArray = tagList.map(tag => ({ label: tag.name, icon: 'tag' }))
@@ -62,7 +65,7 @@ function KioskView() {
             const data = cartItems.find(product => productData[index].name === product.name)
             if (!data) return
             const updatedProduct = { ...data, current: data.current - data.cart }
-            modifyProduct(updatedProduct, index)
+            modifyProduct(filterObjectKeys(updatedProduct, ['index', 'cart']), index)
         }
 
         setCartItems([])
@@ -81,7 +84,7 @@ function KioskView() {
         productData.forEach((item, index) => {
             if (item.name !== data.name) return
             const updatedProduct = { ...item, current: parseInt(item.current) + parseInt(amount) }
-            modifyProduct(updatedProduct, index)
+            modifyProduct(filterObjectKeys(updatedProduct, ['index', 'cart']), index)
         })
     }
 
@@ -102,15 +105,10 @@ function KioskView() {
             <div className="
             flex flex-col
             col-span-2 row-span-2
-            gap-3
             bg-(--bg-soft)
             rounded-md
             ">
-                <div className="
-                flex flex-row
-                justify-between
-                py-2! px-4! gap-3
-                ">
+                <SearchBarWrapper scroll={scroll}>
                     <SearchBar
                         onSearch={data => setQuery(data)}
                     />
@@ -118,12 +116,15 @@ function KioskView() {
                         elements={tags}
                         onSelected={data => setFilter(data)}
                     />
-                </div>
+                </SearchBarWrapper>
 
-                <div className="
-                flex flex-col
-                overflow-y-auto
-                ">
+                <div
+                    className="
+                    flex flex-col
+                    overflow-y-auto
+                    "
+                    onScroll={event => setScroll(event.currentTarget.scrollTop)}
+                >
                     <ItemsList>
                         {filteredList.map((item, index) =>
                             <KioskProductItem
@@ -135,7 +136,7 @@ function KioskView() {
                                         { ...data, cart: amount }
                                     ]))
                                 }
-                                onRefund={(data, amount) => handleRefund(data, amount)}
+                                onRefund={data => handleRefund(data, 1)}
                             />)}
                     </ItemsList>
                 </div>
@@ -171,6 +172,7 @@ function KioskView() {
                             icon="check"
                             onClick={handleSell}
                             customColor="bg-green-600"
+                            disabled={cartItems.length === 0}
                         />
 
                         <DefaultButton
@@ -189,7 +191,10 @@ function KioskView() {
                             data={{ index: index, ...item }}
                             onRemove={(target) => {
                                 setCartItems(prev => prev.filter((_, index) => index !== target))
-                            }} />
+                            }}
+                            itemColor={tagList.filter(tag => tag.name === item.tag)[0]?.color ?? '#000'}
+                        />
+
                     )}
                 </ItemsList>
             </div>

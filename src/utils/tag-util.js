@@ -5,7 +5,9 @@
  * @returns {string}
  */
 export function colorParser(color) {
+    if (!color) return null
     if (color.includes('%')) return color
+
     const parsedColor = color.split('|')
     parsedColor[0] = `${parsedColor[0]}%`
     parsedColor[2] = `${parsedColor[2]}deg`
@@ -87,4 +89,19 @@ export function hexToLCH(hex) {
     if (H < 0) H += 360;
 
     return `${Math.round(L)}|${Math.round(C)}|${Math.round(H)}`;
+}
+
+/**
+ * @param {String} lchCode
+ * @returns {String}
+ */
+export function OriginalLCHParser(lchCode) {
+    if (!lchCode.includes('%')) return lchCode
+
+    let result = lchCode
+    result = result
+        .replace(/%{1}\sdeg{1}/gm, '')
+        .split(' ')
+        .join('|')
+    return result
 }

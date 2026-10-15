@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
 
 function SwitchItem({ value, onChange }) {
@@ -10,7 +11,7 @@ function SwitchItem({ value, onChange }) {
             transition cursor-pointer
             relative
             flex flex-row
-            w-12 h-6.5
+            min-w-12 min-h-6.5
             items-center
             border border-white/20
             rounded-full
@@ -25,6 +26,8 @@ function SwitchItem({ value, onChange }) {
 
             <span className={`
                 absolute transition
+                flex flex-col
+                items-center justify-center
                 w-5 h-5
                 p-4
                 bg-(--bg-alt)
@@ -33,7 +36,9 @@ function SwitchItem({ value, onChange }) {
                 rounded-full
                 ${!currentValue ? 'border-white/20' : 'border-(--bg-alt)'}
                 ${!currentValue ? 'left-0.5' : 'right-0.5'}
+                overflow-hidden
             `}>
+                <FontAwesomeIcon className={currentValue ? 'text-(--accent-alt)' : 'text-white/20'} icon={currentValue ? 'check' : 'times'} size="sm" />
             </span>
         </div>
     )

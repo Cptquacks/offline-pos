@@ -4,11 +4,17 @@ import { hexToLCH, lchToHex } from "../utils/tag-util"
 function TagListWrapper({ children, color, onSelected, isSelected, onColorSelected }) {
     const [currentColor, setCurrentColor] = useState(lchToHex(color) ?? '#000')
     const colorPicker = useRef(null)
+    const [canChange, setChangeable] = useState(true)
 
-    const handleColorChange = (color) => {
-        setCurrentColor(color)
-        const newLCH = hexToLCH(color)
-        onColorSelected(newLCH)
+    const handleColorChange = async (color) => {
+        if (!canChange) return
+        setChangeable(false)
+        setTimeout(() => {
+            setCurrentColor(color)
+            const newLCH = hexToLCH(color)
+            onColorSelected(newLCH)
+            setChangeable(true)
+        }, 250);
     }
 
     if (!children) return false

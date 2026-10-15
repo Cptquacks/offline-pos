@@ -8,7 +8,7 @@ import { normalizeExcelDate } from "../utils/date-util"
 import useDialogStore from "../stores/dialogStore"
 import DefaultButton from "./DefaultButton"
 
-function XLSXImportDialog({ title, model, optionalFields, onImport, previewComponent: Preview }) {
+function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: Preview }) {
 
     const { closeDialog } = useDialogStore()
     const { addAlert } = useAlertStore()
@@ -91,11 +91,11 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
         overflow-hidden
         rounded-md
         ">
-            <DialogTopBar label={title} />
+            <DialogTopBar label={'Importar'} />
 
             <div className="
             flex flex-col
-            p-4! gap-3
+            p-4! gap-6
             overflow-y-auto
             ">
                 <div className="
@@ -137,6 +137,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                                     {fileData.columns.map((entry, index) =>
                                         <th
                                             className="
+                                            px-2! py-0.5!
                                             border border-(--border)
                                             "
                                             key={index}
@@ -150,6 +151,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                                         {fileData.columns.map((col, colIndex) =>
                                             <td
                                                 className="
+                                                px-2! py-0.5!
                                                 border border-(--border)
                                                 "
                                                 key={colIndex}>
@@ -159,6 +161,7 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                                     </tr>
                                 )}
                                 <tr className="
+                                px-4! py-1!
                                 border border-(--border)
                                 ">
                                     <td>
@@ -187,7 +190,9 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                 mt-6! gap-1
                 ">
                     <strong className="text-lg">
-                        Haga coincidir los campos
+                        Haga coincidir los campos.
+                        <br />
+                        Los campos requeridos se denotan con <span className="text-red-400">*</span>
                     </strong>
 
                     <div className="
@@ -196,7 +201,6 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                         {previewFields.map((field, index) =>
                             <ColumnSelector
                                 key={index}
-                                //label={`${field} K:${programFields[index]?.key ?? 'ERR'}  V:${programFields[index]?.value ?? 'ERR'}`}
                                 label={field}
                                 columns={fileData.columns}
                                 optional={optionalFields.includes(programFields[index]?.key)}
@@ -211,16 +215,26 @@ function XLSXImportDialog({ title, model, optionalFields, onImport, previewCompo
                     </div>
                 </div>
 
-                <div className="text-lg w-fit">
-                    <strong>
-                        Previsualización
-                    </strong>
-                    {resultantData.length > 0 &&
-                        <Preview
-                            isOnPreview={true}
-                            data={resultantData[0]} />
-                    }
-                </div>
+                {
+                    Preview &&
+                    <div
+                        className="
+                        flex flex-col
+                        gap-3
+                        w-full
+                        text-lg
+                        "
+                    >
+                        <strong>
+                            Previsualización:
+                        </strong>
+                        {resultantData.length > 0 &&
+                            <Preview
+                                isOnPreview={true}
+                                data={resultantData[0]} />
+                        }
+                    </div>
+                }
             </div>
 
             <div className="

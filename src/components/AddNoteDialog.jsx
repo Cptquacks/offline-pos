@@ -3,6 +3,7 @@ import DialogTopBar from "./DialogTopBar"
 import { faSave } from "@fortawesome/free-solid-svg-icons"
 import { useMemo, useState } from "react"
 import useDialogStore from "../stores/dialogStore"
+import DefaultButton from "./DefaultButton"
 
 function AddNoteDialog({ onAdd }) {
     const { closeDialog } = useDialogStore()
@@ -34,29 +35,29 @@ function AddNoteDialog({ onAdd }) {
             flex flex-col
             p-4! gap-3
             ">
-                <strong className="text-2xl">
-                    Nueva nota
-                </strong>
-
                 <div className="
                 flex flex-row
-                items-end
-                w-fit
-                p-4! py-2! gap-1
+                items-center
+                p-4! py-2! gap-3
                 bg-(--bg-soft)
-                border border-(--border)
+                border border-white/15
                 rounded-md
                 ">
                     <strong className="text-xl">
-                        Titulo:
+                        Nueva nota:
                     </strong>
 
                     <input
                         className="
-                        px-2! py-0.5
+                        transition
+                        flex-1
+                        px-3! py-0.75!
                         bg-(--bg)
-                        border border-(--border)
+                        border border-white/15
                         rounded-sm
+                        focus:border-(--accent-alt)
+                        focus:bg-(--accent-alt)/45
+                        focus:text-white!
                         "
                         type="text"
                         placeholder="Titulo de la nota..."
@@ -74,13 +75,15 @@ function AddNoteDialog({ onAdd }) {
                     </strong>
                     <textarea
                         className="
+                        transition
                         flex-1
                         w-full h-full
                         resize-none
-                        p-4!
+                        p-4! py-3!
                         bg-(--bg-alt)
-                        border border-(--border)
+                        border border-white/15
                         rounded-md
+                        focus:border-(--accent-alt)
                         "
                         rows="16"
                         placeholder="Contenido de la nota..."
@@ -96,25 +99,12 @@ function AddNoteDialog({ onAdd }) {
             p-2! gap-2
             bg-(--border)
             ">
-                <button className="
-                transition 
-                cursor-pointer disabled:cursor-not-allowed
-                flex flex-row
-                items-center
-                px-3! py-1! gap-1
-                bg-(--accent-alt) text-white!
-                rounded-xs
-
-                hover:not-disabled:bg-white hover:not-disabled:text-(--bg-alt)!
-
-                disabled:opacity-50
-                "
-                    disabled={isNoteValid}>
-                    <strong className="text-xl">
-                        Guardar
-                    </strong>
-                    <FontAwesomeIcon icon={faSave} size="lg" />
-                </button>
+                <DefaultButton
+                    icon={'save'}
+                    label={'Guardar'}
+                    disabled={isNoteValid}
+                    type="submit"
+                />
             </div>
         </form>
     )

@@ -16,7 +16,7 @@ function SearchBar({ onSearch }) {
         self-center items-center
         px-6! py-1.5! gap-2
         bg-(--bg-alt)
-        border border-(--border)
+        border border-white/15
         rounded-full
         ">
             <div className="

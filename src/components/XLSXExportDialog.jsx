@@ -37,7 +37,7 @@ function XLSXExportDialog({ model, data }) {
     return (
         <div className="
         flex flex-col
-        border border-(--border)
+        border border-white/15
         min-w-[60dvw] max-w-[90dvw]
         min-h-[60dvh] max-h-[90dvh]
         
@@ -59,12 +59,12 @@ function XLSXExportDialog({ model, data }) {
                 border-collapse
                 w-full
                 ">
-                    <thead>
+                    <thead >
                         <tr>
                             {previewData[0].map((data, index) =>
                                 <th
                                     key={index}
-                                    className="border border-(--border)"
+                                    className="bg-white/5 border border-white/15 px-1! py-0.5! "
                                     scope="col">
                                     {data}
                                 </th>
@@ -77,7 +77,7 @@ function XLSXExportDialog({ model, data }) {
                                 {y.map((x, xIndex) =>
                                     <td
                                         key={xIndex}
-                                        className="border border-(--border)"
+                                        className="border border-white/15 px-1! py-0.5!"
                                         scope="col"
                                     >
                                         {x ||

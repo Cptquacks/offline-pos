@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useDialogStore from "../stores/dialogStore";
 import ConfirmDialog from "./ConfirmDialog";
 
-function DeleteButton({ onDelete }) {
+function DeleteButton({ onDelete, label }) {
 
     const { openDialog } = useDialogStore()
 
@@ -17,19 +17,25 @@ function DeleteButton({ onDelete }) {
     }
 
     return (
+
         <div
             className="
+            flex flex-row
             transition cursor-pointer
+            items-center
             bg-red-500/60 text-white!
             w-fit h-fit
-            p-1!
-            border-2 border-(--border)
-            hover:shadow-(--shadow)
-            rounded-lg
+            p-2.25! px-1.75!
+            border-2 border-white/15
+            rounded-xs
+
+            hover:bg-white
+            hover:*:text-(--bg)
             "
             onClick={handleOnClick}
         >
             <FontAwesomeIcon icon={faTrashAlt} size="lg" />
+            {label && <strong>{label}</strong>}
         </div>
     )
 }

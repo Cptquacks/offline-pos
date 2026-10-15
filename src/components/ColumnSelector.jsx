@@ -39,12 +39,8 @@ function ColumnSelector({ label, columns, onSelected, optional = false }) {
             gap-3
             ">
                 <strong>
-                    {label}
+                    {label} {!optional && <span className="text-red-400">*</span>}
                 </strong>
-
-                {optional &&
-                    <TagItem label={'Opcional'} icon={'user-cog'} />
-                }
             </div>
 
             <select
