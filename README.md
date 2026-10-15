@@ -147,4 +147,5 @@ Desarrollado con esfuerzo por **Shard Development Team**.
 ---
 
 > **Nota:** KEPLER funciona completamente offline. Todos los datos se almacenan localmente en la carpeta de usuario del sistema operativo (`%APPDATA%/Kepler` en Windows, `~/.config/Kepler` en Linux).
+
 > **Nota 2:** Hice este README.md con DeepSeek
