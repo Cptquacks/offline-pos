@@ -26,7 +26,7 @@ const useTraceStore = create((set, get) => ({
 
     loadData: async () => {
         const { currentTrace } = get()
-        console.log(currentTrace)
+
         let data = await loadData('traces') ?? []
         data.sort((a, b) => b.date.localeCompare(a.date))
 
