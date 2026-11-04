@@ -4,19 +4,31 @@
   "version": "1.1.5",
   "main": "./src/electron/main.js",
   "type": "module",
+  "description": "Punto de venta offline para PYMES",
+  "author": {
+    "name": "Shard Development Team",
+    "email": "zgenshinzgenshin@gmail.com"
+  },
   "scripts": {
     "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:electron\"",
     "dev:renderer": "vite",
     "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
     "build": "vite build",
-    "build:win": "npm run build && npx --verbose --prefer-offline electron-builder --win",
-    "build:linux": "npm run build && npx --verbose --prefer-offline electron-builder --linux",
+    "build:win": "npm run build && npx --verbose electron-builder --win",
+    "build:linux": "npm run build && npx --verbose electron-builder --linux",
+    "postinstall": "electron-builder install-app-deps",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "build": {
     "appId": "com.shard.kepler",
     "productName": "Kepler",
+    "asar": true,
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**",
+      "**/node_modules/bindings/**",
+      "**/node_modules/file-uri-to-path/**"
+    ],
     "copyright": "Copyright © 2026 Shard Development Team",
     "directories": {
       "output": "release"
@@ -27,13 +39,17 @@
       "package.json"
     ],
     "win": {
-      "target": "portable",
-      "icon": "public/icon.ico"
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "artifactName": "Kepler-Portable-${version}.exe"
     },
     "linux": {
       "target": "AppImage",
       "icon": "public/favicon.svg",
-      "category": "Utilites"
+      "category": "Utility"
     }
   },
   "dependencies": {
@@ -43,6 +59,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.0",
     "@tailwindcss/vite": "^4.2.2",
+    "better-sqlite3": "^13.0.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.14.0",
@@ -59,6 +76,7 @@
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "electron": "^33.4.11",
+    "electron-builder": "^26.15.3",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
