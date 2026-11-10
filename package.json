@@ -1,10 +1,10 @@
 {
   "name": "offline-pos",
-  "private": true,
-  "version": "1.1.5",
+  "private": false,
+  "version": "2.0.0",
   "main": "./src/electron/main.js",
   "type": "module",
-  "description": "Punto de venta offline para PYMES",
+  "description": "POS",
   "author": {
     "name": "Shard Development Team",
     "email": "zgenshinzgenshin@gmail.com"
@@ -18,7 +18,10 @@
     "build:linux": "npm run build && npx --verbose electron-builder --linux",
     "postinstall": "electron-builder install-app-deps",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "build": {
     "appId": "com.shard.kepler",
@@ -59,7 +62,9 @@
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.0",
     "@tailwindcss/vite": "^4.2.2",
-    "better-sqlite3": "^13.0.3",
+    "better-sqlite3": "^11.10.0",
+    "drizzle-orm": "^1.0.0-rc.5",
+    "express": "^5.3.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.14.0",
@@ -75,12 +80,14 @@
     "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
+    "drizzle-kit": "^1.0.0-rc.5",
     "electron": "^33.4.11",
     "electron-builder": "^26.15.3",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "typescript": "^7.0.2",
     "vite": "^8.0.4",
     "wait-on": "^9.0.3"
   }

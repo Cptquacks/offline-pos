@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
+import { initDb, closeDb } from './services/dbService.js';
 import fileService from './services/fileService.js';
 import xlsxService from './services/xlsxService.js';
 import LicenseService from './services/licenseService.js';
@@ -10,17 +10,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const isInDev = process.env.NODE_ENV === 'development';
 
-const require = createRequire(import.meta.url);
-const Database = require('better-sqlite3');
-
-let db;
-
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 1280,
         height: 720,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.cjs'), // CJS si sandbox activo
+            preload: path.join(__dirname, 'preload.cjs'),
             contextIsolation: true,
             nodeIntegration: false,
             devTools: isInDev,
@@ -36,15 +31,7 @@ const createWindow = () => {
 
 app.whenReady()
     .then(async () => {
-        const dbPath = path.join(app.getPath('userData'), 'kepler.db');
-        db = new Database(dbPath);
-        db.pragma('journal_mode = WAL');
-        db.pragma('synchronous = NORMAL');
-        db.pragma('foreign_keys = ON');
-        db.pragma('busy_timeout = 5000');
-
-        // TODO: migración de esquema aquí (reemplaza ensureDefaultFiles)
-        // await migrateSchema(db);
+        initDb(); // abre conexión + Drizzle
 
         const files = new fileService();
         const xlsx = new xlsxService();
@@ -70,6 +57,4 @@ app.whenReady()
         app.quit();
     });
 
-app.on('before-quit', () => {
-    if (db) db.close();
-});
+app.on('before-quit', () => closeDb());
