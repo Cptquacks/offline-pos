@@ -49,9 +49,10 @@ export function findByDate(date, withRelations = false) {
 
 export function getOrCreateToday() {
     const db = getDb();
-    const today = getToday();
+    const today = getToday(); // Reference to the top ^
 
     return db.transaction((tx) => {
+        // select trace with eq date to selected date (getToday ref)
         const existingTrace = tx.select()
             .from(traces)
             .where(eq(traces.date, today))
