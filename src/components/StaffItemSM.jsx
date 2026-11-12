@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import EmployeContractIndicator from "./EmployeContractIndicator"
 import { useMemo } from "react"
-import { daysFromToday } from "../utils/date-util"
+import { daysFromToday } from "../facades/date-facades"
 
 function StaffItemSM({ data }) {
 
