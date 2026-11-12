@@ -12,7 +12,7 @@
 
 import { create } from 'zustand';
 import { loadData, updateData, writeData } from '../utils/storage-util';
-import { addDays, daysFromToday } from '../facades/date-facades';
+import { addDays, daysFromToday } from '../facades/date-facade';
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<providerStore>>} */
 
