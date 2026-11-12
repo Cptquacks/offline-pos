@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
-import * as schema from '../db/schema.js';
 import { relations } from '../db/schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -37,7 +36,7 @@ export function initDb() {
     sqlite = new Database(dbPath);
     applyPragmas(sqlite);
 
-    db = drizzle(sqlite, { schema, relations });
+    db = drizzle({ client: sqlite, relations });
 
     const migrationsFolder = path.join(__dirname, '..', 'migrations');
     console.log('[db] Aplicando migraciones desde:', migrationsFolder);

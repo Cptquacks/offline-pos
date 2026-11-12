@@ -15,12 +15,14 @@ import useTagStore from "../stores/tagStore"
 import { stringSimilarity } from "../utils/string-util"
 import DefaultButton from "../components/DefaultButton"
 import SearchBarWrapper from "../components/SearchBarWrapper"
-import { filterObjectKeys } from "../utils/filter-util"
+import useAlertStore from "../stores/alertStore"
+import ErrorToast from "../components/ErrorToast"
 
 function KioskView() {
-    const { productData, loadData, modifyProduct } = useProductStore()
+    const { productData, loadData, adjustStock } = useProductStore()
     const { ticketData, loadData: loadTickets, addTicket, cleanTickets } = useTicketStore()
     const { tagList, loadTags } = useTagStore()
+    const { addAlert } = useAlertStore()
     const { addSell, addRefund } = useTraceStore()
 
     const [scroll, setScroll] = useState(0)
@@ -39,7 +41,7 @@ function KioskView() {
         let result = productData
 
         if (filter !== 'All') {
-            result = result.filter(product => product.tag === filter)
+            result = result.filter(product => product.category === filter)
         }
 
         if (query.trim().length > 0) {
@@ -52,20 +54,39 @@ function KioskView() {
         return result
     }, [query, filter, productData])
 
+    const handleAddToCart = (product, amount) => {
+        const quantity = Number(amount)
+        const alreadyInCart = cartItems
+            .filter((item) => item.id === product.id)
+            .reduce((total, item) => total + Number(item.cart), 0)
+
+        if (!Number.isInteger(quantity) || quantity <= 0 || alreadyInCart + quantity > product.stock) {
+            addAlert(<ErrorToast label={`Stock insuficiente para ${product.name}`} />)
+            return
+        }
+
+        setCartItems((items) => [...items, { ...product, cart: quantity }])
+    }
+
     const handleSell = async () => {
-        addTicket(registerSell(cartItems))
-        addSell(cartItems)
+        const soldAmounts = cartItems.reduce((amounts, item) => {
+            amounts.set(item.id, (amounts.get(item.id) ?? 0) + Number(item.cart))
+            return amounts
+        }, new Map())
 
-        const productNames = cartItems.map(item => item.name)
+        for (const [productId, amount] of soldAmounts) {
+            const product = productData.find((item) => item.id === productId)
+            if (!product || product.stock < amount) {
+                addAlert(<ErrorToast label={`Stock insuficiente para ${product?.name ?? 'un producto del carrito'}`} />)
+                return
+            }
+        }
 
-        for (let index = 0; index < productData.length; index++) {
-            if (!productNames.includes(productData[index].name)) continue
+        await addTicket(registerSell(cartItems))
+        await addSell(cartItems)
 
-
-            const data = cartItems.find(product => productData[index].name === product.name)
-            if (!data) return
-            const updatedProduct = { ...data, current: data.current - data.cart }
-            modifyProduct(filterObjectKeys(updatedProduct, ['index', 'cart']), index)
+        for (const [productId, amount] of soldAmounts) {
+            await adjustStock(productId, -amount)
         }
 
         setCartItems([])
@@ -76,16 +97,11 @@ function KioskView() {
      * @param {Object} data 
      * @param {NUmber} amount 
      */
-    const handleRefund = (data, amount) => {
+    const handleRefund = async (data, amount) => {
 
-        addTicket(registerRefund(data, amount))
-        addRefund(data, amount)
-
-        productData.forEach((item, index) => {
-            if (item.name !== data.name) return
-            const updatedProduct = { ...item, current: parseInt(item.current) + parseInt(amount) }
-            modifyProduct(filterObjectKeys(updatedProduct, ['index', 'cart']), index)
-        })
+        await addTicket(registerRefund(data, amount))
+        await addRefund(data, amount)
+        await adjustStock(data.id, Number(amount))
     }
 
     useEffect(() => {
@@ -131,12 +147,9 @@ function KioskView() {
                                 key={index}
                                 data={{ index: index, ...item }}
                                 onAdd={
-                                    (data, amount) => setCartItems(prev => ([
-                                        ...prev,
-                                        { ...data, cart: amount }
-                                    ]))
+                                    handleAddToCart
                                 }
-                                onRefund={data => handleRefund(data, 1)}
+                                onRefund={(data, amount) => handleRefund(data, amount)}
                             />)}
                     </ItemsList>
                 </div>
@@ -170,7 +183,7 @@ function KioskView() {
                         <DefaultButton
                             label="Vender"
                             icon="check"
-                            onClick={handleSell}
+                            onClick={() => setCartItems([])}
                             customColor="bg-green-600"
                             disabled={cartItems.length === 0}
                         />
@@ -192,7 +205,7 @@ function KioskView() {
                             onRemove={(target) => {
                                 setCartItems(prev => prev.filter((_, index) => index !== target))
                             }}
-                            itemColor={tagList.filter(tag => tag.name === item.tag)[0]?.color ?? '#000'}
+                            itemColor={tagList.filter(tag => tag.name === item.category)[0]?.color ?? '#000'}
                         />
 
                     )}

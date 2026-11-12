@@ -4,7 +4,7 @@ import { importFile } from "../utils/xlsx-util"
 import useAlertStore from "../stores/alertStore"
 import ErrorToast from "./ErrorToast"
 import ColumnSelector from "./ColumnSelector"
-import { normalizeExcelDate } from "../facades/date-facade"
+import { normalizeExcelDate } from "../utils/date-util"
 import useDialogStore from "../stores/dialogStore"
 import DefaultButton from "./DefaultButton"
 
@@ -38,14 +38,14 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
         if (!fileData.data.length || !programFields.length) return [];
 
         return fileData.data.map(row => {
-            const newObj = { ...model } // copia del modelo base
+            const newObj = Object.fromEntries(Object.keys(model).map((key) => [key, null]))
             programFields.forEach(({ key, value }) => {
-                if (dateKeys.includes(key) && value && row.hasOwnProperty(value)) {
+                if (dateKeys.includes(key) && value && Object.prototype.hasOwnProperty.call(row, value)) {
                     newObj[key] = normalizeExcelDate(row[value]);
                     return
                 }
 
-                if (value && row.hasOwnProperty(value)) {
+                if (value && Object.prototype.hasOwnProperty.call(row, value)) {
                     newObj[key] = row[value]
                 }
             })

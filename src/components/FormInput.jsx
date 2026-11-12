@@ -26,7 +26,7 @@ function FormInput({
             font-bold!
             ">
                 {label}
-                {!required && <span className="text-red-400"> *</span>}
+                {required && <span className="text-red-400"> *</span>}
             </p>
 
             <input

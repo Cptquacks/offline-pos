@@ -3,11 +3,11 @@ import useTagStore from "../stores/tagStore"
 import TagItem from "./TagItem"
 import useRoleStore from "../stores/roleStore"
 
-function TagSelector({ onChange, useRoles = false }) {
+function TagSelector({ onChange, useRoles = false, selectedValue }) {
     const { tagList, loadTags } = useTagStore()
     const { roleList, loadRoles } = useRoleStore()
 
-    const [selected, setSelected] = useState('N/A')
+    const [selected, setSelected] = useState(selectedValue ?? 'N/A')
 
     const current = useMemo(() => {
         let current = { name: selected, color: '0%,0,0' }
@@ -38,10 +38,13 @@ function TagSelector({ onChange, useRoles = false }) {
     useEffect(() => {
         if (tagList.length === 0) return
 
-        onChange((useRoles ? roleList[0] : tagList[0])?.name ?? 'N/A')
-        setSelected((useRoles ? roleList[0] : tagList[0])?.name ?? 'N/A')
+        const value = selectedValue !== undefined
+            ? selectedValue ?? 'N/A'
+            : (useRoles ? roleList[0] : tagList[0])?.name ?? 'N/A'
+        onChange(value)
+        setSelected(value)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tagList, roleList])
+    }, [tagList, roleList, selectedValue])
 
     return (
         <div
@@ -79,6 +82,10 @@ function TagSelector({ onChange, useRoles = false }) {
                 "
             >
                 <option value="N/A">Ninguno</option>
+                {selectedValue && selectedValue !== 'N/A' &&
+                    !(useRoles ? roleList : tagList).some(item => item.name === selectedValue) &&
+                    <option value={selectedValue}>{selectedValue}</option>
+                }
                 {(useRoles ? roleList : tagList).map((tag, index) => <option key={index} value={tag.name}>{tag.name}</option>
                 )}
             </select>

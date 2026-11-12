@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { loadData, updateData, writeData } from "../utils/storage-util";
-import { getToday } from "../facades/date-facade";
+import { getToday } from "../utils/date-util";
 
 
 /**
@@ -180,7 +180,7 @@ const useTraceStore = create((set, get) => ({
             if (!updatedTrace.total[item.currency])
                 updatedTrace.total[item.currency] = 0
 
-            updatedTrace.total[item.currency] += parseInt(item.price) * parseInt(item.cart)
+            updatedTrace.total[item.currency] += parseInt(item.cost) * parseInt(item.cart)
         })
 
         set({ currentTrace: updatedTrace });
@@ -197,7 +197,7 @@ const useTraceStore = create((set, get) => ({
             updatedTrace.total['CUP'] = 0
 
         else
-            updatedTrace.total[product.currency] -= product.price
+            updatedTrace.total[product.currency] -= product.cost
 
         set({ currentTrace: updatedTrace });
     }

@@ -10,14 +10,14 @@ function KioskProductItem({ data, onAdd, onRefund }) {
 
     const { tagList } = useTagStore()
     const currentTag = useMemo(() => {
-        let tag = { name: data.tag, color: '0%,0,0' }
-        const filteredTag = tagList.find(tag => tag.name === data.tag) ?? {}
+        let tag = { name: data.category, color: '0%,0,0' }
+        const filteredTag = tagList.find(tag => tag.name === data.category) ?? {}
 
         return { ...tag, ...filteredTag }
-    }, [tagList, data.tag])
+    }, [tagList, data.category])
 
     const [currentAmount, setAmount] = useState(1)
-    const outOfStock = useMemo(() => data.current <= 0, [data])
+    const outOfStock = useMemo(() => data.stock <= 0, [data.stock])
 
     const handleAdd = () => onAdd(data, currentAmount)
     const handleRefund = () => onRefund(data, currentAmount)
@@ -48,9 +48,6 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                             {data.name}
                         </p>
 
-                        <p>
-                            {data.description}
-                        </p>
                     </div>
 
                     <div className="
@@ -62,11 +59,11 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                     rounded-full
                     ">
                         <p className="font-bold!">
-                            D: {data.current}
+                            D: {data.stock} {data.unit}
                         </p>
 
                         <p>
-                            {data.price} {data.currency}
+                            {data.cost} {data.currency}
                         </p>
                     </div>
                 </div>
@@ -97,7 +94,7 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                 border border-white/20
                 px-2! py-0.5!
                 rounded-sm
-                " type="number" min={1} max={data.amount} value={currentAmount}
+                " type="number" min={1} max={data.stock} value={currentAmount}
                     onChange={event => setAmount(event.target.value)} required />
 
                 <div className="
@@ -110,7 +107,7 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                         label="Añadir al carrito"
                         icon="shopping-cart"
                         onClick={handleAdd}
-                        disabled={(currentAmount > data.amount) || outOfStock}
+                        disabled={(currentAmount > data.stock) || outOfStock}
                         customColor="bg-green-600"
                     />
                     <DefaultButton

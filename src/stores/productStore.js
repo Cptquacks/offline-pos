@@ -1,5 +1,27 @@
 import { create } from "zustand";
-import { loadData, updateData, writeData } from "../utils/storage-util";
+import {
+    listAll,
+    create as productCreate,
+    createMany as productsCreateMany,
+    update as productUpdate,
+    remove as productRemove,
+    removeMany as productsRemoveMany,
+    adjustStock as productAdjustStock,
+} from "../facades/products-facade";
+
+function normalizeProduct(product) {
+    const normalized = { ...product };
+
+    if ("cost" in normalized) normalized.cost = Number(normalized.cost);
+    if ("stock" in normalized) normalized.stock = Number.parseInt(normalized.stock, 10);
+    if (normalized.category === "N/A" || normalized.category === "") normalized.category = null;
+    if (normalized.expiresAt === "") normalized.expiresAt = null;
+
+    delete normalized.id;
+    delete normalized.createdAt;
+
+    return normalized;
+}
 
 
 /**
@@ -7,48 +29,65 @@ import { loadData, updateData, writeData } from "../utils/storage-util";
  * @property {Array} productData
  * @property {() => Promise<void>} loadData
  * @property {(product: Object) => Promise<void>} addProduct
- * @property {(product: Object, index: number) => Promise<void>} modifyProduct
- * @property {(target: number) => Promise<void>} deleteProduct
- * @property {(chunk: Array) => Promise<void>} overwriteFile You could nuke the products, beware
+ * @property {(products: Array) => Promise<void>} addProducts
+ * @property {(id: number, patch: Object) => Promise<void>} modifyProduct
+ * @property {(id: number) => Promise<void>} deleteProduct
+ * @property {(ids: Array<number>) => Promise<void>} deleteProducts
+ * @property {(id: number, delta: number) => Promise<void>} adjustStock
  */
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<productStore>>} */
-const useProductStore = create((set, get) => ({
+const useProductStore = create((set) => ({
     productData: [],
 
     loadData: async () => {
-        const data = await loadData('products')
+        const data = await listAll()
         set({ productData: data })
     },
 
     addProduct: async (product) => {
-        const data = await updateData('products', product)
-        set({ productData: data })
+        const created = await productCreate(normalizeProduct(product));
+        if (!created) throw new Error("No se pudo crear el producto.");
+        set(({ productData }) => ({ productData: [created, ...productData] }));
     },
 
-    modifyProduct: async (product, index) => {
-        const { productData } = get()
-        const updatedData = [...productData]
-
-        updatedData[index] = product
-        const data = await writeData('products', updatedData)
-
-        set({ productData: data })
+    addProducts: async (products) => {
+        if (products.length === 0) return;
+        const created = await productsCreateMany(products.map(normalizeProduct));
+        set(({ productData }) => ({ productData: [...created, ...productData] }));
     },
 
-    deleteProduct: async (target) => {
-        const { productData } = get()
-        let updatedData = [...productData]
-
-        updatedData = updatedData.filter((_, index) => index !== target)
-        const data = await writeData('products', updatedData)
-
-        set({ productData: data })
+    modifyProduct: async (id, patch) => {
+        const updated = await productUpdate(id, normalizeProduct(patch));
+        if (!updated) throw new Error(`No se encontró el producto ${id}.`);
+        set(({ productData }) => ({
+            productData: productData.map((product) => product.id === id ? updated : product),
+        }));
     },
 
-    overwriteFile: async (chunk) => {
-        const data = await writeData('products', chunk)
-        set({ productData: data })
-    }
+    deleteProduct: async (id) => {
+        const removed = await productRemove(id);
+        if (!removed) throw new Error(`No se encontró el producto ${id}.`);
+        set(({ productData }) => ({
+            productData: productData.filter((product) => product.id !== id),
+        }));
+    },
+
+    deleteProducts: async (ids) => {
+        if (ids.length === 0) return;
+        const removed = await productsRemoveMany(ids);
+        const removedIds = new Set(removed.map((product) => product.id));
+        set(({ productData }) => ({
+            productData: productData.filter((product) => !removedIds.has(product.id)),
+        }));
+    },
+
+    adjustStock: async (id, delta) => {
+        const updated = await productAdjustStock(id, delta);
+        if (!updated) throw new Error(`No se encontró el producto ${id}.`);
+        set(({ productData }) => ({
+            productData: productData.map((product) => product.id === id ? updated : product),
+        }));
+    },
 }))
 export default useProductStore

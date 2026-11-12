@@ -11,12 +11,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
     importFile: () => ipcRenderer.invoke('import-file'),
     exportFile: (data, filePath) => ipcRenderer.invoke('export-file', data, filePath),
 
-    //Date Service
-    getToday: () => ipcRenderer.invoke('get-today'),
-    daysBetween: (a, b) => ipcRenderer.invoke('days-between', a, b),
-    daysFromToday: (target) => ipcRenderer.invoke('days-from-today', target),
-    addDays: (dateStr, days) => ipcRenderer.invoke('add-days', dateStr, days),
-    normalizeExcelDate: (excelDateStr) => ipcRenderer.invoke('normalize-excel-date', excelDateStr),
+    // Product Repository
+    productsListAll: (withRelations) => ipcRenderer.invoke('products-list-all', withRelations),
+    productsCreate: (product) => ipcRenderer.invoke('products-create', product),
+    productsCreateMany: (products) => ipcRenderer.invoke('products-create-many', products),
+    productsUpdate: (id, patch) => ipcRenderer.invoke('products-update', id, patch),
+    productsRemove: (id) => ipcRenderer.invoke('products-remove', id),
+    productsRemoveMany: (ids) => ipcRenderer.invoke('products-remove-many', ids),
+
+    productsList: (withRelations, limit) => ipcRenderer.invoke('products-list', withRelations, limit),
+    productsFindById: (id, withRelations) => ipcRenderer.invoke('products-find-by-id', id, withRelations),
+    productsFindByName: (name, withRelations) => ipcRenderer.invoke('products-find-by-name', name, withRelations),
+    productsFindByCategory: (category, withRelations) => ipcRenderer.invoke('products-find-by-category', category, withRelations),
+    productsLowStock: (threshold, withRelations) => ipcRenderer.invoke('products-low-stock', threshold, withRelations),
+    productsAdjustStock: (id, adjustment) => ipcRenderer.invoke('products-adjust-stock', id, adjustment),
 
     //License Service
     checkLicense: (code) => ipcRenderer.invoke('check-license', code)

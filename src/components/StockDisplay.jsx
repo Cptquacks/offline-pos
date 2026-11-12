@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-function StockDisplay({ total, amount }) {
+function StockDisplay({ stock }) {
     return (
         <section
             className="
-            min-w-85
+            min-w-fit
             flex flex-row
             p-2! px-6! gap-6
             bg-(--bg-alt)
@@ -13,14 +13,9 @@ function StockDisplay({ total, amount }) {
             "
         >
             <div className="flex flex-row gap-1 items-center">
-                <FontAwesomeIcon icon={"clipboard-check"} size="lg" />
-                <strong>Total:</strong>
-                <p>{total}</p>
-            </div>
-            <div className="flex flex-row gap-1 items-center">
                 <FontAwesomeIcon icon={"warehouse"} size="lg" />
-                <strong>Disponible:</strong>
-                <p>{amount}</p>
+                <strong>Stock:</strong>
+                <p>{stock}</p>
             </div>
         </section>
     )

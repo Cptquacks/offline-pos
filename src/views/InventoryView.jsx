@@ -4,7 +4,7 @@ import ImportPanel from "../components/ImportPanel"
 import useProductStore from "../stores/productStore"
 import ItemsList from "../components/ItemsList"
 import { stringSimilarity } from "../utils/string-util"
-import { daysFromToday } from "../facades/date-facade"
+import { daysFromToday } from "../utils/date-util"
 import useTagStore from "../stores/tagStore"
 import { filterObjectKeysFromStructure } from "../utils/filter-util"
 import { randomLCH } from "../utils/tag-util"
@@ -25,7 +25,7 @@ import ButtonBelt from "../components/ButtonBelt"
 import SearchBarWrapper from "../components/SearchBarWrapper"
 
 function InventoryView() {
-    const { productData, loadData, addProduct, modifyProduct, overwriteFile, deleteProduct } = useProductStore()
+    const { productData, loadData, addProduct, addProducts, modifyProduct, deleteProduct, deleteProducts } = useProductStore()
     const { tagList, loadTags, addTag } = useTagStore()
     const { openDialog, closeDialog } = useDialogStore()
     const { addAlert } = useAlertStore()
@@ -45,7 +45,7 @@ function InventoryView() {
         let result = productData
 
         if (filter !== 'All') {
-            result = result.filter(product => product.tag === filter)
+            result = result.filter(product => product.category === filter)
         }
 
         if (query.trim().length > 0) {
@@ -60,14 +60,13 @@ function InventoryView() {
 
 
     const exportedData = useMemo(() => {
-        return filterObjectKeysFromStructure(productData, ['index', 'span'])
+        return filterObjectKeysFromStructure(productData, ['id', 'createdAt'])
     }, [productData]);
 
     const [isLoading, setLoading] = useState(false)
-    const [loadValue, setLoadValue] = useState({ current: 0, total: 0 })
 
     const [isSelecting, setSelecting] = useState(false)
-    const [selectedIndexes, setIndexes] = useState([])
+    const [selectedIds, setSelectedIds] = useState([])
 
 
     /**
@@ -88,37 +87,41 @@ function InventoryView() {
      */
     const handleImportation = async (importedData) => {
         setLoading(true)
-        setLoadValue({ current: 0, total: importedData.length })
 
-        const newTags = []
-        importedData.forEach(fragment => {
+        try {
+            const newTags = [...new Set(
+                importedData
+                    .map((product) => product.category)
+                    .filter((category) => category && category !== 'N/A')
+            )]
 
-            if (fragment.tag && !newTags.includes(fragment.tag))
-                newTags.push(fragment.tag)
-            fragment.current ? fragment.current : fragment.current = fragment.amount
-            fragment.current = parseInt(fragment.current)
-            fragment.amount = parseInt(fragment.amount)
-            fragment.price = parseInt(fragment.price)
-            fragment.expiresAt ? fragment.span = daysFromToday(fragment.expiresAt) : fragment
+            for (const category of newTags) {
+                if (tagList.some(item => item.name === category)) continue
+                await addTag({ name: category, color: randomLCH() })
+            }
 
-            setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
-        })
+            const products = importedData.map((product) => ({
+                name: product.name,
+                cost: Number(product.cost),
+                stock: Number.parseInt(product.stock, 10),
+                unit: product.unit,
+                category: product.category && product.category !== 'N/A' ? product.category : null,
+                currency: product.currency,
+                expiresAt: product.expiresAt || null,
+            }))
 
-        for (let index = 0; index < newTags.length; index++) {
-            if (tagList.some(item => item.name === newTags[index])) continue
-            await addTag({ name: newTags[index], color: randomLCH() })
+            await addProducts(products)
+            await loadTags()
+        } catch {
+            addAlert(<ErrorToast label={'No se pudieron importar los productos'} />)
+        } finally {
+            setLoading(false)
         }
-
-        let result = [...productData, ...importedData]
-        overwriteFile(result)
-        loadTags()
-
-        setLoading(false)
     }
 
     const deleteItems = async () => {
-        await overwriteFile(productData.filter((_, index) => !selectedIndexes.includes(index)))
-        setIndexes([])
+        await deleteProducts(selectedIds)
+        setSelectedIds([])
     }
 
     useEffect(() => {
@@ -143,17 +146,14 @@ function InventoryView() {
         }
 
         openDialog(
-            <LoadingDialog
-                current={loadValue.current}
-                total={loadValue.total}
-            />
+            <LoadingDialog />
         )
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading, loadValue])
+    }, [isLoading])
 
     useEffect(() => {
         if (isSelecting) return
-        setIndexes([])
+        setSelectedIds([])
     }, [isSelecting])
 
     return (
@@ -199,44 +199,27 @@ function InventoryView() {
                                         label={'producto'}
                                         fileFields={[
                                             { 'name': 'text' },
-                                            { 'tag': 'tag' },
-                                            { 'code': 'text' },
-                                            { 'amount': 'number' },
-                                            { 'price': 'price' },
+                                            { 'category': 'tag' },
+                                            { 'unit': 'text' },
+                                            { 'stock': 'number' },
+                                            { 'cost': 'price' },
                                             { 'currency': 'currency' },
                                             { 'expiresAt': 'expiration' }
                                         ]}
                                         uiFields={[
                                             { 'name': 'Nombre' },
-                                            { 'tag': 'Tipo' },
-                                            { 'code': 'Numero de serie' },
-                                            { 'amount': 'Stock' },
-                                            { 'price': 'Precio' },
+                                            { 'category': 'Categoría' },
+                                            { 'unit': 'Unidad' },
+                                            { 'stock': 'Stock' },
+                                            { 'cost': 'Precio' },
                                             { 'currency': 'Moneda de pago' },
                                             { 'expiresAt': 'Fecha de caducidad' }
                                         ]}
-                                        optionalFields={['expiresAt']}
+                                        optionalFields={['category', 'expiresAt', 'unit']}
                                         additionCallback={value => addProduct(value)}
                                         alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
                                     />
                                 )}
-                            />
-                        </ButtonBelt>
-
-                        <ButtonBelt>
-                            <DefaultButton
-                                icon={'sync'}
-                                label={`
-                                    Rellenar inventario 
-                                    (${productData.filter(entry => entry.amount > entry.current).length})`
-                                }
-                                iconLeft
-                                onClick={() => {
-                                    let newData = [...productData]
-                                    newData = newData.map(entry => ({ ...entry, current: entry.amount }))
-                                    overwriteFile(newData)
-                                }}
-                                disabled={!productData.some(entry => entry.amount > entry.current)}
                             />
                         </ButtonBelt>
 
@@ -248,19 +231,25 @@ function InventoryView() {
                             />
 
                             {!isSelecting && <DefaultButton
-                                label={isSelecting ? "Cancelar" : "Seleccionar todos"}
-                                icon={isSelecting ? "times" : "clipboard-check"}
+                                label={"Seleccionar todos"}
+                                icon={"clipboard-check"}
                                 onClick={() => {
-                                    setIndexes(productData.map((_, index) => index))
+                                    setSelectedIds(productData.map((product) => product.id))
                                     setSelecting(true)
                                 }}
                             />}
 
-                            {selectedIndexes.length > 0 && <DeleteButton
-                                label={`Eliminar todos (${selectedIndexes.length})`}
+                            {selectedIds.length > 0 && <DeleteButton
+                                label={`Eliminar todos (${selectedIds.length})`}
                                 onDelete={async () => {
                                     setLoading(true)
-                                    await deleteItems().then(() => setLoading(false))
+                                    try {
+                                        await deleteItems()
+                                    } catch {
+                                        addAlert(<ErrorToast label={'No se pudieron eliminar los productos seleccionados'} />)
+                                    } finally {
+                                        setLoading(false)
+                                    }
                                 }}
                             />}
                         </ButtonBelt>
@@ -268,30 +257,26 @@ function InventoryView() {
                         <ImportPanel
                             model={{
                                 "name": "Nombre",
-                                "tag": "Categoría",
-                                "code": "Codigo de barras",
-                                "description": "Descripción",
-                                "amount": "Cantidad",
-                                "price": "Precio",
+                                "category": "Categoría",
+                                "unit": "Unidad",
+                                "stock": "Stock disponible",
+                                "cost": "Precio",
                                 "currency": "Moneda",
-                                "expiresAt": "Caducidad",
-                                "current": "Disponibilidad"
+                                "expiresAt": "Caducidad"
                             }}
-                            optionalFields={['description', 'expiresAt', 'current']}
+                            optionalFields={['category', 'expiresAt']}
                             onImport={data => handleImportation(data)}
                             previewComponent={({ data }) =>
                                 <StandardItemCard
                                     icon="box"
                                     title={data.name}
-                                    codeBar={data.code ?? 'N/A'}
                                     endDate={data.expiresAt}
                                     stockDisplay={
                                         <StockDisplay
-                                            total={data.amount}
-                                            amount={data.current}
+                                            stock={data.stock}
                                         />
                                     }
-                                    salaryDisplay={data.price && data.currency}
+                                    salaryDisplay={`${data.cost ?? ''} ${data.currency ?? ''}`}
                                     isOnPreview
                                 />
                             }
@@ -304,34 +289,32 @@ function InventoryView() {
                         {/*
                             NOTE Inventory items
                         */}
-                        {filteredList.map((product, index) =>
+                        {filteredList.map((product) =>
                             <StandardItemCardWrapper
                                 canSelect={isSelecting}
-                                isSelected={selectedIndexes.includes(index)}
+                                isSelected={selectedIds.includes(product.id)}
                                 onSelect={() => {
-                                    if (selectedIndexes.includes(index)) {
-                                        setIndexes(prev => prev.filter(item => item !== index))
+                                    if (selectedIds.includes(product.id)) {
+                                        setSelectedIds(prev => prev.filter((id) => id !== product.id))
                                         return
                                     }
-                                    setIndexes(prev => [...prev, index].toSorted((a, b) => a - b))
+                                    setSelectedIds(prev => [...prev, product.id])
                                 }}
-                                key={index}
+                                key={product.id}
                             >
                                 <StandardItemCard
                                     icon="box"
                                     title={product.name}
-                                    codeBar={product.code ?? 'N/A'}
                                     tagItem={
                                         <TagItem
                                             icon={'tag'}
-                                            label={product.tag}
-                                            color={tagList.find(tag => tag.name === product.tag)?.color ?? '#000'}
+                                            label={product.category ?? 'N/A'}
+                                            color={tagList.find(tag => tag.name === product.category)?.color ?? '#000'}
                                         />
                                     }
                                     stockDisplay={
                                         <StockDisplay
-                                            total={product.amount}
-                                            amount={product.current ?? product.amount}
+                                            stock={product.stock}
                                         />
                                     }
                                     expirationDisplay={
@@ -340,65 +323,44 @@ function InventoryView() {
                                                 days={daysFromToday(product.expiresAt)}
                                             /> : null
                                     }
-                                    restockButton={
-                                        product.current !== product.amount &&
-                                        <DefaultButton
-                                            icon={'sync'}
-                                            label={'Restock'}
-                                            onClick={() =>
-                                                modifyProduct({ ...product, current: product.amount }, index)
-                                            }
-
-                                        />
-                                    }
                                     onEdit={() => openDialog(
                                         <StandarNewItemDialog
                                             icon={'box'}
                                             label={'producto'}
                                             fileFields={[
                                                 { 'name': 'text' },
-                                                { 'tag': 'tag' },
-                                                { 'code': 'text' },
-                                                { 'amount': 'number' },
-                                                { 'price': 'price' },
+                                                { 'category': 'tag' },
+                                                { 'unit': 'text' },
+                                                { 'stock': 'number' },
+                                                { 'cost': 'price' },
                                                 { 'currency': 'currency' },
                                                 { 'expiresAt': 'expiration' }
                                             ]}
                                             uiFields={[
                                                 { 'name': 'Nombre' },
-                                                { 'tag': 'Tipo' },
-                                                { 'code': 'Numero de serie' },
-                                                { 'amount': 'Stock' },
-                                                { 'price': 'Precio' },
+                                                { 'category': 'Categoría' },
+                                                { 'unit': 'Unidad' },
+                                                { 'stock': 'Stock' },
+                                                { 'cost': 'Precio' },
                                                 { 'currency': 'Moneda de pago' },
                                                 { 'expiresAt': 'Fecha de caducidad' }
                                             ]}
                                             currentFieldData={product}
-                                            optionalFields={['expiresAt']}
-                                            additionCallback={value => modifyProduct({ ...product, ...value }, index)}
+                                            optionalFields={['category', 'expiresAt', 'unit']}
+                                            additionCallback={value => modifyProduct(product.id, value)}
                                             alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
                                         />
                                     )}
                                     endDate={product.expiresAt}
-                                    onDelete={() => deleteProduct(index)}
+                                    onDelete={async () => {
+                                        try {
+                                            await deleteProduct(product.id)
+                                        } catch {
+                                            addAlert(<ErrorToast label={'No se pudo eliminar el producto. Puede estar asociado a ventas registradas.'} />)
+                                        }
+                                    }}
                                     isOnPreview={isSelecting}
-                                    missingData={(() => {
-                                        const required = [
-                                            'name',
-                                            'tag',
-                                            'code',
-                                            'amount',
-                                            'price',
-                                            'currency'
-                                        ]
-                                        const current = Object.keys(product)
-                                            .filter(item => required.includes(item))
-
-                                        return !current.every((element, index) =>
-                                            element === required[index] &&
-                                            product[element]
-                                        )
-                                    })()}
+                                    missingData={!product.name || product.cost == null || product.stock == null || !product.unit || !product.currency}
                                 />
                             </StandardItemCardWrapper>
                         )}

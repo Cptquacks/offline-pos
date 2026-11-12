@@ -33,9 +33,10 @@ function SwitchItem({ value, onChange }) {
                 bg-(--bg-alt)
                 group-hover:bg-black/50
                 border border-(--accent)/70
+                top-1/2 -translate-y-1/2
                 rounded-full
                 ${!currentValue ? 'border-white/20' : 'border-(--bg-alt)'}
-                ${!currentValue ? 'left-0.5' : 'right-0.5'}
+                ${!currentValue ? 'right-1/2' : 'translate-x-[calc(100%-0.01rem)] right-1/2'}
                 overflow-hidden
             `}>
                 <FontAwesomeIcon className={currentValue ? 'text-(--accent-alt)' : 'text-white/20'} icon={currentValue ? 'check' : 'times'} size="sm" />

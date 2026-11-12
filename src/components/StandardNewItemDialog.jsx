@@ -16,8 +16,7 @@ function StandarNewItemDialog(
     {
         label, icon,
         fileFields, uiFields, optionalFields, currentFieldData,
-        // eslint-disable-next-line no-unused-vars
-        additionCallback, alertCallback
+        additionCallback, alertCallback = () => {}
     }
 ) {
     const { closeDialog } = useDialogStore()
@@ -57,7 +56,7 @@ function StandarNewItemDialog(
 
     const canAddItem = useMemo(() => {
         const requiredFields = fileFields.filter(field => !optionalFields.includes(Object.keys(field)[0])).map(field => Object.keys(field)[0])
-        return requiredFields.every(field => formData[field] !== null)
+        return requiredFields.every(field => formData[field] !== null && formData[field] !== '')
     }, [formData, fileFields, optionalFields])
 
     return (
@@ -88,7 +87,7 @@ function StandarNewItemDialog(
                     <FontAwesomeIcon icon={`${icon}`} size="xl" />
                     <strong className="text-lg">
                         Los elementos obligatorios se destacan con un
-                        <span className="text-red-400"> *</span>
+                        <span className="text-red-400"> * </span>
                     </strong>
 
                 </div>
@@ -103,7 +102,7 @@ function StandarNewItemDialog(
                                     defaultValue={item.value}
                                     placeholder={`${item.uiName} del ${label}`}
                                     onChange={value => editFormFields(item.name, value)}
-                                    required={optionalFields.includes(item.name)}
+                                    required={!optionalFields.includes(item.name)}
                                 />
 
                             case "name":
@@ -113,13 +112,14 @@ function StandarNewItemDialog(
                                     defaultValue={item.value}
                                     placeholder={`${item.uiName} del ${label}`}
                                     onChange={value => editFormFields(item.name, value)}
-                                    required={optionalFields.includes(item.name)}
+                                    required={!optionalFields.includes(item.name)}
                                     isValid={/([A-Z][a-z]+\s?)+/.test(formData[item.name])}
                                 />
 
                             case "tag":
                                 return <TagSelector
                                     key={index}
+                                    selectedValue={currentFieldData ? item.value : undefined}
                                     onChange={value => editFormFields(item.name, value)}
                                 />
 
@@ -136,9 +136,10 @@ function StandarNewItemDialog(
                                     type="number"
                                     label={item.uiName}
                                     defaultValue={item.value}
+                                    min={item.name === 'stock' ? 0 : 1}
                                     placeholder={`${item.uiName} del ${label}`}
-                                    onChange={value => editFormFields(item.name, parseInt(value))}
-                                    required={optionalFields.includes(item.name)}
+                                    onChange={value => editFormFields(item.name, parseInt(value, 10))}
+                                    required={!optionalFields.includes(item.name)}
                                 />
 
                             case "phone-list":
@@ -160,7 +161,7 @@ function StandarNewItemDialog(
                                 return <PriceSelectionInput
                                     key={index}
                                     defaultValue={item.value}
-                                    onChange={value => editFormFields(item.name, parseInt(value))}
+                                    onChange={value => editFormFields(item.name, parseFloat(value))}
                                 />
 
                             case "currency":
@@ -213,9 +214,13 @@ function StandarNewItemDialog(
                     label={currentFieldData ? 'Editar' : 'Añadir'}
                     icon={currentFieldData ? 'pen-to-square' : 'check'}
                     disabled={!canAddItem}
-                    onClick={() => {
-                        additionCallback(formData)
-                        closeDialog()
+                    onClick={async () => {
+                        try {
+                            await additionCallback(formData)
+                            closeDialog()
+                        } catch {
+                            alertCallback()
+                        }
                     }}
                 />
             </footer>

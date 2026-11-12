@@ -2,7 +2,7 @@ import { faBox, faCalendar } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import ExpirationDisplay from "./ExpirationDisplay"
 import { useMemo } from "react"
-import { daysFromToday } from "../facades/date-facade"
+import { daysFromToday } from "../utils/date-util"
 
 function ProductItemSM({ data }) {
     const daysUntilED = useMemo(() => {
@@ -28,7 +28,7 @@ function ProductItemSM({ data }) {
                     {data.name}
                 </strong>
                 <strong>
-                    D: {data.current}
+                    D: {data.stock} {data.unit}
                 </strong>
             </div>
             {daysUntilED <= 31 && <ExpirationDisplay days={daysUntilED} />}

@@ -21,14 +21,14 @@ export function registerSell(data) {
         newTicket.productsAmount += item.cart
         newTicket.products.push({
             "name": item.name,
-            "price": item.price,
+            "price": item.cost,
             "amount": item.cart
         })
 
         if (!newTicket.total[item.currency])
             newTicket.total[item.currency] = 0
 
-        newTicket.total[item.currency] += parseInt(item.price) * parseInt(item.cart)
+        newTicket.total[item.currency] += parseInt(item.cost) * parseInt(item.cart)
     });
 
     return newTicket
@@ -49,7 +49,7 @@ export function registerRefund(product, amount) {
         "date": new Date().toDateString(),
     }
 
-    newTicket.total[product.currency] = product.price * amount
+    newTicket.total[product.currency] = product.cost * amount
 
     return newTicket
 }

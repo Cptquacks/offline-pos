@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { products } from "../db/schema.js";
 import { getDb } from "../services/dbService.js";
 
@@ -64,8 +64,16 @@ export function lowStock(threshold = 10, withRelations = false) {
 
 export function create(product) {
     const db = getDb();
-    const result = db.insert(products).values(product).returning().get();
-    return result.id;
+    return db.insert(products).values(product).returning().get();
+}
+
+export function createMany(productList) {
+    if (!Array.isArray(productList) || productList.length === 0) return [];
+
+    const db = getDb();
+    return db.transaction((tx) => productList.map((product) =>
+        tx.insert(products).values(product).returning().get()
+    ));
 }
 
 export function update(id, patch) {
@@ -79,11 +87,23 @@ export function remove(id) {
     return db.delete(products).where(eq(products.id, id)).returning().get();
 }
 
+export function removeMany(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) return [];
+
+    const db = getDb();
+    return db.transaction((tx) => ids.map((id) =>
+        tx.delete(products).where(eq(products.id, id)).returning().get()
+    ));
+}
+
 export function adjustStock(id, delta) {
+    const stockGuard = delta < 0 ? gte(products.stock, -delta) : undefined;
     return getDb()
         .update(products)
         .set({ stock: sql`${products.stock} + ${delta}` })
-        .where(eq(products.id, id))
+        .where(stockGuard
+            ? and(eq(products.id, id), stockGuard)
+            : eq(products.id, id))
         .returning()
         .get();
 }

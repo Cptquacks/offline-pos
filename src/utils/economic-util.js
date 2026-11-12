@@ -121,23 +121,20 @@ export function predictNextTwoDays(dataArray, predicted = 2, taken = 5) {
 }
 
 /**
- * Obtiene los productos más vendidos basado en la diferencia entre amount (inicial) y current (actual)
- * @param {Array} productsArray - Array de productos con propiedades amount y current
+ * Obtiene los productos más vendidos a partir de sus ticketItems relacionados.
+ * @param {Array} productsArray - Productos con la relación ticketItems cargada
  * @param {number} top - Número de productos a devolver (por defecto 5)
  * @returns {Array} - Array con los top productos más vendidos, incluyendo la cantidad vendida
  */
 export function mostSoldProducts(productsArray, top = 5) {
     if (!Array.isArray(productsArray) || productsArray.length === 0) return [];
 
-    // Calcular ventas totales por producto
     const productsWithSales = productsArray.map(product => ({
         ...product,
-        sold: product.amount - product.current
+        sold: (product.ticketItems ?? []).reduce((total, item) => total + item.amount, 0)
     }));
 
-    // Ordenar descendente por cantidad vendida
     const sorted = productsWithSales.sort((a, b) => b.sold - a.sold);
 
-    // Tomar los primeros 'top' productos con ventas > 0
     return sorted.filter(p => p.sold > 0).slice(0, top);
 }

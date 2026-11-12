@@ -13,7 +13,7 @@ function XLSXExportDialog({ model, data }) {
 
         result.push(Object.values(model))
 
-        rawData.forEach(entry => result.push(Object.values(entry)))
+        rawData.forEach(entry => result.push(Object.keys(model).map((key) => entry[key])))
         return result
     }, [data, model])
 
@@ -24,7 +24,7 @@ function XLSXExportDialog({ model, data }) {
 
                 if (typeof item[key] === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item[key])) {
                     const [year, month, day] = item[key].split('-').map(Number)
-                    newItem[model[key]] = new Date(year, month, day)
+                    newItem[model[key]] = new Date(year, month - 1, day)
                     return
                 }
 

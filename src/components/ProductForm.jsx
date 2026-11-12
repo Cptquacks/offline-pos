@@ -13,10 +13,10 @@ function ProductForm({ onSubmit }) {
 
     const [formData, setFormData] = useState({
         "name": "",
-        "tag": "",
-        "description": "",
-        "amount": 0,
-        "price": 0,
+        "category": null,
+        "unit": "",
+        "stock": 0,
+        "cost": 0,
         "currency": "CUP",
         "expiresAt": null
     })
@@ -30,7 +30,7 @@ function ProductForm({ onSubmit }) {
     const calculatePrice = (cost, profit) => {
 
         const price = cost + (cost * (profit / 100))
-        setFormData(prev => ({ ...prev, price: Math.round(price) }))
+        setFormData(prev => ({ ...prev, cost: Math.round(price) }))
     }
 
     const handleSubmition = () => {
@@ -58,14 +58,14 @@ function ProductForm({ onSubmit }) {
             <FormInput label="Nombre" type="text" placeholder="Nombre del producto..."
                 onChange={data => setFormData(prev => ({ ...prev, name: data }))} />
 
-            <FormInput label="Descripcion" type="text" placeholder="Decripcion opcional..." required={false}
-                onChange={data => setFormData(prev => ({ ...prev, description: data }))} />
+            <TagSelector onChange={data => setFormData(prev => ({ ...prev, category: data === 'N/A' ? null : data }))} />
 
-            <TagSelector onChange={data => setFormData(prev => ({ ...prev, tag: data }))} />
+            <FormInput label="Unidad" type="text" placeholder="Unidad..."
+                onChange={data => setFormData(prev => ({ ...prev, unit: data }))} />
 
-
-            <FormInput label="Cantidad de producto" type="number" placeholder="Cantidad de producto..."
-                onChange={data => setFormData(prev => ({ ...prev, amount: parseInt(data), current: parseInt(data) }))} />
+            <FormInput label="Stock" type="number" placeholder="Stock disponible..."
+                min={0}
+                onChange={data => setFormData(prev => ({ ...prev, stock: parseInt(data, 10) }))} />
 
 
             <PreferenceSwitch
@@ -76,7 +76,7 @@ function ProductForm({ onSubmit }) {
 
             {!automaticPrice &&
                 <FormInput label="Precio de producto" type="number" placeholder="Precio de producto..."
-                    onChange={data => setFormData(prev => ({ ...prev, price: data }))} />}
+                    onChange={data => setFormData(prev => ({ ...prev, cost: Number(data) }))} />}
 
             {automaticPrice &&
                 <FormInput label="Costo de compra/produccion" type="number" placeholder="Costo..."

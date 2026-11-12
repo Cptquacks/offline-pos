@@ -1,4 +1,4 @@
-CREATE TABLE `contacts` (
+CREATE TABLE IF NOT EXISTS `contacts` (
 	`id` integer PRIMARY KEY AUTOINCREMENT,
 	`phone` text NOT NULL,
 	`email` text,
@@ -10,19 +10,18 @@ CREATE TABLE `contacts` (
 	CONSTRAINT `fk_contacts_provider_id_providers_id_fk` FOREIGN KEY (`provider_id`) REFERENCES `providers`(`id`) ON DELETE CASCADE
 );
 --> statement-breakpoint
-CREATE TABLE `products` (
+CREATE TABLE IF NOT EXISTS `products` (
 	`id` integer PRIMARY KEY AUTOINCREMENT,
 	`name` text NOT NULL,
 	`cost` real DEFAULT 0 NOT NULL,
 	`stock` integer NOT NULL,
-	`unit` text NOT NULL,
 	`category` text,
 	`currency` text NOT NULL,
 	`expires_at` text,
 	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `providers` (
+CREATE TABLE IF NOT EXISTS `providers` (
 	`id` integer PRIMARY KEY AUTOINCREMENT,
 	`name` text NOT NULL,
 	`waste` real DEFAULT 0 NOT NULL,
@@ -33,7 +32,7 @@ CREATE TABLE `providers` (
 	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `staff` (
+CREATE TABLE IF NOT EXISTS `staff` (
 	`id` integer PRIMARY KEY AUTOINCREMENT,
 	`name` text NOT NULL,
 	`uid` text NOT NULL CONSTRAINT `staff_uid_unique` UNIQUE,
@@ -45,7 +44,7 @@ CREATE TABLE `staff` (
 	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `tags` (
+CREATE TABLE IF NOT EXISTS `tags` (
 	`id` integer PRIMARY KEY AUTOINCREMENT,
 	`name` text NOT NULL,
 	`type` integer NOT NULL,
@@ -54,7 +53,7 @@ CREATE TABLE `tags` (
 	CONSTRAINT `tags_name_type_unique` UNIQUE(`name`,`type`)
 );
 --> statement-breakpoint
-CREATE TABLE `ticket_items` (
+CREATE TABLE IF NOT EXISTS `ticket_items` (
 	`id` integer PRIMARY KEY AUTOINCREMENT,
 	`ticket_id` integer NOT NULL,
 	`product_id` integer NOT NULL,
@@ -66,7 +65,7 @@ CREATE TABLE `ticket_items` (
 	CONSTRAINT `fk_ticket_items_product_id_products_id_fk` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT
 );
 --> statement-breakpoint
-CREATE TABLE `tickets` (
+CREATE TABLE IF NOT EXISTS `tickets` (
 	`id` integer PRIMARY KEY AUTOINCREMENT,
 	`trace_id` integer NOT NULL,
 	`total` real DEFAULT 0 NOT NULL,
@@ -75,9 +74,11 @@ CREATE TABLE `tickets` (
 	CONSTRAINT `fk_tickets_trace_id_traces_id_fk` FOREIGN KEY (`trace_id`) REFERENCES `traces`(`id`) ON DELETE CASCADE
 );
 --> statement-breakpoint
-CREATE TABLE `traces` (
+CREATE TABLE IF NOT EXISTS `traces` (
 	`id` integer PRIMARY KEY AUTOINCREMENT,
 	`date` text NOT NULL,
 	`is_closed` integer DEFAULT 0 NOT NULL,
 	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL
 );
+--> statement-breakpoint
+ALTER TABLE `products` ADD `unit` text NOT NULL DEFAULT 'unidad';

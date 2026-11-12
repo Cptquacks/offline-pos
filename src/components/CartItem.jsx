@@ -44,7 +44,7 @@ function CartItem({ data, onRemove, itemColor }) {
                     border border-(--border)
                     rounded-full
                     ">
-                        Total: {data.price * data.cart} {data.currency}
+                        Total: {data.cost * data.cart} {data.currency}
                     </p>
                 </div>
             </div>
@@ -56,7 +56,7 @@ function CartItem({ data, onRemove, itemColor }) {
             p-1!
             ">
                 <TagItem
-                    label={data.tag}
+                    label={data.category}
                     icon={'tag'}
                     color={itemColor}
                 />
