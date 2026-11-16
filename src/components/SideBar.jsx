@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import SideBarButton from "./SideBarButton"
 import usePreferenceStore from "../stores/preferenceStore"
 import useLicenseStore from "../stores/licenseStore"
+import AccountDisplay from "./AccountDisplay"
 
 
 function SideBar() {
@@ -51,7 +52,7 @@ function SideBar() {
             flex flex-col flex-1
             gap-2
             ">
-
+                <AccountDisplay />
                 {menuItems.map((item, index) =>
                     item && <SideBarButton
                         key={index}

@@ -29,7 +29,7 @@ function SwitchItem({ value, onChange }) {
                 flex flex-col
                 items-center justify-center
                 w-5 h-5
-                p-4
+                p-2!
                 bg-(--bg-alt)
                 group-hover:bg-black/50
                 border border-(--accent)/70

@@ -30,6 +30,19 @@ export const staff = sqliteTable('staff', {
     unique('staff_uid_unique').on(table.uid)
 ])
 
+export const staffAccounts = sqliteTable('staff_accounts', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    staffId: integer('staff_id')
+        .notNull()
+        .references(() => staff.id, { onDelete: 'cascade' }),
+    username: text('username').notNull(),
+    password: text('password').notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp_ms' })
+        .notNull().default(sql`(unixepoch() * 1000)`)
+}, (table) => [
+    unique('staff_accounts_username_unique').on(table.username)
+])
+
 export const providers = sqliteTable('providers', {
     id: integer('id').primaryKey({ autoIncrement: true }),
     name: text('name').notNull(),
