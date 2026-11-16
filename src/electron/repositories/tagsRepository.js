@@ -1,13 +1,12 @@
-import { eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { tag } from "../db/schema.js";
 import { getDb } from "../services/dbService.js";
 
 export function listByType(type) {
-    const db = getDb();
-    return db.query.tag.findMany({
-        where: (row, { eq: equals }) => equals(row.type, type),
-        orderBy: { createdAt: "desc" },
-    });
+    return getDb().select().from(tag)
+        .where(eq(tag.type, type))
+        .orderBy(desc(tag.createdAt))
+        .all();
 }
 
 export function listAll() {
@@ -16,12 +15,10 @@ export function listAll() {
 }
 
 export function list(type, limit = 10) {
-    const db = getDb();
-    return db.query.tag.findMany({
-        where: (row, { eq: equals }) => equals(row.type, type),
-        orderBy: { createdAt: "desc" },
-        limit: limit > 0 ? limit : undefined,
-    });
+    const query = getDb().select().from(tag)
+        .where(eq(tag.type, type))
+        .orderBy(desc(tag.createdAt));
+    return limit > 0 ? query.limit(limit).all() : query.all();
 }
 
 export function create(values) {
