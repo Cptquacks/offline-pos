@@ -21,6 +21,7 @@ function AccountDisplay() {
             const user = staffData.find(member => member.id === userID)
             setUserData(user)
         })()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userID, loadData])
 
     if (staffData.length === 0) return
