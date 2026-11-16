@@ -20,33 +20,14 @@ class fileService {
      * Si no existen, los crea con un contenido inicial adecuado.
      */
     async ensureDefaultFiles() {
+        await fs.mkdir(this.dataPath, { recursive: true });
         // Diccionario de archivos y su contenido por defecto
         const defaultFiles = {
-            'traces.json': [],
-            'products.json': [],
-            'providers.json': [],
-            'staff.json': [],
-            'tags.json': [],
-            'roles.json': [],
-            'tickets.json': [],
             'licenses.json': [],
-            'currencies.json': ['CUP', 'USD'],
             'preferences.json': [
-                {
-                    "key": "sideBarExpanded",
-                    "name": "Barra lateral expandida",
-                    "value": true
-                },
-                {
-                    "key": "coloredTags",
-                    "name": "Categorías coloreadas",
-                    "value": false
-                },
-                {
-                    "key": "hasKiosk",
-                    "name": "Kiosko",
-                    "value": true
-                }
+                { key: 'sideBarExpanded', name: 'Barra lateral expandida', value: true },
+                { key: 'coloredTags', name: 'Categorías coloreadas', value: false },
+                { key: 'hasKiosk', name: 'Kiosko', value: true },
             ],
         };
 

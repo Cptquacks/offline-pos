@@ -7,7 +7,6 @@ import useDialogStore from './stores/dialogStore'
 import LicenseDialog from './components/LicenseDialog'
 import usePreferenceStore from './stores/preferenceStore'
 import LoadingWidget from './components/LoadingWidget'
-import Notch from './components/Notch'
 
 function App() {
     const { loadData } = usePreferenceStore()
@@ -41,8 +40,7 @@ function App() {
     )
     return (
         <main className='flex flex-col w-full h-screen'>
-            <Notch />
-            <section className='flex flex-row w-full h-screen'>
+            <section className='flex flex-row w-full h-full'>
                 <SideBar />
                 <SectionDisplay />
                 <DialogRoot />

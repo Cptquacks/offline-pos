@@ -1,93 +1,94 @@
+import { create } from "zustand";
+import * as providersFacade from "../facades/providers-facade";
+import * as notesFacade from "../facades/notes-facade";
+import { addDays, daysFromToday } from "../utils/date-util";
 
-/**
- * @typedef {Object} providerStore
- * @property {Array} providerData
- * @property {Object} paymentWaste
- * @property {() => Promise<void>} loadData
- * @property {(provider: Object) => Promise<void>} addProvider
- * @property {(provider: Object, index: number) => Promise<void>} modifyProvider
- * @property {(target: number) => Promise<void>} deleteProvider
- * @property {(chunk: Array) => Promise<void>} overwriteData
- */
+function fromDatabase(provider) {
+    const span = Number(provider.span ?? 31);
+    const active = Boolean(provider.active) &&
+        daysFromToday(addDays(provider.startedAt || new Date().toLocaleDateString("sv-SE"), span)) > 0;
+    return {
+        ...provider,
+        span,
+        active,
+        contactData: provider.contacts?.map((contact) => ({ value: contact.phone })) ?? [],
+        notes: provider.notes ?? [],
+    };
+}
 
-import { create } from 'zustand';
-import { loadData, updateData, writeData } from '../utils/storage-util';
-import { addDays, daysFromToday } from '../utils/date-util';
+function toDatabase(provider) {
+    const {
+        contactData = [], contacts: _contacts, notes: _notes,
+        id: _id, createdAt: _createdAt, ...rest
+    } = provider;
+    const startedAt = rest.startedAt || new Date().toLocaleDateString("sv-SE");
+    const parsedSpan = Number(rest.span);
+    const span = Number.isFinite(parsedSpan) && parsedSpan > 0 ? parsedSpan : 31;
+    return {
+        ...rest,
+        startedAt,
+        span,
+        endsAt: addDays(startedAt, span),
+        waste: Number(rest.waste) || 0,
+        currency: rest.currency || "CUP",
+        active: rest.active === undefined ? 1 : rest.active ? 1 : 0,
+        contacts: contactData.filter((contact) => contact?.value).map((contact) => ({ phone: String(contact.value) })),
+    };
+}
 
-/** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<providerStore>>} */
+function setProviders(set, records) {
+    const providerData = records.map(fromDatabase);
+    const paymentWaste = {};
+    for (const provider of providerData) {
+        if (!provider.active) continue;
+        paymentWaste[provider.currency] = (paymentWaste[provider.currency] ?? 0) + Number(provider.waste || 0);
+    }
+    set({ providerData, paymentWaste });
+}
 
 const useProviderStore = create((set, get) => ({
     providerData: [],
-    paymentWaste: {
-        "CUP": 0,
-        "USD": 0
-    },
+    paymentWaste: { CUP: 0, USD: 0 },
 
-    loadData: async () => {
-        const data = await loadData('providers')
-        let total = {}
-
-        data.forEach(provider => {
-            const endsAt = addDays(provider.startedAt, provider.span)
-            const isExpired = daysFromToday(endsAt) <= 0
-
-            if (!provider.active && !isExpired) return
-
-
-            provider.active = !isExpired
-            total[provider.currency] += parseInt(provider.waste)
-        })
-
-        set({ providerData: data, paymentWaste: total })
-    },
+    loadData: async () => setProviders(set, await providersFacade.listAll(true)),
 
     addProvider: async (provider) => {
-        const { paymentWaste } = get()
-        const data = await updateData('providers', provider)
-
-        let total = { ...paymentWaste }
-        if (!total[provider.currency]) total[provider.currency] = 0
-        total[provider.currency] += parseInt(provider.waste)
-
-        set({ providerData: data, paymentWaste: total })
-    },
-    modifyProvider: async (provider, index) => {
-        const { providerData, paymentWaste } = get()
-        const updatedData = [...providerData]
-        updatedData[index] = provider
-
-        const data = await writeData('providers', updatedData)
-
-        let total = { ...paymentWaste }
-        if (!total[provider.currency]) total[provider.currency] = 0
-        total[provider.currency] += parseInt(provider.waste)
-
-        set({ providerData: data, paymentWaste: total })
-
-    },
-    deleteProvider: async (target) => {
-        const { providerData, paymentWaste } = get()
-        let updatedData = [...providerData]
-
-        const provider = providerData[target]
-
-        let total = { ...paymentWaste }
-        if (!total[provider.currency]) total[provider.currency] = 0
-        total[provider.currency] -= parseInt(provider.waste)
-
-        updatedData = updatedData.filter((_, index) => index !== target)
-        const data = await writeData('providers', updatedData)
-
-        set({ providerData: data, paymentWaste: total })
+        const created = await providersFacade.create(toDatabase(provider));
+        if (!created) throw new Error("No se pudo crear el proveedor.");
+        await get().loadData();
     },
 
-    overwriteData: async (chunk) => {
-        const { loadData } = get()
-        const data = await writeData('providers', chunk)
+    addMany: async (providers) => {
+        await providersFacade.createMany(providers.map(toDatabase));
+        await get().loadData();
+    },
 
-        set({ providerData: data })
-        await loadData()
-    }
-}))
+    modifyProvider: async (id, patch) => {
+        const updated = await providersFacade.update(id, toDatabase(patch));
+        if (!updated) throw new Error(`No se encontró el proveedor ${id}.`);
+        await get().loadData();
+    },
 
-export default useProviderStore
+    deleteProvider: async (id) => {
+        const removed = await providersFacade.remove(id);
+        if (!removed) throw new Error(`No se encontró el proveedor ${id}.`);
+        await get().loadData();
+    },
+
+    deleteMany: async (ids) => {
+        await providersFacade.removeMany(ids);
+        await get().loadData();
+    },
+
+    addNote: async (providerId, note) => {
+        await notesFacade.create("provider", providerId, note);
+        await get().loadData();
+    },
+
+    deleteNote: async (noteId) => {
+        await notesFacade.remove(noteId);
+        await get().loadData();
+    },
+}));
+
+export default useProviderStore;

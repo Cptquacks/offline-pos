@@ -55,6 +55,12 @@ export function addDays(dateStr, days) {
  */
 export function normalizeExcelDate(excelDateStr) {
     if (!excelDateStr || typeof excelDateStr !== 'string') return null
+    const isoDate = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(excelDateStr)
+    if (isoDate) {
+        const [, year, month, day] = isoDate
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+    }
+
     const parts = excelDateStr.split('/')
     if (parts.length !== 3) return null
 

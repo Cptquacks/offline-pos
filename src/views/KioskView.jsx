@@ -8,7 +8,6 @@ import SearchBar from "../components/SearchBar"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faReceipt, faShoppingCart } from "@fortawesome/free-solid-svg-icons"
 import CartItem from "../components/CartItem"
-import { registerRefund, registerSell } from "../utils/ticket-util"
 import useTraceStore from "../stores/traceStore"
 import DropdownMenu from "../components/DropdownMenu"
 import useTagStore from "../stores/tagStore"
@@ -19,11 +18,11 @@ import useAlertStore from "../stores/alertStore"
 import ErrorToast from "../components/ErrorToast"
 
 function KioskView() {
-    const { productData, loadData, adjustStock } = useProductStore()
-    const { ticketData, loadData: loadTickets, addTicket, cleanTickets } = useTicketStore()
+    const { productData, loadData } = useProductStore()
+    const { ticketData, loadData: loadTickets, addSale, addRefund, cleanTickets } = useTicketStore()
     const { tagList, loadTags } = useTagStore()
     const { addAlert } = useAlertStore()
-    const { addSell, addRefund } = useTraceStore()
+    const { ensureToday, loadData: loadTraces } = useTraceStore()
 
     const [scroll, setScroll] = useState(0)
     const tags = useMemo(() => {
@@ -54,7 +53,7 @@ function KioskView() {
         return result
     }, [query, filter, productData])
 
-    const handleAddToCart = (product, amount) => {
+    const handleAddToCart = async (product, amount) => {
         const quantity = Number(amount)
         const alreadyInCart = cartItems
             .filter((item) => item.id === product.id)
@@ -65,6 +64,12 @@ function KioskView() {
             return
         }
 
+        try {
+            await ensureToday()
+        } catch (error) {
+            addAlert(<ErrorToast label={error instanceof Error ? error.message : "No se pudo preparar la traza de hoy."} />)
+            return
+        }
         setCartItems((items) => [...items, { ...product, cart: quantity }])
     }
 
@@ -82,13 +87,13 @@ function KioskView() {
             }
         }
 
-        await addTicket(registerSell(cartItems))
-        await addSell(cartItems)
-
-        for (const [productId, amount] of soldAmounts) {
-            await adjustStock(productId, -amount)
+        try {
+            await addSale(cartItems)
+        } catch (error) {
+            addAlert(<ErrorToast label={error instanceof Error ? error.message : "No se pudo completar la venta."} />)
+            return
         }
-
+        await loadData()
         setCartItems([])
     }
 
@@ -99,14 +104,19 @@ function KioskView() {
      */
     const handleRefund = async (data, amount) => {
 
-        await addTicket(registerRefund(data, amount))
-        await addRefund(data, amount)
-        await adjustStock(data.id, Number(amount))
+        try {
+            await addRefund(data, amount)
+        } catch (error) {
+            addAlert(<ErrorToast label={error instanceof Error ? error.message : "No se pudo registrar la devolución."} />)
+            return
+        }
+        await loadData()
     }
 
     useEffect(() => {
         loadData()
         loadTickets()
+        loadTraces()
         loadTags()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -183,7 +193,7 @@ function KioskView() {
                         <DefaultButton
                             label="Vender"
                             icon="check"
-                            onClick={() => setCartItems([])}
+                            onClick={handleSell}
                             customColor="bg-green-600"
                             disabled={cartItems.length === 0}
                         />
@@ -191,7 +201,7 @@ function KioskView() {
                         <DefaultButton
                             label="Limpiar"
                             icon="brush"
-                            onClick={handleSell}
+                            onClick={() => setCartItems([])}
                             customColor="bg-red-600"
                             inversedIcon
                         />

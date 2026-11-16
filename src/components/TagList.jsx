@@ -10,12 +10,12 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
     const [newItem, setNewItem] = useState('')
     const [selectedIndexes, setSelectedIndexes] = useState([])
 
-    const handleSelection = (index) => {
-        if (selectedIndexes.includes(index)) {
-            setSelectedIndexes(prev => prev.filter(entry => entry != index))
+    const handleSelection = (id) => {
+        if (selectedIndexes.includes(id)) {
+            setSelectedIndexes(prev => prev.filter(entry => entry !== id))
             return
         }
-        setSelectedIndexes(prev => ([...prev, index]))
+        setSelectedIndexes(prev => ([...prev, id]))
     }
 
     return (
@@ -55,7 +55,11 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
                 p-2! gap-3
                 rounded-sm
                 border border-white/20
-                " onSubmit={() => onAdd(newItem)}>
+                " onSubmit={(event) => {
+                    event.preventDefault()
+                    onAdd(newItem)
+                    setNewItem('')
+                }}>
                     <input
                         className="
                         items-center self-stretch 
@@ -91,14 +95,14 @@ function TagList({ label, elements, icon, onAdd, onDelete, onModified }) {
 
                 {elements && elements.map((element, index) =>
                     <TagListWrapper
-                        key={index}
+                        key={element.id ?? index}
                         color={element.color ?? null}
-                        isSelected={selectedIndexes.includes(index)}
+                        isSelected={selectedIndexes.includes(element.id)}
 
                         onSelected={() => {
-                            handleSelection(index)
+                            handleSelection(element.id)
                         }}
-                        onColorSelected={data => onModified({ name: element.name, color: data }, index)}
+                        onColorSelected={data => onModified({ name: element.name, color: data }, element.id)}
                     >
                         <TagItem
                             label={element.name ?? element}

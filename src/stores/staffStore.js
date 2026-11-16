@@ -1,72 +1,92 @@
 import { create } from "zustand";
-import { loadData, updateData, writeData } from "../utils/storage-util";
+import * as staffFacade from "../facades/staff-facade";
+import * as notesFacade from "../facades/notes-facade";
 
-/**
- * @typedef {Object} staffStore
- * @property {Array} staffData
- * @property {number} salaryWaste
- * @property {() => Promise<void>} loadData
- * @property {(staff: Object) => Promise<void>} addStaff
- * @property {(staff: Object, index: number) => Promise<void>} modifyStaff
- * @property {(target: number) => Promise<void>} deleteStaff
- * @property {(chunk: Array) => Promise<void>} overwriteFile
- */
+function fromDatabase(member) {
+    return {
+        ...member,
+        ID: member.uid,
+        charge: member.role,
+        startDate: member.startedAt,
+        endDate: member.endsAt,
+        contact: member.contacts?.map((contact) => contact.phone).join(", ") ?? "",
+        notes: member.notes ?? [],
+    };
+}
 
-/** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<staffStore>>} */
+function toDatabase(member) {
+    const {
+        ID, charge, startDate, endDate, contact, contacts: _contacts, notes: _notes,
+        index: _index, id: _id, createdAt: _createdAt, ...rest
+    } = member;
+    if (ID === undefined || ID === null || String(ID).trim() === "") {
+        throw new Error("El carnet de identidad es obligatorio.");
+    }
+    return {
+        ...rest,
+        uid: String(ID ?? ""),
+        role: charge || null,
+        startedAt: startDate || null,
+        endsAt: endDate || null,
+        salary: Number(member.salary) || 0,
+        currency: member.currency || "CUP",
+        contacts: contact ? [{ phone: String(contact) }] : [],
+    };
+}
+
+function setStaff(set, records) {
+    const staffData = records.map(fromDatabase);
+    set({
+        staffData,
+        salaryWaste: staffData.reduce((total, member) => total + Number(member.salary || 0), 0),
+    });
+}
+
 const useStaffStore = create((set, get) => ({
     staffData: [],
     salaryWaste: 0,
 
-    loadData: async () => {
-        const data = await loadData('staff')
+    loadData: async () => setStaff(set, await staffFacade.listAll(true)),
 
-        let total = 0
-        data.forEach(member => total += parseFloat(member.salary));
-
-        set({ staffData: data, salaryWaste: total })
+    addStaff: async (member) => {
+        const created = await staffFacade.create(toDatabase(member));
+        if (!created) throw new Error("No se pudo crear el empleado.");
+        await get().loadData();
     },
 
-    addStaff: async (staff) => {
-        const { salaryWaste } = get()
-        const data = await updateData('staff', staff)
-
-        const total = salaryWaste + parseFloat(staff.salary)
-        set({ staffData: data, salaryWaste: total })
+    addMany: async (members) => {
+        await staffFacade.createMany(members.map(toDatabase));
+        await get().loadData();
     },
 
-    modifyStaff: async (staff, index) => {
-        const { staffData, salaryWaste } = get()
-        const updatedData = [...staffData]
-
-        const cleanStaff = Object.fromEntries(
-            Object.entries(staff).filter(([key]) => !['index'].includes(key))
-        )
-        updatedData[index] = cleanStaff
-
-        const data = await writeData('staff', updatedData)
-        const total = salaryWaste + parseFloat(staff.salary)
-
-        set({ staffData: data, salaryWaste: total })
+    modifyStaff: async (id, patch) => {
+        const updated = await staffFacade.update(id, toDatabase(patch));
+        if (!updated) throw new Error(`No se encontró el empleado ${id}.`);
+        await get().loadData();
     },
 
-    deleteStaff: async (target) => {
-        const { staffData, salaryWaste } = get()
-        let updatedData = [...staffData]
-
-        const total = salaryWaste - parseFloat(updatedData[target].salary)
-        updatedData = updatedData.filter((_, index) => index !== target)
-
-        const data = await writeData('staff', updatedData)
-
-        set({ staffData: data, salaryWaste: total })
+    deleteStaff: async (id) => {
+        const removed = await staffFacade.remove(id);
+        if (!removed) throw new Error(`No se encontró el empleado ${id}.`);
+        await get().loadData();
     },
 
-    overwriteFile: async (chunk) => {
-        const { loadData } = get()
-        const data = await writeData('staff', chunk)
-        set({ staffData: data })
-        await loadData()
-    }
-}))
+    deleteMany: async (ids) => {
+        await staffFacade.removeMany(ids);
+        await get().loadData();
+    },
 
-export default useStaffStore
+    addNote: async (staffId, note) => {
+        await notesFacade.create("staff", staffId, note);
+        await get().loadData();
+    },
+
+    deleteNote: async (noteId) => {
+        await notesFacade.remove(noteId);
+        await get().loadData();
+    },
+
+    overwriteFile: async (members) => get().addMany(members),
+}));
+
+export default useStaffStore;

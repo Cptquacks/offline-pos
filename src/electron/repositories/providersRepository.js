@@ -1,14 +1,16 @@
-import { eq } from "drizzle-orm";
-import { providers } from "../db/schema.js";
+import { eq, inArray } from "drizzle-orm";
+import { contacts, providers } from "../db/schema.js";
 import { getDb } from "../services/dbService.js";
 
 const providerRelations = {
     contacts: true,
+    notes: true,
 };
 
 export function listAll(withRelations = false) {
     const db = getDb();
     return db.query.providers.findMany({
+        orderBy: { createdAt: "desc" },
         with: withRelations ? providerRelations : undefined,
     });
 }
@@ -67,20 +69,61 @@ export function findByEndsAt(endsAt, withRelations = false) {
 
 export function create(provider) {
     const db = getDb();
-    return db.insert(providers).values(provider).returning().get();
+    const { contacts: providerContacts = [], ...values } = provider;
+    return db.transaction((tx) => {
+        const created = tx.insert(providers).values(values).returning().get();
+        for (const contact of providerContacts) {
+            tx.insert(contacts).values({ ...contact, providerId: created.id }).run();
+        }
+        return tx.query.providers.findFirst({
+            where: (row, { eq }) => eq(row.id, created.id),
+            with: providerRelations,
+        });
+    });
+}
+
+export function createMany(providerList) {
+    if (!Array.isArray(providerList) || providerList.length === 0) return [];
+    const db = getDb();
+    return db.transaction((tx) => providerList.map((provider) => {
+        const { contacts: providerContacts = [], ...values } = provider;
+        const created = tx.insert(providers).values(values).returning().get();
+        for (const contact of providerContacts) {
+            tx.insert(contacts).values({ ...contact, providerId: created.id }).run();
+        }
+        return created;
+    }));
 }
 
 export function update(id, patch) {
-    const { id: _id, createdAt: _createdAt, ...safe } = patch;
+    const { id: _id, createdAt: _createdAt, contacts: providerContacts, ...safe } = patch;
     const db = getDb();
-    return db.update(providers)
-        .set(safe)
-        .where(eq(providers.id, id))
-        .returning()
-        .get();
+    return db.transaction((tx) => {
+        const updated = tx.update(providers)
+            .set(safe)
+            .where(eq(providers.id, id))
+            .returning()
+            .get();
+        if (!updated) return undefined;
+        if (providerContacts !== undefined) {
+            tx.delete(contacts).where(eq(contacts.providerId, id)).run();
+            for (const contact of providerContacts) {
+                tx.insert(contacts).values({ ...contact, providerId: id }).run();
+            }
+        }
+        return tx.query.providers.findFirst({
+            where: (row, { eq }) => eq(row.id, id),
+            with: providerRelations,
+        });
+    });
 }
 
 export function remove(id) {
     const db = getDb();
     return db.delete(providers).where(eq(providers.id, id)).returning().get();
+}
+
+export function removeMany(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) return [];
+    return getDb().delete(providers).where(inArray(providers.id, ids)).returning().all();
 }

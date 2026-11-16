@@ -131,7 +131,8 @@ export function mostSoldProducts(productsArray, top = 5) {
 
     const productsWithSales = productsArray.map(product => ({
         ...product,
-        sold: (product.ticketItems ?? []).reduce((total, item) => total + item.amount, 0)
+        sold: (product.ticketItems ?? []).reduce((total, item) =>
+            total + (item.ticket?.kind === 'refund' ? 0 : item.amount), 0)
     }));
 
     const sorted = productsWithSales.sort((a, b) => b.sold - a.sold);

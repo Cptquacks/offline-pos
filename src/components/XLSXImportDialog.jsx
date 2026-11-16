@@ -5,6 +5,7 @@ import useAlertStore from "../stores/alertStore"
 import ErrorToast from "./ErrorToast"
 import ColumnSelector from "./ColumnSelector"
 import { normalizeExcelDate } from "../utils/date-util"
+import { stringSimilarity } from "../utils/string-util"
 import useDialogStore from "../stores/dialogStore"
 import DefaultButton from "./DefaultButton"
 
@@ -56,8 +57,9 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
 
     const readyToImport = useMemo(() => {
         const requiredFields = programFields.filter(f => !optionalFields.includes(f.key));
-        return requiredFields.every(f => f.value !== null && f.value !== 'null');
-    }, [programFields, optionalFields]);
+        return fileData.data.length > 0 &&
+            requiredFields.every(f => f.value !== null && f.value !== undefined && f.value !== 'null');
+    }, [fileData.data.length, programFields, optionalFields]);
 
     const handleImport = async () => {
         const result = await importFile()
@@ -79,6 +81,17 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
         setProgramFields(transformedFields)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (fileData.columns.length === 0) return
+        setProgramFields((fields) => fields.map((field, index) => {
+            const bestMatch = fileData.columns
+                .map((column) => ({ column, similarity: stringSimilarity(column, previewFields[index]) }))
+                .filter((entry) => entry.similarity >= 0.75)
+                .sort((a, b) => b.similarity - a.similarity)[0]?.column ?? "null"
+            return { ...field, value: bestMatch }
+        }))
+    }, [fileData.columns, previewFields])
 
     return (
         <div className="
@@ -203,6 +216,7 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
                                 key={index}
                                 label={field}
                                 columns={fileData.columns}
+                                value={programFields[index]?.value}
                                 optional={optionalFields.includes(programFields[index]?.key)}
 
                                 onSelected={data => {
@@ -246,17 +260,16 @@ function XLSXImportDialog({ model, optionalFields, onImport, previewComponent: P
                 <DefaultButton
                     label="Importar"
                     icon="file-import"
-                    onClick={() => {
-                        let result = resultantData
-                        result.forEach(item => {
-                            Object.keys(model).forEach(entry => {
-                                if (previewFields.some(field => field === item[entry]))
-                                    item[entry] = null
-                            })
-                        })
-
-                        onImport(result)
-                        closeDialog()
+                    onClick={async () => {
+                        try {
+                            await onImport(resultantData)
+                            closeDialog()
+                        } catch (error) {
+                            console.error("No se pudieron importar los datos XLSX:", error)
+                            addAlert(
+                                <ErrorToast label="No se pudieron importar los datos del archivo" />
+                            )
+                        }
                     }}
                     disabled={!readyToImport}
                 />

@@ -22,8 +22,19 @@ import SearchBarWrapper from "../components/SearchBarWrapper"
 import DeleteButton from "../components/DeleteButton"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
+function parseImportedActive(value, fallback) {
+    if (value === undefined || value === null || value === "") return fallback;
+    if (typeof value === "boolean") return value;
+    if (typeof value === "number") return value !== 0;
+
+    const normalized = String(value).trim().toLowerCase();
+    if (["true", "1", "yes", "y", "si", "sí", "activo", "active"].includes(normalized)) return true;
+    if (["false", "0", "no", "n", "inactivo", "inactive"].includes(normalized)) return false;
+    throw new Error(`Valor de estado activo no válido: ${value}`);
+}
+
 function ProvidersView() {
-    const { providerData, loadData, addProvider, modifyProvider, deleteProvider, overwriteData } = useProviderStore()
+    const { providerData, loadData, addProvider, addMany, modifyProvider, deleteProvider, deleteMany, addNote, deleteNote } = useProviderStore()
     const { openDialog, closeDialog } = useDialogStore()
 
     const today = new Date().toLocaleDateString('sv-SE')
@@ -72,30 +83,31 @@ function ProvidersView() {
      * 
      * @param {Array} importedData 
      */
-    const handleImportation = (importedData) => {
+    const handleImportation = async (importedData) => {
         setLoading(true)
         setLoadValue({ current: 0, total: importedData.length })
 
-        importedData.forEach(fragment => {
-            fragment.waste = parseFloat(fragment.waste)
-            fragment.currency ? fragment.currency : fragment.currency = "CUP"
+        try {
+            importedData.forEach(fragment => {
+                fragment.waste = parseFloat(fragment.waste)
+                fragment.currency ? fragment.currency : fragment.currency = "CUP"
 
-            fragment.startedAt ? fragment.startedAt : fragment.startedAt = getToday()
-            fragment.span ? fragment.span = parseInt(fragment.span) : fragment.span = 31
+                fragment.startedAt ? fragment.startedAt : fragment.startedAt = getToday()
+                fragment.span ? fragment.span = parseInt(fragment.span) : fragment.span = 31
 
-            const isExpired = daysFromToday(addDays(fragment.startedAt, fragment.span))
-            fragment.active ? fragment.active : fragment.active = !isExpired
+                const isActive = daysFromToday(addDays(fragment.startedAt, fragment.span)) > 0
+                fragment.active = parseImportedActive(fragment.active, isActive) && isActive
 
-            fragment.contactData ? fragment.contactData = [{ value: `${fragment.contactData}` }] : fragment.contactData = []
-            fragment.notes ? fragment.notes : fragment.notes = []
+                fragment.contactData ? fragment.contactData = [{ value: `${fragment.contactData}` }] : fragment.contactData = []
+                fragment.notes ? fragment.notes : fragment.notes = []
 
-            setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
-        });
+                setLoadValue(prev => ({ ...prev, current: prev.current + 1 }))
+            });
 
-        const result = [...providerData, ...importedData]
-        overwriteData(result)
-
-        setLoading(false)
+            await addMany(importedData)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const handleRebuyAll = () => {
@@ -108,6 +120,7 @@ function ProvidersView() {
             provider :
             ({
                 ...provider,
+                active: true,
                 startedAt: (() => {
                     const restockDate = addDays(provider.startedAt, provider.span)
                     const newSpan = daysBetween(today, restockDate)
@@ -118,7 +131,14 @@ function ProvidersView() {
             })
         )
         setLoading(true)
-        await overwriteData(updatedData).then(() => setLoading(false))
+        for (const provider of updatedData.filter((item) => !item.active)) {
+            const current = providerData.find((item) => item.id === provider.id)
+            if (current && provider.startedAt !== current.startedAt) {
+                await modifyProvider(provider.id, provider)
+            }
+        }
+        await loadData()
+        setLoading(false)
     }
 
     useEffect(() => {
@@ -234,7 +254,7 @@ function ProvidersView() {
                                 label={'Seleccionar todos'}
                                 onClick={() => {
                                     setSelecting(true)
-                                    selectedIndexes(providerData.map((_, i) => i))
+                                    selectedIndexes(providerData.map((provider) => provider.id))
                                 }}
                             />}
                             {isSelecting && <DeleteButton
@@ -242,11 +262,9 @@ function ProvidersView() {
                                 onDelete={async () => {
                                     setLoading(true);
                                     (async () => {
-                                        await overwriteData(providerData.filter((_, i) => !indexes.includes(i)))
-                                            .then(() => {
-                                                setLoading(false)
-                                                selectedIndexes([])
-                                            })
+                                        await deleteMany(indexes)
+                                        setLoading(false)
+                                        selectedIndexes([])
                                     })()
                                 }}
                             />}
@@ -265,22 +283,27 @@ function ProvidersView() {
                             optionalFields={["startedAt", "span", "active", "contactData", "currency"]}
                             title={"Importar"}
                             onImport={data => handleImportation(data)}
-                            previewComponent={({ data }) =>
-                                <StandardItemCard
-                                    icon="handshake-alt"
-                                    title={data.name}
-                                    salaryDisplay={data.waste}
-                                    startDate={data.startedAt}
-                                    endDate={addDays(data.startedAt, data.span)}
+                            previewComponent={({ data }) => {
+                                const startDate = data.startedAt || today
+                                const parsedSpan = Number.parseInt(data.span, 10)
+                                const span = Number.isNaN(parsedSpan) ? 31 : parsedSpan
 
-                                    tagItem={
-                                        <ActiveDisplay
-                                            isActive={data.active}
-                                        />
-                                    }
-                                    isOnPreview
-                                />
-                            }
+                                return (
+                                    <StandardItemCard
+                                        icon="handshake-alt"
+                                        title={data.name}
+                                        salaryDisplay={data.waste}
+                                        startDate={startDate}
+                                        endDate={addDays(startDate, span)}
+                                        tagItem={
+                                            <ActiveDisplay
+                                                isActive={data.active}
+                                            />
+                                        }
+                                        isOnPreview
+                                    />
+                                )
+                            }}
                             exportData={exportedData}
                         />
                     </div>
@@ -301,13 +324,13 @@ function ProvidersView() {
                                 key={index}
                                 canSelect={isSelecting}
                                 onSelect={() => {
-                                    if (indexes.includes(index)) {
-                                        selectedIndexes(prev => prev.filter(item => item !== index))
+                                    if (indexes.includes(provider.id)) {
+                                        selectedIndexes(prev => prev.filter(item => item !== provider.id))
                                         return
                                     }
-                                    selectedIndexes(prev => [...prev, index])
+                                    selectedIndexes(prev => [...prev, provider.id])
                                 }}
-                                isSelected={indexes.includes(index)}
+                                isSelected={indexes.includes(provider.id)}
                             >
                                 <StandardItemCard
                                     icon="handshake-alt"
@@ -333,20 +356,14 @@ function ProvidersView() {
 
                                                 setOpened(result)
                                             }}
-                                            addNote={value => modifyProvider(
-                                                { ...provider, notes: [...provider.notes, value] },
-                                                index
-                                            )}
+                                            addNote={value => addNote(provider.id, value)}
                                         />
                                     }
                                     noteData={provider.notes ?? []}
                                     notesOpen={notesOpened.includes(index)}
                                     onNoteDelete={async (note) => {
-                                        let notes = [...provider.notes]
-                                        notes = notes.filter((_, i) => i !== note)
-
                                         setLoading(true)
-                                        await modifyProvider({ ...provider, notes: notes }, index)
+                                        await deleteNote(note.id)
                                             .then(() => setLoading(false))
                                     }}
 
@@ -356,12 +373,10 @@ function ProvidersView() {
                                             label={'Renovar'}
                                             icon={'sync'}
                                             onClick={() =>
-                                                modifyProvider(
-                                                    //NOTE provider modification
+                                                modifyProvider(provider.id,
                                                     {
                                                         ...provider,
-
-                                                        //NOTE Inline function
+                                                        active: true,
                                                         startedAt: (() => {
                                                             const restockDate = addDays(provider.startedAt, provider.span)
                                                             const newSpan = daysBetween(today, restockDate)
@@ -369,19 +384,18 @@ function ProvidersView() {
                                                             const finalDate = addDays(provider.startedAt, provider.span - newSpan)
                                                             return finalDate
                                                         })()
-                                                    },
-                                                    index
+                                                    }
                                                 )
                                             }
                                         />
                                     }
 
                                     salaryDisplay={`${provider.waste} ${provider.currency}`}
-                                    onDelete={() => deleteProvider(index)}
+                                    onDelete={() => deleteProvider(provider.id)}
 
                                     onEdit={() => openDialog(
                                         <StandarNewItemDialog
-                                            additionCallback={data => modifyProvider({ ...provider, ...data }, index)}
+                                            additionCallback={data => modifyProvider(provider.id, { ...provider, ...data })}
                                             fileFields={[
                                                 { 'name': 'text' },
                                                 { 'waste': 'number' },

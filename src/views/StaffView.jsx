@@ -26,7 +26,7 @@ import AlertDialog from "../components/AlertDialog"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function StaffView() {
-    const { staffData, loadData, addStaff, modifyStaff, overwriteFile, deleteStaff } = useStaffStore()
+    const { staffData, loadData, addStaff, addMany, modifyStaff, deleteStaff, deleteMany, addNote, deleteNote } = useStaffStore()
     const { roleList, addRole, loadRoles } = useRoleStore()
     const { openDialog, closeDialog } = useDialogStore()
 
@@ -109,11 +109,11 @@ function StaffView() {
             await addRole({ name: newRoles[index], color: randomLCH() })
         }
 
-        const result = [...staffData, ...importedData]
-        overwriteFile(result)
-
-        loadRoles()
-        setLoading(false)
+        try {
+            await addMany(importedData)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
@@ -191,7 +191,7 @@ function StaffView() {
                                         additionCallback={data => addStaff(data)}
                                         fileFields={[
                                             { 'name': 'name' },
-                                            { 'ID': 'number' },
+                                            { 'ID': 'text' },
                                             { 'salary': 'number' },
                                             { 'currency': 'currency' },
                                             { 'charge': 'tag-roles' },
@@ -238,7 +238,7 @@ function StaffView() {
                                 label={'Seleccionar todos'}
                                 onClick={() => {
                                     setSelecting(true)
-                                    selectedIndexes(staffData.map((_, i) => i))
+                                    selectedIndexes(staffData.map((member) => member.id))
                                 }}
                             />}
                             {isSelecting && <DeleteButton
@@ -246,11 +246,9 @@ function StaffView() {
                                 onDelete={async () => {
                                     setLoading(true);
                                     (async () => {
-                                        await overwriteFile(staffData.filter((_, i) => !indexes.includes(i)))
-                                            .then(() => {
-                                                setLoading(false)
-                                                selectedIndexes([])
-                                            })
+                                        await deleteMany(indexes)
+                                        setLoading(false)
+                                        selectedIndexes([])
                                     })()
                                 }}
                             />}
@@ -268,7 +266,7 @@ function StaffView() {
                                 "startDate": "Inicio decontrato",
                                 "endDate": "Fin de contrato"
                             }}
-                            optionalFields={["currency", "charge", "contact", "ID", "startDate", "endDate"]}
+                            optionalFields={["currency", "charge", "contact", "startDate", "endDate"]}
                             title="Importar"
                             onImport={data => handleImportation(data)}
                             previewComponent={({ data }) =>
@@ -307,13 +305,13 @@ function StaffView() {
                                 key={index}
                                 canSelect={isSelecting}
                                 onSelect={() => {
-                                    if (indexes.includes(index)) {
-                                        selectedIndexes(prev => prev.filter(item => item !== index))
+                                    if (indexes.includes(member.id)) {
+                                        selectedIndexes(prev => prev.filter(item => item !== member.id))
                                         return
                                     }
-                                    selectedIndexes(prev => [...prev, index])
+                                    selectedIndexes(prev => [...prev, member.id])
                                 }}
-                                isSelected={indexes.includes(index)}
+                                isSelected={indexes.includes(member.id)}
                             >
                                 <StandardItemCard
                                     icon="user"
@@ -345,13 +343,7 @@ function StaffView() {
                                     notesDisplay={
                                         <NotesControlPanel
                                             addNote={
-                                                data => modifyStaff(
-                                                    {
-                                                        ...member,
-                                                        notes: [...member.notes, data]
-                                                    },
-                                                    index
-                                                )
+                                                data => addNote(member.id, data)
                                             }
                                             data={member}
                                             handleOpen={(isOpen) => {
@@ -369,18 +361,13 @@ function StaffView() {
                                     }
                                     notesOpen={notesIndex.includes(index)}
                                     noteData={member.notes}
-                                    onNoteDelete={note => modifyStaff(
-                                        {
-                                            ...member,
-                                            notes: member.notes.filter((_, i) => i !== note)
-                                        }, index
-                                    )}
-                                    onDelete={() => deleteStaff(index)}
+                                    onNoteDelete={note => deleteNote(note.id)}
+                                    onDelete={() => deleteStaff(member.id)}
                                     onEdit={() => openDialog(
                                         <StandarNewItemDialog
                                             fileFields={[
                                                 { 'name': 'name' },
-                                                { 'ID': 'number' },
+                                                { 'ID': 'text' },
                                                 { 'salary': 'number' },
                                                 { 'currency': 'currency' },
                                                 { 'charge': 'tag-roles' },
@@ -402,7 +389,7 @@ function StaffView() {
                                             label={'empleado'}
                                             optionalFields={['endDate', 'contact']}
                                             currentFieldData={member}
-                                            additionCallback={data => modifyStaff({ ...member, ...data }, index)}
+                                            additionCallback={data => modifyStaff(member.id, { ...member, ...data })}
                                         />
                                     )}
                                     missingData={(() => {

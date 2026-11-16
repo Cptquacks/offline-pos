@@ -1,29 +1,6 @@
-import { useEffect, useRef, useState } from "react"
 import TagItem from "./TagItem"
-import { stringSimilarity } from "../utils/string-util"
 
-function ColumnSelector({ label, columns, onSelected, optional = false }) {
-    const [currentColumn, setCurrentColumn] = useState("null")
-    const onSelectedRef = useRef(onSelected);
-    useEffect(() => {
-        onSelectedRef.current = onSelected
-    }, [onSelected])
-
-    const handleSelection = (selection) => {
-        onSelected(selection)
-        setCurrentColumn(selection)
-    }
-
-    useEffect(() => {
-        if (columns.length === 0) return
-        let filteredColumns = columns.filter(entry => stringSimilarity(entry, label) >= 0.75)
-        filteredColumns = filteredColumns.sort((a, b) => stringSimilarity(a, label) - stringSimilarity(b, label))
-
-        setCurrentColumn(filteredColumns[0])
-        onSelectedRef.current(filteredColumns[0])
-
-    }, [columns, label])
-
+function ColumnSelector({ label, columns, onSelected, optional = false, value = "null" }) {
     return (
         <div className="
         flex flex-col
@@ -45,8 +22,8 @@ function ColumnSelector({ label, columns, onSelected, optional = false }) {
 
             <select
                 className="bg-(--bg-alt)"
-                value={currentColumn}
-                onChange={event => handleSelection(event.target.value)}
+                value={value ?? "null"}
+                onChange={event => onSelected(event.target.value)}
                 name="column-selector">
                 <option value="null">Sin asignar</option>
                 {columns.map((column, index) =>

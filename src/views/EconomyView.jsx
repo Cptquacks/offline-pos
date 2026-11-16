@@ -324,7 +324,7 @@ function EconomyView() {
      * Importation
      * @param {Array} importedData
      */
-    const handleImportation = (importedData) => {
+    const handleImportation = async (importedData) => {
         setLoading(true)
         setLoadValue({ current: 0, total: importedData.length })
 
@@ -350,9 +350,11 @@ function EconomyView() {
 
 
         const result = [...traceData, ...transformedData]
-        overwriteTrace(result)
-
-        setLoading(false)
+        try {
+            await overwriteTrace(result)
+        } finally {
+            setLoading(false)
+        }
     }
 
     /**

@@ -15,7 +15,7 @@ function SettingsView() {
     const { preferenceData, loadData, setPreference } = usePreferenceStore()
     const { roleList, loadRoles, deleteRoles, addRole, modifyRole } = useRoleStore()
     const { tagList, loadTags, deleteTags, addTag, modifyTag } = useTagStore()
-    const { currencyList, loadData: loadCurrencies, addCurrency, deleteCurrency } = useCurrencyStore()
+    const { currencyData, loadData: loadCurrencies, addCurrency, deleteCurrency } = useCurrencyStore()
     const { openDialog, closeDialog } = useDialogStore()
 
     const [isLoading, setLoading] = useState(false)
@@ -79,14 +79,12 @@ function SettingsView() {
 
                         onAdd={data => {
                             addTag({ name: data, color: randomLCH() })
-                            loadTags()
                         }}
                         onDelete={(data) => {
                             deleteTags(data)
                         }}
                         onModified={(data, index) => {
                             modifyTag(data, index)
-                            loadTags()
                         }}
                     />
 
@@ -110,19 +108,17 @@ function SettingsView() {
 
                         onAdd={data => {
                             addRole({ name: data, color: randomLCH() })
-                            loadRoles()
                         }}
                         onDelete={(data) => {
                             deleteRoles(data)
                         }}
                         onModified={(data, index) => {
                             modifyRole(data, index)
-                            loadRoles()
                         }} />
 
                     <TagList
                         label="Monedas"
-                        elements={currencyList}
+                        elements={currencyData}
                         icon="dollar-sign"
                         onAdd={data => addCurrency(data)}
                         onDelete={data => deleteCurrency(data)} />

@@ -118,9 +118,9 @@ function StandardItemCard({
                 >
                     {noteData.map((note, index) =>
                         <NoteItem
-                            key={index}
+                            key={note.id ?? index}
                             data={note}
-                            onDelete={() => onNoteDelete(index)}
+                            onDelete={() => onNoteDelete(note)}
                         />
                     )}
                 </div>

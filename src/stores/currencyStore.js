@@ -1,33 +1,35 @@
 import { create } from "zustand";
-import { loadData, updateData, writeData } from "../utils/storage-util";
+import * as tagsFacade from "../facades/tags-facade";
 
-/**
- * @typedef currencyStore
- * @property {Array<String>} currencyList
- * @property {() => Promise<void>} loadData
- * @property {(currency: String) => Promise<void>} addCurrency
- * @property {(indexes: Array<Number>) => Promise<void>} deleteCurrency
- */
-/**@type {import("zustand").UseBoundStore<import("zustand").StoreApi<currencyStore>>} */
-
+const CURRENCY_TYPE = 2;
 
 const useCurrencyStore = create((set, get) => ({
     currencyList: [],
+    currencyData: [],
 
     loadData: async () => {
-        const data = await loadData('currencies')
-        set({ currencyList: data })
+        const currencyData = await tagsFacade.listByType(CURRENCY_TYPE);
+        set({
+            currencyData,
+            currencyList: currencyData.map((currency) => currency.name),
+        });
     },
-    addCurrency: async (currency) => {
-        const data = await updateData('currencies', currency)
-        set({ currencyList: data })
-    },
-    deleteCurrency: async (indexes) => {
-        const { currencyList } = get()
-        const updateData = [...currencyList]
-        const data = await writeData('currencies', updateData.filter((_, index) => !indexes.includes(index)))
-        set({ currencyList: data })
-    }
-}))
 
-export default useCurrencyStore
+    addCurrency: async (name) => {
+        const normalized = String(name).trim().toUpperCase();
+        if (!/^[A-Z]{3}$/.test(normalized)) {
+            throw new Error("La moneda debe ser un código de tres letras.");
+        }
+        const exists = get().currencyData.some((currency) => currency.name === normalized);
+        if (exists) return;
+        await tagsFacade.create({ name: normalized, type: CURRENCY_TYPE, color: null });
+        await get().loadData();
+    },
+
+    deleteCurrency: async (ids) => {
+        await tagsFacade.removeMany(ids);
+        await get().loadData();
+    },
+}));
+
+export default useCurrencyStore;

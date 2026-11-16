@@ -1,5 +1,5 @@
 import { sql, defineRelations } from "drizzle-orm";
-import { sqliteTable, text, integer, real, unique } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, unique, check } from "drizzle-orm/sqlite-core";
 
 // Models
 export const products = sqliteTable('products', {
@@ -37,6 +37,7 @@ export const providers = sqliteTable('providers', {
     currency: text('currency').notNull(),
     startedAt: text('started_at'),
     endsAt: text('ends_at'),
+    span: integer('span').notNull().default(31),
     active: integer('active').notNull().default(1),
     createdAt: integer('created_at', { mode: 'timestamp_ms' })
         .notNull().default(sql`(unixepoch() * 1000)`)
@@ -45,6 +46,9 @@ export const providers = sqliteTable('providers', {
 export const traces = sqliteTable('traces', {
     id: integer('id').primaryKey({ autoIncrement: true }),
     date: text('date').notNull(),
+    refunds: integer('refunds').notNull().default(0),
+    sells: integer('sells').notNull().default(0),
+    total: text('total', { mode: 'json' }).notNull().default({}),
     isClosed: integer('is_closed').notNull().default(0),
     createdAt: integer('created_at', { mode: 'timestamp_ms' })
         .notNull().default(sql`(unixepoch() * 1000)`)
@@ -56,6 +60,8 @@ export const tickets = sqliteTable('tickets', {
         .notNull()
         .references(() => traces.id, { onDelete: 'cascade' }),
     total: real('total').notNull().default(0),
+    kind: text('kind').notNull().default('sale'),
+    archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
     isClosed: integer('is_closed').notNull().default(0),
     createdAt: integer('created_at', { mode: 'timestamp_ms' })
         .notNull().default(sql`(unixepoch() * 1000)`)
@@ -73,6 +79,8 @@ export const ticketItems = sqliteTable('ticket_items', {
     unitPrice: real('unit_price').notNull(),
     subTotal: real('sub_total').notNull(),
     transactionCurrency: text('transaction_currency').notNull(),
+    originalTicketItemId: integer('original_ticket_item_id')
+        .references(() => ticketItems.id, { onDelete: 'restrict' }),
 })
 
 export const tag = sqliteTable('tags', {
@@ -99,10 +107,26 @@ export const contacts = sqliteTable('contacts', {
         .notNull().default(sql`(unixepoch() * 1000)`)
 })
 
+export const notes = sqliteTable('notes', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    title: text('title').notNull(),
+    value: text('value').notNull(),
+    staffId: integer('staff_id').references(() => staff.id, { onDelete: 'cascade' }),
+    providerId: integer('provider_id').references(() => providers.id, { onDelete: 'cascade' }),
+    productId: integer('product_id').references(() => products.id, { onDelete: 'cascade' }),
+    createdAt: integer('created_at', { mode: 'timestamp_ms' })
+        .notNull().default(sql`(unixepoch() * 1000)`),
+}, (table) => [
+    check('notes_single_owner_check', sql`
+        (${table.staffId} IS NOT NULL) +
+        (${table.providerId} IS NOT NULL) +
+        (${table.productId} IS NOT NULL) = 1
+    `),
+])
 
 // Relations
 export const relations = defineRelations(
-    { products, staff, providers, traces, tickets, ticketItems, tag, contacts },
+    { products, staff, providers, traces, tickets, ticketItems, tag, contacts, notes },
     (r) => ({
         tickets: {
             trace: r.one.traces({
@@ -129,13 +153,16 @@ export const relations = defineRelations(
 
         products: {
             ticketItems: r.many.ticketItems(),
+            notes: r.many.notes({ from: r.products.id, to: r.notes.productId }),
         },
 
         staff: {
             contacts: r.many.contacts(),
+            notes: r.many.notes({ from: r.staff.id, to: r.notes.staffId }),
         },
         providers: {
             contacts: r.many.contacts(),
+            notes: r.many.notes({ from: r.providers.id, to: r.notes.providerId }),
         },
 
         contacts: {
@@ -146,6 +173,21 @@ export const relations = defineRelations(
             provider: r.one.providers({
                 from: r.contacts.providerId,
                 to: r.providers.id,
+            }),
+        },
+
+        notes: {
+            staff: r.one.staff({
+                from: r.notes.staffId,
+                to: r.staff.id,
+            }),
+            provider: r.one.providers({
+                from: r.notes.providerId,
+                to: r.providers.id,
+            }),
+            product: r.one.products({
+                from: r.notes.productId,
+                to: r.products.id,
             }),
         },
     })

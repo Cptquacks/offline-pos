@@ -1,32 +1,36 @@
 import { create } from "zustand";
 import { loadData, writeData } from "../utils/storage-util";
 
-/**
- * @typedef preferenceStore
- * @property {Array} preferenceData
- * @property {() =>  Promise<void>} loadData
- * @property {(key: string, value: boolean) => Promise<void>} setPreference 
- */
-
-/**@type {import("zustand").UseBoundStore<import("zustand").StoreApi<preferenceStore>>} */
+const defaultPreferences = [
+    { key: 'sideBarExpanded', name: 'Barra lateral expandida', value: true },
+    { key: 'coloredTags', name: 'Categorías coloreadas', value: false },
+    { key: 'hasKiosk', name: 'Kiosko', value: true },
+];
 
 const usePreferenceStore = create((set, get) => ({
-    preferenceData: [],
+    preferenceData: defaultPreferences,
 
     loadData: async () => {
-        const data = await loadData('preferences')
-
-        set({ preferenceData: data })
+        const preferenceData = await loadData('preferences');
+        set({
+            preferenceData: Array.isArray(preferenceData) && preferenceData.length > 0
+                ? preferenceData
+                : defaultPreferences,
+        });
     },
+
     setPreference: async (index, value) => {
-        const { preferenceData } = get()
+        const preference = get().preferenceData[index];
+        if (!preference) throw new Error(`No se encontró la preferencia en el índice ${index}.`);
 
-        let updatedData = [...preferenceData]
-        updatedData[index].value = value
+        const nextData = get().preferenceData.map((item, itemIndex) =>
+            itemIndex === index ? { ...item, value } : item
+        );
 
-        const data = await writeData('preferences', updatedData)
+        const saved = await writeData('preferences', nextData);
+        const preferenceData = Array.isArray(saved) && saved.length > 0 ? saved : nextData;
+        set({ preferenceData });
+    },
+}));
 
-        set({ preferenceData: data })
-    }
-}))
-export default usePreferenceStore
+export default usePreferenceStore;
