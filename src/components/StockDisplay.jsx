@@ -4,18 +4,20 @@ function StockDisplay({ stock }) {
     return (
         <section
             className="
-            min-w-fit
+            w-fit
             flex flex-row
-            p-2! px-6! gap-6
+            p-1! px-3! gap-6
             bg-(--bg-alt)
             border border-white/15
             rounded-full
             "
         >
-            <div className="flex flex-row gap-1 items-center">
+            <div className="flex flex-row gap-2 items-center text-sm">
                 <FontAwesomeIcon icon={"warehouse"} size="lg" />
-                <strong>Stock:</strong>
-                <p>{stock}</p>
+                <span className="flex flex-row gap-1 items-center">
+                    <strong>Stock:</strong>
+                    <p>{stock}</p>
+                </span>
             </div>
         </section>
     )

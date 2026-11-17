@@ -310,6 +310,7 @@ function InventoryView() {
                                             icon={'tag'}
                                             label={product.category ?? 'N/A'}
                                             color={tagList.find(tag => tag.name === product.category)?.color ?? '#000'}
+                                            sm
                                         />
                                     }
                                     stockDisplay={

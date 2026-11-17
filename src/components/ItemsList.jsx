@@ -5,8 +5,8 @@ function ItemsList({ children }) {
         <div className="p-4!">
 
             <ul className="
-            grid grid-cols-1
-            gap-2
+            grid grid-cols-4
+            gap-1
             ">
                 {(!children || children.length == 0) &&
                     <EmptyList />}

@@ -2,10 +2,10 @@ import { useMemo } from "react"
 
 function ExpirationDisplay({ days }) {
     const display = useMemo(() => {
-        if (days > 31) return 4
-        else if (days >= 14) return 3
-        else if (days >= 7) return 2
-        else if (days > 0) return 1
+        if (days > 31) return 3
+        else if (days >= 14) return 2
+        else if (days >= 7) return 1
+        else if (days > 0) return 0
 
 
         return 0
@@ -15,13 +15,13 @@ function ExpirationDisplay({ days }) {
 
             {display === 0 && <div className="
             w-fit h-fit
-            px-4! py-0.5!
+            px-2! py-0.5!
             rounded-full
             border border-red-600
             bg-red-950/50
             ">
                 <strong className="
-                text-red-600!
+                text-red-600! text-sm
                 ">
                     Expirado
                 </strong>
@@ -30,13 +30,13 @@ function ExpirationDisplay({ days }) {
 
             {display === 1 && <div className="
             w-fit h-fit
-            px-4! py-0.5!
+            px-2! py-0.5!
             rounded-full
             border border-red-600
             bg-red-950/50
             ">
                 <strong className="
-                text-red-600!
+                text-red-600! text-sm
                 ">
                     Expira en {days} días !
                 </strong>
@@ -45,13 +45,13 @@ function ExpirationDisplay({ days }) {
 
             {display === 2 && <div className="
             w-fit h-fit
-            px-4! py-0.5!
+            px-2! py-0.5!
             rounded-full
             border border-amber-600
             bg-amber-950/50
             ">
                 <strong className="
-                text-amber-600!
+                text-amber-600! text-sm
                 ">
                     Expira en {(days / 7).toFixed(0)} semanas
                 </strong>
@@ -60,13 +60,13 @@ function ExpirationDisplay({ days }) {
 
             {display === 3 && <div className="
             w-fit h-fit
-            px-4! py-0.5!
+            px-2! py-0.5!
             rounded-full
             border border-green-600
             bg-green-950/50
             ">
                 <strong className="
-                text-green-600!
+                text-green-600! text-sm
                 ">
                     Expira en 1 mes
                 </strong>

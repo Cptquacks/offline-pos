@@ -42,7 +42,7 @@ function SideBar() {
 
     return (
         <aside className={`
-        ${showLabel ? 'flex-1/3' : 'w-fit'}
+        ${showLabel ? 'w-fit' : 'w-fit'}
         flex flex-col 
         h-full max-w-1/5
         p-2! 
@@ -53,6 +53,7 @@ function SideBar() {
             gap-2
             ">
                 <AccountDisplay />
+                <hr className="border-transparent my-1!" />
                 {menuItems.map((item, index) =>
                     item && <SideBarButton
                         key={index}

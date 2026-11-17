@@ -6,12 +6,13 @@ function MissingData() {
         <div className="
         flex flex-row
         items-center
-        h-full w-fit
-        px-6! pr-7! py-0.5! gap-1
+        h-fit w-fit
+        px-2! pl-0.5! py-0.75! gap-1
         bg-amber-950/30
         border border-amber-600
         text-amber-600!
         rounded-full
+        text-sm
         ">
             <FontAwesomeIcon icon={faInfoCircle} size="lg" />
             <strong>
