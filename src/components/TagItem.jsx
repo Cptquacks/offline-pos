@@ -15,7 +15,7 @@ function TagItem({ label, color, icon, sm = false }) {
         flex flex-row
         items-center
         h-fit w-fit
-        border-2 border-white/20
+        border-2 border-white/15
         rounded-full
         bg-(--accent-alt)/30
         text-white!

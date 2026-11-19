@@ -24,6 +24,8 @@ import SearchBarWrapper from "../components/SearchBarWrapper"
 import DeleteButton from "../components/DeleteButton"
 import AlertDialog from "../components/AlertDialog"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import ContractDisplay from "../components/ContractDisplay"
+import SalaryDisplay from "../components/SalaryDisplay"
 
 function StaffView() {
     const { staffData, loadData, addStaff, addMany, modifyStaff, deleteStaff, deleteMany, addNote, deleteNote } = useStaffStore()
@@ -321,18 +323,16 @@ function StaffView() {
                                             label={member.charge}
                                             icon="user"
                                             color={roleList.find(tag => tag.name === member.charge)?.color ?? '#000'}
+                                            sm
                                         />
                                     }
-                                    codeBar={member.ID}
-                                    startDate={member.startDate}
-                                    endDate={member.endDate}
-                                    expirationDisplay={
-                                        member.endDate &&
-                                        <ExpirationDisplay
-                                            days={daysFromToday(member.endDate)}
-                                        />
+                                    codeBar={`CI:${member.ID}`}
+                                    contractDisplay={
+                                        <ContractDisplay startDate={member.startDate} endDate={member.endDate ?? null} />
                                     }
-                                    salaryDisplay={`${member.salary} ${member.currency ?? 'CUP'}`}
+                                    salaryDisplay={
+                                        <SalaryDisplay value={member.salary} currency={member.currency} />
+                                    }
                                     restockButton={
                                         (member.endDate && daysFromToday(member.endDate) <= 0) &&
                                         <DefaultButton
@@ -392,24 +392,23 @@ function StaffView() {
                                             additionCallback={data => modifyStaff(member.id, { ...member, ...data })}
                                         />
                                     )}
-                                    missingData={(() => {
-                                        const required = [
-                                            'name',
-                                            'ID',
-                                            'salary',
-                                            'currency',
-                                            'charge',
-                                            'startDate'
-                                        ]
+                                    missingData={(
+                                        () => {
+                                            const required = [
+                                                'name',
+                                                'ID',
+                                                'salary',
+                                                'currency',
+                                                'charge',
+                                                'startDate'
+                                            ]
 
-                                        const current = Object.keys(member)
-                                            .filter(item => required.includes(item))
+                                            const current = Object.keys(member)
+                                                .filter(item => required.includes(item))
 
-                                        return !current.every(((element, index) =>
-                                            element === required[index] &&
-                                            member[element]
-                                        ))
-                                    })()}
+                                            return !current.every(item => required.includes(item) && member[item])
+                                        })()
+                                    }
                                     contactButton={member.contact &&
                                         <DefaultButton
                                             icon={'phone'}

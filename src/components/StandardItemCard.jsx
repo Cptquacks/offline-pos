@@ -64,7 +64,7 @@ function StandardItemCard({
                 <DefaultButton
                     icon={'pen-to-square'}
                     label={'Editar'}
-                    onClick={isOnPreview ? onEdit : false}
+                    onClick={!isOnPreview ? onEdit : false}
                 />
                 <DeleteButton onDelete={isOnPreview ? onDelete : false} />
             </div>

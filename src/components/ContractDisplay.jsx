@@ -4,15 +4,17 @@ function ContractDisplay({ startDate, endDate }) {
     return (
         <section
             className="
-            flex flex-row
-            items-center
-            gap-2
+            flex flex-row 
+            w-full
+            items-center justify-between
+            gap-1
             "
         >
             <div
                 className="
                 w-fit
                 flex flex-row
+                items-center
                 p-1! px-3! gap-2
                 text-sm
                 bg-(--bg-alt)
@@ -23,10 +25,11 @@ function ContractDisplay({ startDate, endDate }) {
                 <FontAwesomeIcon icon={'calendar-alt'} />
                 <strong>{startDate}</strong>
             </div>
-            <div
+            {endDate && <div
                 className="
                 w-fit
                 flex flex-row
+                items-center
                 p-1! px-3! gap-2
                 text-sm
                 bg-(--bg-alt)
@@ -34,9 +37,9 @@ function ContractDisplay({ startDate, endDate }) {
                 rounded-full
                 "
             >
-                <FontAwesomeIcon icon={'calendar-alt'} />
+                <FontAwesomeIcon icon={'calendar-times'} />
                 <strong>{endDate}</strong>
-            </div>
+            </div>}
         </section>
     )
 }
