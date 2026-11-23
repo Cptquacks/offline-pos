@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useState } from "react"
 import SideBarButton from "./SideBarButton"
 import usePreferenceStore from "../stores/preferenceStore"
-import useLicenseStore from "../stores/licenseStore"
+//import useLicenseStore from "../stores/licenseStore"
 import AccountDisplay from "./AccountDisplay"
 
 
 function SideBar() {
     const { preferenceData, loadData } = usePreferenceStore()
+    /* UNUSED CODE
     const { licenseList, loadLicenses } = useLicenseStore()
     const appVersion = import.meta.env.VITE_PROGRAM_VER
     const codeName = import.meta.env.VITE_PROGRAM_CODENAME
+    */
 
     const showLabel = useMemo(() => {
         const result = preferenceData.find(pref => pref.key === 'sideBarExpanded')
@@ -35,58 +37,40 @@ function SideBar() {
     useEffect(() => {
         (async () => {
             await loadData()
-            await loadLicenses()
+            //await loadLicenses()
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
         <aside className={`
-        ${showLabel ? 'w-fit' : 'w-fit'}
+        w-1/6
         flex flex-col 
-        h-full max-w-1/5
+        h-full 
         p-2! 
         bg-(--bg-soft)
         `}>
             <div className="
+            w-full
             flex flex-col flex-1
             gap-2
             ">
-                <AccountDisplay />
-                <hr className="border-transparent my-1!" />
                 {menuItems.map((item, index) =>
-                    item && <SideBarButton
+                    item &&
+                    <SideBarButton
                         key={index}
                         label={item.label}
                         icon={item.icon}
                         route={item.route}
                         selected={item.route === currentSelection}
                         showLabel={showLabel}
-                        onSelected={route => setSelection(route)} />
+                        onSelected={route => setSelection(route)}
+                    />
 
                 )}
 
             </div>
-            {showLabel &&
-                <div className="
-                flex flex-col
-                ">
-                    <strong className="text-sm">
-                        Versión: {appVersion} {codeName}
-                    </strong>
-
-                    <strong className="text-sm">
-                        Activado hasta: {licenseList[(licenseList ?? []).length - 1]?.date ?? 'No activado'}
-                    </strong>
-
-                    <strong className="
-                    text-sm underline underline-offset-2
-                    opacity-75 hover:opacity-100 cursor-pointer
-                    ">
-                        &copy; Shard Development Team
-                    </strong>
-                </div>
-            }
+            <AccountDisplay />
         </aside>
     )
 }
