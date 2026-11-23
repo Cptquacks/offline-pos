@@ -4,7 +4,8 @@ function ActiveDisplay({ isActive = true }) {
         transition
         flex flex-row
         items-center justify-center
-        px-4! py-0.5!
+        px-4! py-0.75!
+        text-sm
         border
         rounded-full
 

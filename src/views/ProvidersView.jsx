@@ -21,6 +21,9 @@ import ButtonBelt from "../components/ButtonBelt"
 import SearchBarWrapper from "../components/SearchBarWrapper"
 import DeleteButton from "../components/DeleteButton"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import ContractDisplay from "../components/ContractDisplay"
+import SalaryDisplay from "../components/SalaryDisplay"
+import StandardNewItemCard from "../components/StandardNewItemCard"
 
 function parseImportedActive(value, fallback) {
     if (value === undefined || value === null || value === "") return fallback;
@@ -34,7 +37,7 @@ function parseImportedActive(value, fallback) {
 }
 
 function ProvidersView() {
-    const { providerData, loadData, addProvider, addMany, modifyProvider, deleteProvider, deleteMany, addNote, deleteNote } = useProviderStore()
+    const { providerData, loadData, addProvider, addMany, modifyProvider, deleteProvider, deleteMany } = useProviderStore()
     const { openDialog, closeDialog } = useDialogStore()
 
     const today = new Date().toLocaleDateString('sv-SE')
@@ -77,7 +80,6 @@ function ProvidersView() {
     // use indexes
     const [indexes, selectedIndexes] = useState([])
     const [isSelecting, setSelecting] = useState(false)
-    const [notesOpened, setOpened] = useState([])
 
     /**
      * 
@@ -197,40 +199,6 @@ function ProvidersView() {
                     items-center
                     px-4! py-2! gap-3
                     ">
-                        <ButtonBelt>
-                            <DefaultButton
-                                icon={'plus'}
-                                label={'Nuevo proveedor'}
-                                onClick={
-                                    () => openDialog(
-                                        <StandarNewItemDialog
-                                            additionCallback={data => addProvider(data)}
-                                            fileFields={[
-                                                { 'name': 'text' },
-                                                { 'waste': 'number' },
-                                                { 'currency': 'currency' },
-                                                { 'startedAt': 'date' },
-                                                { 'span': 'number' },
-                                                { 'contactData': 'phone-list' },
-                                            ]}
-                                            uiFields={[
-                                                { 'name': 'Nombre' },
-                                                { 'waste': 'Gasto' },
-                                                { 'currency': 'Moneda de compra' },
-                                                { 'startedAt': 'Fecha de inicio de contrato' },
-                                                { 'span': 'Dias hasta la recompra' },
-                                                { 'contactData': 'Numeros de telefono' },
-                                            ]}
-                                            icon={'handshake-alt'}
-                                            label={'proveedor'}
-                                            optionalFields={[]}
-
-                                        />
-                                    )
-                                }
-                            />
-                        </ButtonBelt>
-
                         <ButtonBelt
                         >
 
@@ -318,7 +286,36 @@ function ProvidersView() {
                         />
                     </div>
 
-                    <ItemsList>
+                    <ItemsList
+                        newItemLabel={'proveedor'}
+                        onAdd={
+                            () => openDialog(
+                                <StandarNewItemDialog
+                                    additionCallback={data => addProvider(data)}
+                                    fileFields={[
+                                        { 'name': 'text' },
+                                        { 'waste': 'number' },
+                                        { 'currency': 'currency' },
+                                        { 'startedAt': 'date' },
+                                        { 'span': 'number' },
+                                        { 'contactData': 'phone-list' },
+                                    ]}
+                                    uiFields={[
+                                        { 'name': 'Nombre' },
+                                        { 'waste': 'Gasto' },
+                                        { 'currency': 'Moneda de compra' },
+                                        { 'startedAt': 'Fecha de inicio de contrato' },
+                                        { 'span': 'Dias hasta la recompra' },
+                                        { 'contactData': 'Numeros de telefono' },
+                                    ]}
+                                    icon={'handshake-alt'}
+                                    label={'proveedor'}
+                                    optionalFields={[]}
+
+                                />
+                            )
+                        }
+                    >
                         {filteredList.map((provider, index) =>
                             <StandardItemCardWrapper
                                 key={index}
@@ -334,43 +331,28 @@ function ProvidersView() {
                             >
                                 <StandardItemCard
                                     icon="handshake-alt"
-                                    title={provider.name}
+                                    title={
+                                        provider.name.length > 16 ?
+                                            provider.name
+                                                .slice(0, 16)
+                                                .padEnd(19, '.') :
+                                            provider.name
+                                    }
                                     tagItem={
                                         <ActiveDisplay
                                             isActive={provider.active}
                                         />
                                     }
-                                    startDate={provider.startedAt}
-                                    endDate={addDays(provider.startedAt, provider.span)}
-                                    notesDisplay={
-                                        <NotesControlPanel
-                                            data={provider}
-                                            handleOpen={() => {
-                                                let result = [...notesOpened]
-
-                                                if (result.includes(index))
-                                                    result = result.filter(i => i !== index)
-
-                                                else if (!result.includes(index))
-                                                    result.push(index)
-
-                                                setOpened(result)
-                                            }}
-                                            addNote={value => addNote(provider.id, value)}
+                                    contractDisplay={
+                                        <ContractDisplay
+                                            startDate={provider.startedAt}
+                                            endDate={provider.endsAt}
                                         />
                                     }
-                                    noteData={provider.notes ?? []}
-                                    notesOpen={notesOpened.includes(index)}
-                                    onNoteDelete={async (note) => {
-                                        setLoading(true)
-                                        await deleteNote(note.id)
-                                            .then(() => setLoading(false))
-                                    }}
 
                                     restockButton={
                                         !provider.active &&
                                         <DefaultButton
-                                            label={'Renovar'}
                                             icon={'sync'}
                                             onClick={() =>
                                                 modifyProvider(provider.id,
@@ -390,7 +372,9 @@ function ProvidersView() {
                                         />
                                     }
 
-                                    salaryDisplay={`${provider.waste} ${provider.currency}`}
+                                    salaryDisplay={
+                                        <SalaryDisplay value={provider.waste} currency={provider.currency} />
+                                    }
                                     onDelete={() => deleteProvider(provider.id)}
 
                                     onEdit={() => openDialog(
@@ -440,7 +424,6 @@ function ProvidersView() {
                                     contactButton={
                                         provider.contactData.length !== 0 && <DefaultButton
                                             icon={'phone'}
-                                            label={'Contacto'}
                                             onClick={() =>
                                                 openDialog(
                                                     <AlertDialog

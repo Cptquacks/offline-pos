@@ -15,7 +15,7 @@ function SalaryDisplay({ value, currency }) {
             <div className="flex flex-row gap-1 items-center text-sm">
                 <FontAwesomeIcon icon={'dollar-sign'} />
                 <div className="flex flex-row items-center">
-                    <strong>Salario: </strong>
+                    <strong>Pago: </strong>
                     <p>{value} {currency}</p>
                 </div>
             </div>

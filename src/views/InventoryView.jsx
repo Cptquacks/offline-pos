@@ -187,6 +187,7 @@ function InventoryView() {
 
                     onScroll={event => setScroll(event.currentTarget.scrollTop)}
                 >
+
                     <div className="flex flex-row flex-wrap w-full gap-3 px-4! py-2!">
 
                         <ButtonBelt>
@@ -285,7 +286,36 @@ function InventoryView() {
 
                     </div>
 
-                    <ItemsList>
+                    <ItemsList
+                        newItemLabel={'producto'}
+                        onAdd={() => openDialog(
+                            <StandarNewItemDialog
+                                icon={'box'}
+                                label={'producto'}
+                                fileFields={[
+                                    { 'name': 'text' },
+                                    { 'category': 'tag' },
+                                    { 'unit': 'text' },
+                                    { 'stock': 'number' },
+                                    { 'cost': 'price' },
+                                    { 'currency': 'currency' },
+                                    { 'expiresAt': 'expiration' }
+                                ]}
+                                uiFields={[
+                                    { 'name': 'Nombre' },
+                                    { 'category': 'Categoría' },
+                                    { 'unit': 'Unidad' },
+                                    { 'stock': 'Stock' },
+                                    { 'cost': 'Precio' },
+                                    { 'currency': 'Moneda de pago' },
+                                    { 'expiresAt': 'Fecha de caducidad' }
+                                ]}
+                                optionalFields={['category', 'expiresAt', 'unit']}
+                                additionCallback={value => addProduct(value)}
+                                alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
+                            />
+                        )}
+                    >
                         {/*
                             NOTE Inventory items
                         */}

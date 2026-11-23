@@ -58,8 +58,8 @@ function StandardItemCard({
                 {missingData && <MissingData />}
             </div>
 
-            <div className="flex flex-row flex-wrap items-center justify-end *:h-full w-full gap-0.5">
-                {isOnPreview && restockButton}
+            <div className="flex flex-row items-center justify-end *:h-full w-full gap-0.75">
+                {!isOnPreview && restockButton}
                 {contactButton}
                 <DefaultButton
                     icon={'pen-to-square'}
