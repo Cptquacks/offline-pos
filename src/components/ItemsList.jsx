@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import EmptyList from './EmptyList'
 import StandardNewItemCard from './StandardNewItemCard'
 
-function ItemsList({ newItemLabel, onAdd, children, vertical = false, removeAdd = false }) {
+function ItemsList({ newItemLabel, onAdd, children, cols = 4, vertical = false, removeAdd = false }) {
 
     const computedStyle = useMemo(() => {
         let finalStyle = ''
@@ -11,10 +11,10 @@ function ItemsList({ newItemLabel, onAdd, children, vertical = false, removeAdd 
             finalStyle += 'flex flex-row overflow-x-auto gap-0.5'
         }
         else if (!vertical) {
-            finalStyle += 'grid grid-cols-4 gap-1.25'
+            finalStyle += `grid grid-cols-${cols} gap-1.25`
         }
         return finalStyle
-    }, [vertical])
+    }, [vertical, cols])
 
     if (vertical && (children && children.length === 0)) return
     return (

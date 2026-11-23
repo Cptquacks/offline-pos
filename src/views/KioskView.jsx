@@ -151,7 +151,7 @@ function KioskView() {
                     "
                     onScroll={event => setScroll(event.currentTarget.scrollTop)}
                 >
-                    <ItemsList>
+                    <ItemsList cols={3} removeAdd >
                         {filteredList.map((item, index) =>
                             <KioskProductItem
                                 key={index}
@@ -258,7 +258,7 @@ function KioskView() {
                 </div>
             </div>
 
-        </section>
+        </section >
     )
 }
 export default KioskView
