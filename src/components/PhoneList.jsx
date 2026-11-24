@@ -3,7 +3,7 @@ import DeleteButton from "./DeleteButton"
 import DefaultButton from "./DefaultButton"
 
 function PhoneList({ single = false, onChange, defaultValue }) {
-    const [listData, setData] = useState(defaultValue ?? [])
+    const [listData, setData] = useState(Array.isArray(defaultValue) ? defaultValue : [])
     const [fieldData, setFieldData] = useState(defaultValue ?? null)
 
     useEffect(() => {
@@ -115,7 +115,7 @@ function PhoneList({ single = false, onChange, defaultValue }) {
                                 />
                             </div>
                             <DeleteButton
-                                onDelete={() => listData.filter((_, i) => i !== index)}
+                                onDelete={() => setData(prev => prev.filter((_, i) => i !== index))}
                             />
                         </div>
                     )

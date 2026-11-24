@@ -33,6 +33,7 @@ function KioskProductItem({ data, onAdd, onRefund }) {
         rounded-md
         ">
             <div className="
+            flex-1
             flex flex-row
             w-full
             items-start justify-between 
@@ -40,8 +41,11 @@ function KioskProductItem({ data, onAdd, onRefund }) {
             ">
 
                 <FontAwesomeIcon icon={faBox} size="3x" />
-                <strong className="text-lg">
-                    {data.name}
+                <strong className="text-lg text-right">
+                    {data.name.length > 16
+                        ? data.name.slice(0, 16).padEnd(19, '.')
+                        : data.name
+                    }
                 </strong>
 
             </div>
@@ -61,9 +65,11 @@ function KioskProductItem({ data, onAdd, onRefund }) {
 
                 <span
                     className="
+                    flex flex-row
                     bg-(--bg) w-full
+                    items-center
                     border border-white/20
-                    px-2! py-0.5!
+                    px-2! py-0.5! gap-1
                     rounded-sm
                     "
                 >
@@ -71,6 +77,7 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                         Cantidad:
                     </strong>
                     <input
+                        className="flex-1"
                         ref={amountInput}
                         type="number"
                         min={1}

@@ -122,15 +122,17 @@ function KioskView() {
     }, [])
 
     return (
-        <section className="
-        grid 
-        grid-cols-3 grid-rows-2
-        h-full
-        p-4! gap-3">
+        <section
+            className="
+            grid grid-cols-3
+            h-full
+            p-4! gap-3
+            "
+        >
 
             <div className="
             flex flex-col
-            col-span-2 row-span-2
+            col-span-2
             bg-(--bg-soft)
             rounded-md
             ">
@@ -208,7 +210,7 @@ function KioskView() {
                     </div>
                 </div>
 
-                <ItemsList>
+                <ItemsList removeAdd >
                     {cartItems.map((item, index) =>
                         <CartItem key={index}
                             data={{ index: index, ...item }}
@@ -220,42 +222,6 @@ function KioskView() {
 
                     )}
                 </ItemsList>
-            </div>
-
-            <div className="
-            flex flex-col
-            p-4! gap-3
-            bg-(--bg-soft)
-            rounded-md
-            ">
-                <div className="flex flex-row justify-between items-end">
-
-                    <div className="flex flex-row gap-3 items-center">
-                        <FontAwesomeIcon icon={faReceipt} size="xl" />
-                        <p className="font-bold! text-2xl">
-                            Recibos de compra
-                        </p>
-                    </div>
-
-                    <DefaultButton
-                        label="Limpiar"
-                        icon="brush"
-                        inversedIcon
-                        onClick={() => {
-                            loadTickets()
-                            cleanTickets()
-                        }}
-                    />
-                </div>
-
-                <div className="overflow-y-auto">
-                    <ItemsList>
-                        {ticketData.map((ticket, index) =>
-                            <TicketItem key={index}
-                                data={ticket} />
-                        )}
-                    </ItemsList>
-                </div>
             </div>
 
         </section >

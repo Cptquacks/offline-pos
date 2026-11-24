@@ -2,21 +2,25 @@ import { useMemo } from 'react'
 import EmptyList from './EmptyList'
 import StandardNewItemCard from './StandardNewItemCard'
 
-function ItemsList({ newItemLabel, onAdd, children, cols = 4, vertical = false, removeAdd = false }) {
+function ItemsList({
+    newItemLabel, onAdd, children,
+    cols = 4,
+    listStyling = 'grid', removeAdd = false
+}) {
 
     const computedStyle = useMemo(() => {
-        let finalStyle = ''
-
-        if (vertical) {
-            finalStyle += 'flex flex-row overflow-x-auto gap-0.5'
+        switch (listStyling) {
+            case 'vertical':
+                return 'flex flex-row overflow-x-auto gap-0.5'
+            case 'horizontal':
+                return 'flex flex-col overflow-y-auto gap-0.5'
+            case 'grid':
+            default:
+                return `grid grid-cols-${cols} gap-1.25`
         }
-        else if (!vertical) {
-            finalStyle += `grid grid-cols-${cols} gap-1.25`
-        }
-        return finalStyle
-    }, [vertical, cols])
+    }, [listStyling, cols])
 
-    if (vertical && (children && children.length === 0)) return
+    if (listStyling === 'vertical' && (children && children.length === 0)) return
     return (
         <div className="p-4!">
 
@@ -24,7 +28,7 @@ function ItemsList({ newItemLabel, onAdd, children, cols = 4, vertical = false, 
             ${computedStyle}
             `}>
                 {!removeAdd && <StandardNewItemCard label={newItemLabel} onAdd={onAdd} />}
-                {((!children || children.length === 0) && vertical) &&
+                {((!children || children.length === 0) && listStyling === 'vertical') &&
                     <EmptyList />}
                 {children}
             </ul>

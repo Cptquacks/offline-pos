@@ -15,7 +15,7 @@ import StandardItemCardWrapper from "../components/StandardItemCardWrapper"
 import StandardItemCard from "../components/StandardItemCard"
 import TagItem from "../components/TagItem"
 import ExpirationDisplay from "../components/ExpirationDisplay"
-import { daysFromToday, getToday } from "../utils/date-util"
+import { addDays, daysBetween, daysFromToday, getToday } from "../utils/date-util"
 import DefaultButton from "../components/DefaultButton"
 import NotesControlPanel from "../components/NotesControlPanel"
 import ButtonBelt from "../components/ButtonBelt"
@@ -23,14 +23,18 @@ import StandarNewItemDialog from "../components/StandardNewItemDialog"
 import SearchBarWrapper from "../components/SearchBarWrapper"
 import DeleteButton from "../components/DeleteButton"
 import AlertDialog from "../components/AlertDialog"
+import ConfirmDialog from "../components/ConfirmDialog"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import ContractDisplay from "../components/ContractDisplay"
 import SalaryDisplay from "../components/SalaryDisplay"
+import useAlertStore from "../stores/alertStore"
+import ErrorToast from "../components/ErrorToast"
 
 function StaffView() {
     const { staffData, loadData, addStaff, addMany, modifyStaff, deleteStaff, deleteMany, addNote, deleteNote } = useStaffStore()
     const { roleList, addRole, loadRoles } = useRoleStore()
     const { openDialog, closeDialog } = useDialogStore()
+    const { addAlert } = useAlertStore()
 
     const [scroll, setScroll] = useState(0)
     const roles = useMemo(() => {
@@ -116,6 +120,33 @@ function StaffView() {
         } finally {
             setLoading(false)
         }
+    }
+
+    const handleRehire = (member) => {
+        if (typeof member.startDate !== 'string' || typeof member.endDate !== 'string') {
+            addAlert(<ErrorToast label={`No se pudo calcular la duración del contrato de ${member.name}.`} />)
+            return
+        }
+
+        const contractDays = daysBetween(member.startDate, member.endDate)
+        if (!Number.isFinite(contractDays) || contractDays < 0) {
+            addAlert(<ErrorToast label={`No se pudo calcular la duración del contrato de ${member.name}.`} />)
+            return
+        }
+
+        const newEndDate = addDays(getToday(), contractDays)
+        openDialog(
+            <ConfirmDialog
+                label={`¿Deseas recontratar a ${member.name} por ${contractDays} días?`}
+                callback={async () => {
+                    try {
+                        await modifyStaff(member.id, { ...member, endDate: newEndDate })
+                    } catch (error) {
+                        addAlert(<ErrorToast label={error instanceof Error ? error.message : `No se pudo recontratar a ${member.name}.`} />)
+                    }
+                }}
+            />
+        )
     }
 
     useEffect(() => {
@@ -336,8 +367,8 @@ function StaffView() {
                                     restockButton={
                                         (member.endDate && daysFromToday(member.endDate) <= 0) &&
                                         <DefaultButton
-                                            label={'Recontratar'}
                                             icon={'sync'}
+                                            onClick={() => handleRehire(member)}
                                         />
                                     }
                                     notesDisplay={
