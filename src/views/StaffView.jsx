@@ -443,7 +443,6 @@ function StaffView() {
                                     contactButton={member.contact &&
                                         <DefaultButton
                                             icon={'phone'}
-                                            label={'Contacto'}
                                             onClick={() =>
                                                 openDialog(
                                                     <AlertDialog

@@ -58,14 +58,16 @@ function StandardItemCard({
                 {missingData && <MissingData />}
             </div>
 
-            <div className="flex flex-row items-center justify-end *:h-full w-full gap-0.75">
-                {!isOnPreview && restockButton}
-                {contactButton}
-                <DefaultButton
-                    icon={'pen-to-square'}
-                    label={'Editar'}
-                    onClick={!isOnPreview ? onEdit : false}
-                />
+            <div className="flex flex-row items-center justify-between *:h-full w-full">
+                <div className="flex-1 flex flex-row items-center justify-start gap-0.5 *:h-full">
+                    <DefaultButton
+                        icon={'pen-to-square'}
+                        label={'Editar'}
+                        onClick={!isOnPreview ? onEdit : false}
+                    />
+                    {!isOnPreview && restockButton}
+                    {contactButton}
+                </div>
                 <DeleteButton onDelete={isOnPreview ? onDelete : false} />
             </div>
         </section>
