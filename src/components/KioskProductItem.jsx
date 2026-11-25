@@ -52,8 +52,8 @@ function KioskProductItem({ data, onAdd, onRefund }) {
 
             <div className="
             flex-1
-            flex flex-col
-            self-start items-start gap-1
+            flex flex-row flex-wrap
+            items-start justify-between gap-1
             rounded-md
             ">
                 <TagItem
@@ -62,6 +62,23 @@ function KioskProductItem({ data, onAdd, onRefund }) {
                     icon="tag"
                     sm
                 />
+
+                <strong
+                    className="
+                    flex flex-row
+                    items-center
+                    px-4! py-1! gap-1
+                    text-sm
+                    bg-(--bg-alt)
+                    rounded-full 
+                    border border-white/15
+                    "
+                >
+                    <FontAwesomeIcon
+                        icon={'store'}
+                    />
+                    {data.stock}
+                </strong>
 
                 <span
                     className="
