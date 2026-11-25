@@ -192,40 +192,6 @@ function InventoryView() {
 
                         <ButtonBelt>
                             <DefaultButton
-                                label={"Nuevo producto"}
-                                icon={"plus"}
-                                onClick={() => openDialog(
-                                    <StandarNewItemDialog
-                                        icon={'box'}
-                                        label={'producto'}
-                                        fileFields={[
-                                            { 'name': 'text' },
-                                            { 'category': 'tag' },
-                                            { 'unit': 'text' },
-                                            { 'stock': 'number' },
-                                            { 'cost': 'price' },
-                                            { 'currency': 'currency' },
-                                            { 'expiresAt': 'expiration' }
-                                        ]}
-                                        uiFields={[
-                                            { 'name': 'Nombre' },
-                                            { 'category': 'Categoría' },
-                                            { 'unit': 'Unidad' },
-                                            { 'stock': 'Stock' },
-                                            { 'cost': 'Precio' },
-                                            { 'currency': 'Moneda de pago' },
-                                            { 'expiresAt': 'Fecha de caducidad' }
-                                        ]}
-                                        optionalFields={['category', 'expiresAt', 'unit']}
-                                        additionCallback={value => addProduct(value)}
-                                        alertCallback={() => addAlert(<ErrorToast label={'No se ha podido crear el nuevo item'} />)}
-                                    />
-                                )}
-                            />
-                        </ButtonBelt>
-
-                        <ButtonBelt>
-                            <DefaultButton
                                 label={isSelecting ? "Cancelar" : "Seleccionar"}
                                 icon={isSelecting ? "times" : "clipboard-list"}
                                 onClick={() => setSelecting(!isSelecting)}

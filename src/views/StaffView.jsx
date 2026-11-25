@@ -217,42 +217,6 @@ function StaffView() {
                     ">
                         <ButtonBelt>
                             <DefaultButton
-                                icon={'plus'}
-                                label={'Nuevo empleado'}
-                                onClick={() => openDialog(
-                                    <StandarNewItemDialog
-                                        additionCallback={data => addStaff(data)}
-                                        fileFields={[
-                                            { 'name': 'name' },
-                                            { 'ID': 'text' },
-                                            { 'salary': 'number' },
-                                            { 'currency': 'currency' },
-                                            { 'charge': 'tag-roles' },
-                                            { 'contact': 'phone' },
-                                            { 'startDate': 'date' },
-                                            { 'endDate': 'expiration' }
-                                        ]}
-                                        uiFields={[
-                                            { 'name': 'Nombre' },
-                                            { 'ID': 'Carnet de Identidad' },
-                                            { 'salary': 'Salario' },
-                                            { 'currency': 'Moneda de pago' },
-                                            { 'charge': 'Cargo' },
-                                            { 'contact': 'Numero telefonico' },
-                                            { 'startDate': 'Fecha de contratacion' },
-                                            { 'endDate': 'Fecha de despido' }
-                                        ]}
-                                        icon={'user-edit'}
-                                        label={'empleado'}
-                                        optionalFields={['endDate', 'contact']}
-
-                                    />
-                                )}
-                            />
-                        </ButtonBelt>
-
-                        <ButtonBelt>
-                            <DefaultButton
                                 icon={'sync'}
                                 iconLeft
                                 label={`Recontratar todos (${expiredList.length})`}
@@ -332,7 +296,37 @@ function StaffView() {
                         </div>
                     </div>
 
-                    <ItemsList>
+                    <ItemsList
+                        newItemLabel="empleado"
+                        onAdd={() => openDialog(
+                            <StandarNewItemDialog
+                                additionCallback={data => addStaff(data)}
+                                fileFields={[
+                                    { 'name': 'name' },
+                                    { 'ID': 'text' },
+                                    { 'salary': 'number' },
+                                    { 'currency': 'currency' },
+                                    { 'charge': 'tag-roles' },
+                                    { 'contact': 'phone' },
+                                    { 'startDate': 'date' },
+                                    { 'endDate': 'expiration' }
+                                ]}
+                                uiFields={[
+                                    { 'name': 'Nombre' },
+                                    { 'ID': 'Carnet de Identidad' },
+                                    { 'salary': 'Salario' },
+                                    { 'currency': 'Moneda de pago' },
+                                    { 'charge': 'Cargo' },
+                                    { 'contact': 'Numero telefonico' },
+                                    { 'startDate': 'Fecha de contratacion' },
+                                    { 'endDate': 'Fecha de despido' }
+                                ]}
+                                icon={'user-edit'}
+                                label={'empleado'}
+                                optionalFields={['endDate', 'contact']}
+                            />
+                        )}
+                    >
                         {filteredList.map((member, index) =>
                             <StandardItemCardWrapper
                                 key={index}
